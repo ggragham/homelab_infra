@@ -1,0 +1,9 @@
+---
+- name: Init config
+  hosts: all
+
+  vars_files:
+    - vars_file.yml
+
+  roles:
+    - role: init

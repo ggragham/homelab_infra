@@ -1,0 +1,44 @@
+---
+- name: Set ssh key on hosts
+  authorized_key:
+    user: '{{ USERNAME }}'
+    state: present
+    key: "{{ lookup('file', SSH_KEY_PATH) }}"
+
+- block:
+    - name: Remove default values in sshd_config
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: ^\s*({{ item }}.*)
+        replace: '# \1'
+      with_items:
+        - Port
+        - PermitRootLogin
+        - MaxAuthTries
+        - MaxSessions
+        - PasswordAuthentication
+        - PermitEmptyPasswords
+        - X11Forwarding
+        - AuthorizedKeysFile
+
+    - name: Apply sshd config
+      template:
+        src: 01_ssh.j2
+        dest: /etc/ssh/sshd_config.d/01_ssh.conf
+        mode: '0644'
+      notify: Restart sshd
+
+    - name: Remove root password
+      user:
+        name: root
+        state: present
+        password_lock: true
+
+    - name: Set passwordless sudo
+      community.general.sudoers:
+        name: users
+        state: present
+        user: '{{ USERNAME }}'
+        commands: ALL
+
+  become: true

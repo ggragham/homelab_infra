@@ -1,3 +1,9 @@
 .vagrant/
 *.retry
 .DS_Store
+
+assets/*
+!assets/README.md
+
+init_inventory.yml
+vars_file.yml
