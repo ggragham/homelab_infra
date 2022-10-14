@@ -25,7 +25,7 @@
       template:
         src: 01_ssh.j2
         dest: /etc/ssh/sshd_config.d/01_ssh.conf
-        mode: '0644'
+        mode: '0600'
       notify: Restart sshd
 
     - name: Remove root password
