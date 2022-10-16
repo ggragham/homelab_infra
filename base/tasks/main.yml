@@ -1,0 +1,173 @@
+---
+- name: Prepare steps
+  block:
+    - name: Update deb-based system
+      apt:
+        name: '*'
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Allow SSH
+      ufw:
+        state: enabled
+        rule: allow
+        port: '{{ SSH_PORT }}'
+        proto: tcp
+
+  tags: prepare
+  become: true
+
+
+- name: Configure external disk
+  block:
+    - name: Make dir for mountpoint
+      file:
+        path: /mnt/{{ DISK_LABEL }}
+        state: directory
+        mode: 0755
+        owner: root
+
+    - name: Mount external disk
+      mount:
+        path: /mnt/{{ DISK_LABEL }}
+        src: LABEL={{ DISK_LABEL }}
+        fstype: ext4
+        opts: defaults
+        state: mounted
+
+    - name: Make disk share group
+      group:
+        name: '{{ SHARE_DISK_GROUP }}'
+        state: present
+
+    - name: Make disk share user
+      user:
+        name: '{{ SHARE_DISK_USER }}'
+        shell: /usr/sbin/nologin
+        groups: '{{ SHARE_DISK_GROUP }}'
+
+    - name: Make public share user
+      user:
+        name: '{{ SHARE_PUBLIC_USER }}'
+        shell: /usr/sbin/nologin
+
+    - name: Make dir for random files
+      file:
+        path: /mnt/{{ DISK_LABEL }}/files
+        state: directory
+        recurse: true
+        mode: 0775
+        owner: '{{ SHARE_DISK_USER }}'
+        group: '{{ SHARE_DISK_GROUP }}'
+
+    - name: Make dir for public user
+      file:
+        path: /mnt/{{ DISK_LABEL }}/share
+        state: directory
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Make dir for public user
+      file:
+        path: /mnt/{{ DISK_LABEL }}/share/files
+        state: directory
+        mode: 0755
+        owner: '{{ SHARE_PUBLIC_USER }}'
+        group: '{{ SHARE_PUBLIC_USER }}'
+
+    - name: Apply sftp config
+      template:
+        src: 05_sftp.j2
+        dest: /etc/ssh/sshd_config.d/05_sftp.conf
+        mode: 0600
+      notify: Restart sshd
+
+  tags: filesharing
+  become: true
+
+
+- name: Config nginx
+  block:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Allow HTTP(S)
+      ufw:
+        rule: allow
+        port: '{{ item }}'
+        state: reloaded
+      with_items:
+        - 80
+        - 443
+
+    - name: Make webapge dir
+      file:
+        path: /var/www/srv
+        state: directory
+        mode: 0755
+
+    - name: Deploy homepage
+      template:
+        src: index.html
+        dest: /var/www/srv/index.html
+        mode: 0644
+
+    - name: Make services dir
+      file:
+        path: /etc/nginx/services.d
+        state: directory
+        mode: 0755
+
+    - name: Copy ssl cert
+      copy:
+        src: '{{ SSL_CERT_PATH }}'
+        dest: /etc/ssl/certs/{{ SSL_CERT_NAME }}
+        mode: 0444
+
+    - name: Copy ssl key
+      copy:
+        src: '{{ SSL_KEY_PATH }}'
+        dest: /etc/ssl/private/{{ SSL_KEY_NAME }}
+        mode: 0444
+
+    - name: Copy dh group
+      copy:
+        src: '{{ DH_PATH }}'
+        dest: /etc/nginx/{{ DH_NAME }}
+        mode: 0444
+
+    - name: Apply ssl config
+      template:
+        src: ssl-params.j2
+        dest: /etc/nginx/snippets/ssl-params.conf
+        mode: 0644
+
+    - name: Apply nginx config
+      template:
+        src: nginx_default.j2
+        dest: /etc/nginx/sites-available/default
+        mode: 0644
+
+    - name: Enable ngixn config
+      file:
+        src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+        mode: 0644
+
+  notify: Restart nginx
+  tags: webserver
+  become: true

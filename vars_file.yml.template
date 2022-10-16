@@ -1,4 +1,21 @@
 ---
-USERNAME:
+# Base vars
+USERNAME: '{{ ansible_user }}'
 SSH_KEY_PATH: ./assets/srv_key.pem.pub
 SSH_PORT: 22
+SERVER_IP: '{{ ansible_host }}'
+
+# SFTP vars
+SHARE_DISK_GROUP: disksharegroup
+SHARE_DISK_USER: diskshareuser
+SHARE_PUBLIC_USER: publicshareuser
+DISK_LABEL: disk
+
+# NGINX
+SSL_CERT_NAME: cert.crt
+SSL_KEY_NAME: cert.key
+DH_NAME: dhparam.pem
+
+SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}
+SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}
+DH_PATH: ./assets/{{ DH_NAME }}
