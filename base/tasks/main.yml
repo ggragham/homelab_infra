@@ -42,6 +42,7 @@
         fstype: ext4
         opts: defaults
         state: mounted
+      tags: vagrant
 
     - name: Make disk share group
       group:

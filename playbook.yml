@@ -7,3 +7,8 @@
 
   roles:
     - role: base
+
+  tasks:
+    - name: Print link to homepage
+      debug:
+        msg: ' Homepage: http://{{ ansible_host }} '
