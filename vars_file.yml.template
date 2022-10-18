@@ -19,3 +19,9 @@ DH_NAME: dhparam.pem
 SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}
 SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}
 DH_PATH: ./assets/{{ DH_NAME }}
+
+# Transmission vars
+TRANSMISSION_SYSTEM_GROUP: debian-transmission
+TRANSMISSION_PORT: 9091
+TRANSMISSION_USER: transmission
+TRANSMISSION_PASSWORD: 1234

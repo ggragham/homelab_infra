@@ -1,0 +1,12 @@
+---
+- name: Start transmission
+  service:
+    name: transmission-daemon
+    state: started
+  become: true
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+  become: true
