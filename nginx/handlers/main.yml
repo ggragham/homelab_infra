@@ -1,6 +1,6 @@
 ---
-- name: Restart sshd
+- name: Restart nginx
   service:
-    name: sshd
+    name: nginx
     state: restarted
   become: true

@@ -16,7 +16,6 @@ TRANSMISSION_SYSTEM_GROUP: debian-transmission  # System group to set directory 
 TRANSMISSION_PORT: 9091  # Transmission port
 TRANSMISSION_USER: transmission  # Username used to login
 TRANSMISSION_PASSWORD: 1234  # Password used to login
-
 ```
 
 Example Playbook
