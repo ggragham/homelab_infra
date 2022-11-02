@@ -15,14 +15,97 @@
         update_cache: true
       when: ansible_os_family == "Debian"
 
+    - name: Disable ufw IPv6
+      become: true
+      lineinfile:
+        dest: /etc/default/ufw
+        regexp: ^IPV6=
+        line: IPV6=no
+        state: present
+
     - name: Allow SSH
       ufw:
-        state: enabled
         rule: allow
+        src: '{{ SERVER_SUBNET }}'
         port: '{{ SSH_PORT }}'
         proto: tcp
+        state: enabled
 
   tags: prepare
+  become: true
+
+
+- name: Config OpenVPN
+  block:
+    - name: Install OpenVPN
+      apt:
+        name: openvpn
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Apply config
+      copy:
+        src: '{{ OPENVPN_CONFIG_PATH }}'
+        dest: /etc/openvpn/client/client.conf
+        mode: 0400
+
+    - name: Allow SSH from VPN
+      ufw:
+        rule: allow
+        src: '{{ VPN_SUBNET }}'
+        port: '{{ SSH_PORT }}'
+        proto: tcp
+        state: enabled
+
+    - name: Allow HTTP(S) from VPN
+      ufw:
+        rule: allow
+        src: '{{ VPN_SUBNET }}'
+        port: '{{ item }}'
+        state: reloaded
+      with_items:
+        - 80
+        - 443
+
+    - name: Allow out from tun0
+      ufw:
+        rule: allow
+        interface: tun0
+        direction: out
+        state: reloaded
+
+    - name: Allow HTTP(S)
+      ufw:
+        rule: allow
+        interface: eth0
+        direction: out
+        port: '{{ item }}'
+        proto: udp
+        state: reloaded
+      with_items:
+        - 1194
+        - 53
+
+    - name: Outgoing deny
+      ufw:
+        state: enabled
+        direction: outgoing
+        policy: deny
+
+    - name: Incoming deny
+      ufw:
+        state: enabled
+        direction: incoming
+        policy: deny
+
+    - name: Start OpenVPN
+      service:
+        name: openvpn-client@client.service
+        state: started
+        enabled: true
+
+  tags: openvpn
   become: true
 
 
@@ -108,6 +191,7 @@
     - name: Allow HTTP(S)
       ufw:
         rule: allow
+        src: '{{ SERVER_SUBNET }}'
         port: '{{ item }}'
         state: reloaded
       with_items:

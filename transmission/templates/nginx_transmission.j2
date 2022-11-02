@@ -20,6 +20,6 @@ location ^~ /torrent {
 	}
 	
 	location /torrent {
-		return 301 http://$server_name/torrent/web/;
+		return 301 http://$host/torrent/web/;
 	}
 }

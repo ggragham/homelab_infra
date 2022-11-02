@@ -1,6 +1,11 @@
 ---
 # SSH
 SSH_PORT: 22  # Set ssh port for firewall
+SERVER_SUBNET: 192.168.1.0/24
+
+# OpenVPN
+OPENVPN_CONFIG_PATH: ./assets/client.ovpn
+VPN_SUBNET: 10.8.0.0/24
 
 # SFTP
 SHARE_DISK_GROUP: sharedisk  # Group name for sftp access to ext drive

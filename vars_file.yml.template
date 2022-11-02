@@ -4,6 +4,11 @@ USERNAME: '{{ ansible_user }}'
 SSH_KEY_PATH: ./assets/srv_key.pem.pub
 SSH_PORT: 22
 SERVER_IP: '{{ ansible_host }}'
+SERVER_SUBNET: 192.168.1.0/24
+
+# OpenVPN vars
+OPENVPN_CONFIG_PATH: ./assets/client.ovpn
+VPN_SUBNET: 10.8.0.0/24
 
 # SFTP vars
 SHARE_DISK_GROUP: disksharegroup
