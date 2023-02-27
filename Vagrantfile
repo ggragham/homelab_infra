@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/bullseye64"
+  config.vm.box = "generic/debian11"
   config.vm.synced_folder "./", "/opt", type: "sshfs"
 
   config.vm.provider "virt" do |v|
