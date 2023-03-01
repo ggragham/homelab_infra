@@ -3,9 +3,9 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/debian11"
-  config.vm.synced_folder "./", "/opt", type: "sshfs"
+  config.vm.synced_folder "./", "/mnt/vagrant", type: "sshfs"
 
-  config.vm.provider "virt" do |v|
+  config.vm.provider "libvirt" do |v|
     v.memory = 512
     v.cpus = 2
   end
