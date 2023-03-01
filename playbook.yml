@@ -9,6 +9,7 @@
     - role: base
     - role: nginx
     - role: transmission
+    - role: mariadb
 
   tasks:
     - name: Print link to homepage
