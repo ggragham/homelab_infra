@@ -1,0 +1,70 @@
+APP_NAME = Gitea: Git with a cup of {{ GITEA_APP_NAME }}
+RUN_USER = {{ GITEA_USER }}
+RUN_MODE = prod
+
+[server]
+ROOT_URL         = https://{{ ansible_host }}/git/
+SSH_DOMAIN       = localhost
+DOMAIN           = localhost
+HTTP_PORT        = {{ GITEA_PORT }}
+DISABLE_SSH      = false
+SSH_PORT         = 22
+LFS_START_SERVER = true
+LFS_JWT_SECRET   = {{ GITEA_LFS_JWT_SECRET }}
+OFFLINE_MODE     = true
+
+[database]
+DB_TYPE  = mysql
+HOST     = 127.0.0.1:3306
+NAME     = {{ GITEA_DB_NAME }}
+USER     = {{ GITEA_DB_USER }}
+PASSWD   = {{ GITEA_DB_PASSWORD }}
+SCHEMA   = 
+SSL_MODE = disable
+CHARSET  = utf8mb4
+LOG_SQL  = false
+
+[repository]
+ROOT = {{ GITEA_DATA_PATH }}/data/gitea-repositories
+
+[lfs]
+PATH = {{ GITEA_DATA_PATH }}/data/lfs
+
+[mailer]
+ENABLED = false
+
+[service]
+REGISTER_EMAIL_CONFIRM            = false
+ENABLE_NOTIFY_MAIL                = false
+DISABLE_REGISTRATION              = true
+ALLOW_ONLY_EXTERNAL_REGISTRATION  = false
+ENABLE_CAPTCHA                    = false
+REQUIRE_SIGNIN_VIEW               = false
+DEFAULT_KEEP_EMAIL_PRIVATE        = false
+DEFAULT_ALLOW_CREATE_ORGANIZATION = true
+DEFAULT_ENABLE_TIMETRACKING       = true
+NO_REPLY_ADDRESS                  = noreply.localhost
+
+[openid]
+ENABLE_OPENID_SIGNIN = false
+ENABLE_OPENID_SIGNUP = false
+
+[session]
+PROVIDER = file
+
+[log]
+MODE      = console
+LEVEL     = info
+ROOT_PATH = {{ GITEA_DATA_PATH }}/log
+ROUTER    = console
+
+[repository.pull-request]
+DEFAULT_MERGE_STYLE = merge
+
+[repository.signing]
+DEFAULT_TRUST_MODEL = committer
+
+[security]
+INSTALL_LOCK       = true
+INTERNAL_TOKEN     = {{ GITEA_INTERNAL_TOKEN }}
+PASSWORD_HASH_ALGO = {{ GITEA_PASSWORD_HASH_ALGO }}

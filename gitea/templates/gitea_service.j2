@@ -1,0 +1,21 @@
+[Unit]
+Description=Gitea (Git with a cup of {{ GITEA_APP_NAME }})
+After=syslog.target
+After=network.target
+Wants=mariadb.service
+After=mariadb.service
+
+[Service]
+# Uncomment the next line if you have repos with lots of files and get a HTTP 500 error because of that
+# LimitNOFILE=524288:524288
+RestartSec=2s
+Type=simple
+User={{ GITEA_USER }}
+Group={{ GITEA_USER }}
+WorkingDirectory={{ GITEA_DATA_PATH }}
+ExecStart={{ GITEA_PATH }}/gitea web --config {{ GITEA_CONFIG_PATH }}/app.ini
+Restart=always
+Environment=USER={{ GITEA_USER }} HOME=/home/{{ GITEA_USER }} GITEA_WORK_DIR={{ GITEA_DATA_PATH }}
+
+[Install]
+WantedBy=multi-user.target

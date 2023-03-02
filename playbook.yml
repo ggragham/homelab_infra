@@ -1,16 +1,13 @@
 ---
 - name: Deploy
   hosts: all
-
-  vars_files:
-    - vars_file.yml
-
+  vars_files: [vars_file.yml]
   roles:
     - role: base
     - role: nginx
     - role: transmission
     - role: mariadb
-
+    - role: gitea
   tasks:
     - name: Print link to homepage
       debug:
