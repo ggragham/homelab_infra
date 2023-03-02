@@ -8,9 +8,13 @@
         update_cache: true
       when: ansible_os_family == "Debian"
 
-    - name: Install UFW
+    - name: Install necessary packages
       apt:
-        name: ufw
+        name: 
+          - ufw
+          - bash-completion
+          - duf
+          - vim
         state: latest
         update_cache: true
       when: ansible_os_family == "Debian"
