@@ -1,8 +1,0 @@
----
-all:
-  hosts:
-    server:
-      ansible_host: 192.168.1.111
-      ansible_user: anotheruser
-      ansibe_password: qwerty1234
-      ansible_port: 1984

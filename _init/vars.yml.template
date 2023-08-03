@@ -1,0 +1,4 @@
+---
+USERNAME: '{{ ansible_user }}'
+SSH_KEY_PATH: ../assets/id_rsa.pem.pub
+SSH_PORT: 22

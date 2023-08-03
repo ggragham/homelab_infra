@@ -2,8 +2,8 @@
 - name: Init config
   hosts: all
 
-  vars_files:
-    - vars_file.yml
+  vars_files: [vars.yml]
 
   roles:
     - role: init
+      tags: init
