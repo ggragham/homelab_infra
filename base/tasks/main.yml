@@ -13,7 +13,7 @@
         name: 
           - ufw
           - bash-completion
-          - duf
+          # - duf
           - vim
         state: latest
         update_cache: true
