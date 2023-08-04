@@ -4,5 +4,5 @@ all:
     server:
       ansible_host: 192.168.0.1
       ansible_user: user
-      ansibe_password: qwerty1234
+      ansible_become_pass: qwerty1234
       ansible_port: 22
