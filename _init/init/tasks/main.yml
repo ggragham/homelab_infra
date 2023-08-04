@@ -1,4 +1,9 @@
 ---
+- name: Install python for Ansible
+  raw: test -e /usr/bin/python3 || apt update && apt install -y python3-minimal
+  changed_when: false
+  become: true
+
 - name: Set ssh key on hosts
   authorized_key:
     user: '{{ USERNAME }}'
