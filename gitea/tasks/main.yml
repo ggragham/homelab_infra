@@ -95,4 +95,6 @@
         dest: /etc/nginx/services.d/gitea.conf
         mode: 0640
       notify: Restart nginx
+
   become: true
+  tags: gitea

@@ -1,5 +1,5 @@
 ---
-- name: Install transmission
+- name: Install and config transmission
   block:
     - name: Install transmission-daemon
       apt:
@@ -13,12 +13,6 @@
         name: transmission-daemon
         state: stopped
 
-  tags: install_transmission
-  become: true
-
-
-- name: Config transmission
-  block:
     - name: Apply nginx config
       template:
         src: nginx_transmission.j2
@@ -45,5 +39,5 @@
         mode: 0600
       notify: Start transmission
 
-  tags: config_transmission
   become: true
+  tags: transmission

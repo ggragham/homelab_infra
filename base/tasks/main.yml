@@ -19,25 +19,26 @@
         update_cache: true
       when: ansible_os_family == "Debian"
 
-    - name: Disable ufw IPv6
-      become: true
-      lineinfile:
-        dest: /etc/default/ufw
-        regexp: ^IPV6=
-        line: IPV6=no
-        state: present
+    - name: Config UFW
+      block:
+        - name: Disable ufw IPv6
+          become: true
+          lineinfile:
+            dest: /etc/default/ufw
+            regexp: ^IPV6=
+            line: IPV6=no
+            state: present
+        - name: Allow SSH
+          ufw:
+            rule: allow
+            src: '{{ SERVER_SUBNET }}'
+            port: '{{ SSH_PORT }}'
+            proto: tcp
+            state: enabled
+      tags: firewall
 
-    - name: Allow SSH
-      ufw:
-        rule: allow
-        src: '{{ SERVER_SUBNET }}'
-        port: '{{ SSH_PORT }}'
-        proto: tcp
-        state: enabled
-
-  tags: prepare
   become: true
-
+  tags: prepare
 
 - name: Config OpenVPN
   block:
@@ -62,54 +63,52 @@
             dest: /etc/openvpn/client/client.conf
             mode: 0400
 
-        - name: Allow SSH from VPN
-          ufw:
-            rule: allow
-            src: '{{ VPN_SUBNET }}'
-            port: '{{ SSH_PORT }}'
-            proto: tcp
-            state: enabled
-
-        - name: Allow HTTP(S) from VPN
-          ufw:
-            rule: allow
-            src: '{{ VPN_SUBNET }}'
-            port: '{{ item }}'
-            state: reloaded
-          with_items:
-            - 80
-            - 443
-
-        - name: Allow out from tun0
-          ufw:
-            rule: allow
-            interface: tun0
-            direction: out
-            state: reloaded
-
-        - name: Allow outgoing traffic
-          ufw:
-            rule: allow
-            interface: eth0
-            direction: out
-            port: '{{ item }}'
-            proto: udp
-            state: reloaded
-          with_items:
-            - 1194
-            - 53
-
-        - name: Outgoing deny
-          ufw:
-            state: enabled
-            direction: outgoing
-            policy: deny
-
-        - name: Incoming deny
-          ufw:
-            state: enabled
-            direction: incoming
-            policy: deny
+        - name: Config UFW
+          block:
+            - name: Allow SSH from VPN
+              ufw:
+                rule: allow
+                src: '{{ VPN_SUBNET }}'
+                port: '{{ SSH_PORT }}'
+                proto: tcp
+                state: enabled
+            - name: Allow HTTP(S) from VPN
+              ufw:
+                rule: allow
+                src: '{{ VPN_SUBNET }}'
+                port: '{{ item }}'
+                state: reloaded
+              with_items:
+                - 80
+                - 443
+            - name: Allow out from tun0
+              ufw:
+                rule: allow
+                interface: tun0
+                direction: out
+                state: reloaded
+            - name: Allow outgoing traffic
+              ufw:
+                rule: allow
+                interface: eth0
+                direction: out
+                port: '{{ item }}'
+                proto: udp
+                state: reloaded
+              with_items:
+                - 1194
+                - 53
+            - name: Outgoing deny
+              ufw:
+                state: enabled
+                direction: outgoing
+                policy: deny
+            - name: Incoming deny
+              ufw:
+                state: enabled
+                direction: incoming
+                policy: deny
+          tags: firewall
 
         - name: Start OpenVPN
           service:
@@ -193,5 +192,5 @@
         mode: 0600
       notify: Restart sshd
 
-  tags: filesharing
   become: true
+  tags: filesharing

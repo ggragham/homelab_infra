@@ -8,23 +8,25 @@
         update_cache: true
       when: ansible_os_family == "Debian"
 
-    - name: Check UFW installed
-      shell:
-        cmd: |
-          ufw --version >/dev/null
-          echo "$?"
-      register: ufw_return
-
-    - name: Allow HTTP(S)
-      ufw:
-        rule: allow
-        src: '{{ SERVER_SUBNET }}'
-        port: '{{ item }}'
-        state: reloaded
-      with_items:
-        - 80
-        - 443
-      when: ufw_return.stdout=="0"
+    - name: Config UFW
+      block:
+        - name: Check UFW installed
+          shell:
+            cmd: |
+              ufw --version >/dev/null
+              echo "$?"
+          register: ufw_return
+        - name: Allow HTTP(S)
+          ufw:
+            rule: allow
+            src: '{{ SERVER_SUBNET }}'
+            port: '{{ item }}'
+            state: reloaded
+          with_items:
+            - 80
+            - 443
+          when: ufw_return.stdout=="0"
+      tags: firewall
 
     - name: Make webapge dir
       file:
@@ -82,5 +84,5 @@
         mode: 0644
       notify: Restart nginx
 
-  tags: webserver
   become: true
+  tags: nginx
