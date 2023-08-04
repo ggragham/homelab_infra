@@ -122,6 +122,11 @@
         mode: 0755
         owner: root
 
+    - name: Check disk with {{ DISK_LABEL }} label exists
+      shell: blkid -o value -s LABEL | grep -q {{ DISK_LABEL }}
+      register: disk_exists
+      ignore_errors: true
+
     - name: Mount external disk
       mount:
         path: /mnt/{{ DISK_LABEL }}
@@ -129,7 +134,7 @@
         fstype: ext4
         opts: defaults
         state: mounted
-      tags: vagrant
+      when: disk_exists.rc == 0
 
     - name: Make disk share group
       group:
