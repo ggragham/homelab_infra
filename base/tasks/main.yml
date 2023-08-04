@@ -10,7 +10,7 @@
 
     - name: Install necessary packages
       apt:
-        name: 
+        name:
           - ufw
           - bash-completion
           # - duf

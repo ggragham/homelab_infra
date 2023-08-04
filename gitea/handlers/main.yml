@@ -4,11 +4,13 @@
     name: gitea
     state: started
   become: true
+
 - name: Restart MariaDB
   service:
     name: mariadb
     state: restarted
   become: true
+
 - name: Restart nginx
   service:
     name: nginx

@@ -8,6 +8,7 @@
         update_cache: true
         install_recommends: false
       when: ansible_os_family=="Debian"
+
     - name: Remove MariaDB anonymous users
       mysql_user:
         name: ''
@@ -15,12 +16,14 @@
         login_unix_socket: /var/run/mysqld/mysqld.sock
         state: absent
       notify: Restart MariaDB
+
     - name: Remove MariaDB test database
       mysql_db:
         db: test
         login_unix_socket: /var/run/mysqld/mysqld.sock
         state: absent
       notify: Restart MariaDB
+
     - name: Secure MariaDB root user
       mysql_user:
         user: root
