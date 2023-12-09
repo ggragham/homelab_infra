@@ -1,6 +1,6 @@
 ---
 - name: Deploy
-  hosts: all
+  hosts: master_server
 
   vars_files: [vars.yml]
 
