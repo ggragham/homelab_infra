@@ -7,3 +7,4 @@ assets/*
 
 inventory.yml
 inventory.ini
+*vars.yml
