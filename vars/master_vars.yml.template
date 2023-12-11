@@ -10,11 +10,15 @@ SERVER_SUBNET: 192.168.1.0/24
 OPENVPN_CONFIG_PATH: ./assets/client.ovpn
 VPN_SUBNET: 10.8.0.0/24
 
+# External Disk vars
+EXT_DISK_ENABLED: false
+DISK_LABEL: disk  # Exd drive label
+
 # SFTP vars
+SHARING_ENABLED: false
 SHARE_DISK_GROUP: disksharegroup
 SHARE_DISK_USER: diskshareuser
 SHARE_PUBLIC_USER: publicshareuser
-DISK_LABEL: disk
 
 # NGINX
 SSL_CERT_NAME: cert.crt

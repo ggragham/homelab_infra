@@ -121,6 +121,7 @@
 
   tags: openvpn
 
+# External Disk
 - name: Configure external disk
   block:
     - name: Make dir for mountpoint
@@ -144,6 +145,13 @@
         state: mounted
       when: disk_exists.rc == 0
 
+  when: EXT_DISK_ENABLED|bool
+  become: true
+  tags: disk
+
+# SFTP
+- name: Configure SFTP file sharing
+  block:
     - name: Make disk share group
       group:
         name: '{{ SHARE_DISK_GROUP }}'
@@ -192,5 +200,6 @@
         mode: 0600
       notify: Restart sshd
 
+  when: SHARING_ENABLED|bool
   become: true
-  tags: filesharing
+  tags: sftp
