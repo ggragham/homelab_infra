@@ -1,0 +1,18 @@
+[master_server]
+master_server1 ansible_host=192.168.1.10
+master_server2 ansible_host=192.168.1.11
+master_server3 ansible_host=192.168.1.12
+
+[master_server:vars]
+ansible_user=user
+ansible_ssh_private_key_file=~/.ssh/srv_key.pem
+ansible_port=22
+
+[backup_server]
+backup1 ansible_host=192.168.1.129
+backup2 ansible_host=192.168.1.130
+
+[backup_server:vars]
+ansible_user=backup_user
+ansible_ssh_private_key_file=~/.ssh/bckp_key.pem
+ansible_port=22

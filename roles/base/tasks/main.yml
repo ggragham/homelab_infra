@@ -40,6 +40,7 @@
   become: true
   tags: prepare
 
+# OpenVPN
 - name: Config OpenVPN
   block:
     - name: Check openvpn config existence
@@ -96,7 +97,7 @@
                 proto: udp
                 state: reloaded
               with_items:
-                - 1194
+                - '{{ OPENVPN_PORT }}'
                 - 53
             - name: Outgoing deny
               ufw:
@@ -119,8 +120,10 @@
       when: ovpn_config_existence.stat.exists
       become: true
 
+  when: OPENVPN_ENABLED|bool
   tags: openvpn
 
+# External Disk
 - name: Configure external disk
   block:
     - name: Make dir for mountpoint
@@ -144,6 +147,13 @@
         state: mounted
       when: disk_exists.rc == 0
 
+  when: EXT_DISK_ENABLED|bool
+  become: true
+  tags: disk
+
+# SFTP
+- name: Configure SFTP file sharing
+  block:
     - name: Make disk share group
       group:
         name: '{{ SHARE_DISK_GROUP }}'
@@ -192,5 +202,6 @@
         mode: 0600
       notify: Restart sshd
 
+  when: SHARING_ENABLED|bool
   become: true
-  tags: filesharing
+  tags: sftp

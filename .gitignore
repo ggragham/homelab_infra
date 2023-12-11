@@ -6,4 +6,5 @@ assets/*
 !assets/README.md
 
 inventory.yml
-vars.yml
+inventory.ini
+*vars.yml
