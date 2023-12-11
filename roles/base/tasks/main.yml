@@ -40,6 +40,7 @@
   become: true
   tags: prepare
 
+# OpenVPN
 - name: Config OpenVPN
   block:
     - name: Check openvpn config existence
@@ -119,6 +120,7 @@
       when: ovpn_config_existence.stat.exists
       become: true
 
+  when: OPENVPN_ENABLED|bool
   tags: openvpn
 
 # External Disk
