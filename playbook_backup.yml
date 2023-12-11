@@ -1,0 +1,9 @@
+---
+- name: Deploy
+  hosts: backup_server
+
+  vars_files: [vars/backup_vars.yml]
+
+  roles:
+    - role: base
+      tags: base

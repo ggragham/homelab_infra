@@ -1,0 +1,20 @@
+---
+# Base vars
+ASSETS_PATH: ./assets
+USERNAME: '{{ ansible_user }}'
+SERVER_IP: '{{ ansible_host }}'
+SSH_PORT: 22
+SERVER_SUBNET: 192.168.1.0/24
+
+# OpenVPN vars
+OPENVPN_ENABLED: false
+OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
+OPENVPN_PORT: 1194
+VPN_SUBNET: 10.8.0.0/24
+
+# External Disk vars
+EXT_DISK_ENABLED: false
+DISK_LABEL: disk  # Exd drive label
+
+# SFTP vars
+SHARING_ENABLED: false
