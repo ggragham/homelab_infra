@@ -1,0 +1,4 @@
+---
+ASSETS_PATH: ./assets
+USERNAME: '{{ ansible_user }}'
+SERVER_IP: '{{ ansible_host }}'

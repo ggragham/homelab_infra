@@ -1,13 +1,14 @@
 ---
 # Base vars
+ASSETS_PATH: ./assets
 USERNAME: '{{ ansible_user }}'
-SSH_KEY_PATH: ./assets/srv_key.pem.pub
 SSH_PORT: 22
 SERVER_IP: '{{ ansible_host }}'
 SERVER_SUBNET: 192.168.1.0/24
 
 # OpenVPN vars
 OPENVPN_ENABLED: false
+OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
 OPENVPN_PORT: 1194
 VPN_SUBNET: 10.8.0.0/24
 
@@ -21,14 +22,13 @@ SHARE_DISK_GROUP: disksharegroup
 SHARE_DISK_USER: diskshareuser
 SHARE_PUBLIC_USER: publicshareuser
 
-# NGINX
+# NGINX vars
 SSL_CERT_NAME: cert.crt
 SSL_KEY_NAME: cert.key
 DH_NAME: dhparam.pem
-
-SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}
-SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}
-DH_PATH: ./assets/{{ DH_NAME }}
+SSL_CERT_PATH: '{{ ASSETS_PATH }}/{{ SSL_CERT_NAME }}'
+SSL_KEY_PATH: '{{ ASSETS_PATH }}/{{ SSL_KEY_NAME }}'
+DH_PATH: '{{ ASSETS_PATH }}{{ DH_NAME }}'
 
 # Transmission vars
 TRANSMISSION_SYSTEM_GROUP: debian-transmission
@@ -36,7 +36,7 @@ TRANSMISSION_PORT: 9091
 TRANSMISSION_USER: transmission
 TRANSMISSION_PASSWORD: 1234
 
-# Gitea
+# Gitea vars
 GITEA_APP_NAME: tea
 GITEA_PORT: 3000
 GITEA_USER: gitea_user
