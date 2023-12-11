@@ -7,7 +7,7 @@ SERVER_IP: '{{ ansible_host }}'
 SERVER_SUBNET: 192.168.1.0/24
 
 # OpenVPN vars
-OPENVPN_CONFIG_PATH: ./assets/client.ovpn
+OPENVPN_PORT: 1194
 VPN_SUBNET: 10.8.0.0/24
 
 # External Disk vars
