@@ -1,0 +1,7 @@
+---
+- name: Borg timer
+  systemd:
+    name: borgmatic.timer
+    state: started
+    enabled: true
+  become: true

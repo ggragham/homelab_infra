@@ -1,0 +1,3 @@
+---
+USERNAME: '{{ ansible_user }}'
+ASSETS_PATH: ./assets

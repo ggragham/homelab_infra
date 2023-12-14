@@ -1,0 +1,82 @@
+location:
+    source_directories:
+    {% for item in BORGMATIC_BACKUP_SOURCES %}
+    - {{ item }}
+    {% endfor %}
+
+    repositories:
+    {% for server_ip in BORG_SERVER_IP_ADDR_LIST %}
+    - ssh://{{ BORG_USER }}@{{ server_ip }}{{ BORG_BACKUP_PATH }}/backup_{{ current_host_ip }}.borg
+    {% endfor %}
+
+storage:
+    encryption_passphrase: {{ BORGMATIC_ENCRYPTION_PASS }}
+    compression: {{ BORGMATIC_COMPRESSION }}
+    # upload_rate_limit: 500
+    # retries: 5
+    # retry_wait: 15
+    ssh_command: ssh -i /home/{{ USERNAME }}/.ssh/{{ BORG_SSH_PRIVATE_KEY_NAME }}
+
+retention:
+    keep_daily: {{ BORGMATIC_KEEP_DAILY }}
+    keep_weekly: {{ BORGMATIC_KEEP_WEEKLY }}
+    keep_monthly: {{ BORGMATIC_KEEP_MOUNTHLY }}
+    keep_yearly: {{ BORGMATIC_KEEP_YEARLY }}
+
+consistency:
+    checks:
+        - repository
+        - archives
+    # check_last: 3
+
+hooks:
+    # before_actions:
+        # - echo "Starting actions."
+    before_backup:
+        - echo "Starting a backup."
+    before_prune:
+        - echo "Starting pruning."
+    # before_compact:
+        # - echo "Starting compaction."
+    before_check:
+        - echo "Starting checks."
+    before_extract:
+        - echo "Starting extracting."
+    after_backup:
+        - echo "Finished a backup."
+    # after_compact:
+        # - echo "Finished compaction."
+    after_prune:
+        - echo "Finished pruning."
+    after_check:
+        - echo "Finished checks."
+    after_extract:
+        - echo "Finished extracting."
+    # after_actions:
+        # - echo "Finished actions."
+    on_error:
+        - echo "Error during prune/compact/create/check."
+    before_everything:
+        - echo "Starting actions."
+    after_everything:
+        - echo "Completed actions."
+
+    # mariadb_databases:
+        # - name: users
+          # hostname: database.example.org
+          # port: 3307
+          # username: dbuser
+          # password: trustsome1
+          # format: directory
+          # add_drop_database: false
+          # options: --skip-comments
+          # list_options: --defaults-extra-file=my.cnf
+          # restore_options: --defaults-extra-file=my.cnf
+
+    # healthchecks:
+        # ping_url: https://hc-ping.com/your-uuid-here
+        # verify_tls: false
+        # send_logs: false
+        # ping_body_limit: 200000
+        # states:
+            # - finish

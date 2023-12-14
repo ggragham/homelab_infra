@@ -1,0 +1,190 @@
+---
+- name: Borg
+  block:
+    # Install borg
+    - name: Install Borg
+      apt:
+        name:
+          - borgbackup
+          - borgmatic
+        state: present
+        # update_cache: true
+      become: true
+
+    # Gegerate and copy SSH key
+    - name: Check and generate SSH key
+      block:
+        - name: Check if private key exists
+          stat:
+            path: '{{ ASSETS_PATH }}/{{ BORG_SSH_PRIVATE_KEY_NAME }}'
+          register: private_key
+
+        - name: Check if public key exists
+          stat:
+            path: '{{ ASSETS_PATH }}/{{ BORG_SSH_PUBLIC_KEY_NAME }}'
+          register: public_key
+
+        - name: Generate SSH key
+          openssh_keypair:
+            path: '{{ ASSETS_PATH }}/{{ BORG_SSH_PRIVATE_KEY_NAME }}'
+            type: ed25519
+          when: not private_key.stat.exists or not public_key.stat.exists
+
+      delegate_to: localhost
+
+    # Server-Side
+    - name: Config borg server
+      block:
+        # Create Borg user on backup server
+        - name: Create and config {{ BORG_USER }} on backup servers
+          block:
+            - name: Create borg user on backup servers
+              user:
+                name: '{{ BORG_USER }}'
+                shell: /bin/bash
+                create_home: true
+
+            - name: Allow {{ BORG_USER }} user to run borg and borgmatic without password
+              community.general.sudoers:
+                name: '{{ BORG_USER }}'
+                state: present
+                user: '{{ BORG_USER }}'
+                commands:
+                  - /usr/bin/borg
+                  - /usr/bin/borgmatic
+
+        # Config SSH on backup server
+        - name: Add public key to {{ BORG_SERVER_GROUP }} group
+          block:
+            - name: Create .ssh dir on backup servers
+              file:
+                path: /home/{{ BORG_USER }}/.ssh
+                state: directory
+                owner: '{{ BORG_USER }}'
+                group: '{{ BORG_USER }}'
+                mode: '0700'
+
+            - name: Authorize keys on backup servers
+              authorized_key:
+                user: '{{ BORG_USER }}'
+                key: "{{ lookup('file', '{{ ASSETS_PATH }}/{{ BORG_SSH_PUBLIC_KEY_NAME }}') }}"
+                key_options: command="cd {{ BORG_BACKUP_PATH }}; borg serve --restrict-to-path {{ BORG_BACKUP_PATH }}",restrict
+
+            - name: Set authorized_keys permissions
+              file:
+                path: /home/{{ BORG_USER }}/.ssh/authorized_keys
+                owner: '{{ BORG_USER }}'
+                group: '{{ BORG_USER }}'
+                mode: 0600
+                state: file
+
+        # Create backup dir on backup server
+        - name: Create Borg Backup directory
+          file:
+            name: '{{ BORG_BACKUP_PATH }}'
+            state: directory
+            recurse: true
+            owner: '{{ BORG_USER }}'
+            group: '{{ BORG_USER }}'
+            mode: '0700'
+
+      when: BORG_TYPE=='server'
+      become: true
+
+    # Client-side config
+    - name: Config borg client
+      block:
+        # Config ssh on clients
+        - name: Add private key to {{ BORG_CLIENT_GROUP }} group
+          block:
+            - name: Create .ssh dir on clients
+              file:
+                path: /home/{{ USERNAME }}/.ssh
+                state: directory
+                owner: '{{ USERNAME }}'
+                group: '{{ USERNAME }}'
+                mode: '0700'
+
+            - name: Copy private key to {{ BORG_CLIENT_GROUP }} group
+              copy:
+                src: '{{ ASSETS_PATH }}/{{ BORG_SSH_PRIVATE_KEY_NAME }}'
+                dest: /home/{{USERNAME }}/.ssh/{{ BORG_SSH_PRIVATE_KEY_NAME }}
+                owner: '{{ USERNAME }}'
+                group: '{{ USERNAME }}'
+                mode: '0600'
+
+            - name: Set authorized_keys permissions on clients
+              file:
+                path: /home/{{ USERNAME }}/.ssh/{{ BORG_SSH_PRIVATE_KEY_NAME }}
+                state: file
+                owner: '{{ USERNAME }}'
+                group: '{{ USERNAME }}'
+                mode: 0400
+
+        # Apply config to clients
+        - name: Apply borgmatic config
+          block:
+            - name: Save IP addresses of backup servers
+              set_fact:
+                BORG_SERVER_IP_ADDR_LIST: >-
+                  {{
+                    hostvars
+                    | dict2items
+                    | selectattr('key', 'in', groups.backup_server)
+                    | map(attribute='value.ansible_host')
+                  }}
+              run_once: true
+
+            - name: Create borgmatic config dir
+              file:
+                path: /home/{{ USERNAME }}/.config/borgmatic
+                state: directory
+                recurse: true
+                owner: '{{ USERNAME }}'
+                group: '{{ USERNAME }}'
+                mode: 0700
+
+            - name: Apply borgmatic config
+              template:
+                src: config.yml.j2
+                dest: /home/{{ USERNAME }}/.config/borgmatic/config.yaml
+                owner: '{{ USERNAME }}'
+                group: '{{ USERNAME }}'
+                mode: 0600
+              vars:
+                current_host_ip: "{{ hostvars[host]['ansible_host'] }}"
+              delegate_to: '{{ host }}'
+              loop_control:
+                loop_var: host
+              loop: '{{ groups[BORG_CLIENT_GROUP] }}'
+
+        # Init repos
+        - name: Init borg repos
+          block:
+            - name: Bypass SSH host cheking
+              shell: "ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no {{ BORG_USER}}@{{ hostvars[host]['ansible_host'] }} :"
+              environment:
+                SSH_KEY_PATH: /home/{{ USERNAME }}/.ssh/{{ BORG_SSH_PRIVATE_KEY_NAME }}
+              vars:
+                current_host_ip: '{{ host }}'
+              loop_control:
+                loop_var: host
+              loop: '{{ groups[BORG_SERVER_GROUP] }}'
+
+            - name: Initialize BorgBackup repositories
+              shell: borgmatic init --encryption repokey
+
+        # Systemd configs
+        - name: Apply systemd service and timer
+          template:
+            src: '{{ item }}.j2'
+            dest: /etc/systemd/system/{{ item }}
+          with_items:
+            - borgmatic.service
+            - borgmatic.timer
+          become: true
+          notify: Borg timer
+
+      when: BORG_TYPE=='client'
+
+  tags: borg
