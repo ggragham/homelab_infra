@@ -1,0 +1,92 @@
+---
+- name: Pi-hole
+  block:
+    - name: Install dependecies
+      apt:
+        name:
+          - git
+          - php8.2-cgi
+          - php8.2-fpm
+          - php8.2-intl
+          - php8.2-sqlite3
+          - php8.2-xml
+        state: latest
+        update_cache: true
+      become: true
+
+    - name: Config UFW
+      block:
+        - name: Check UFW installed
+          shell:
+            cmd: |
+              ufw --version >/dev/null
+              echo "$?"
+          register: ufw_return
+        - name: Allow DNS
+          ufw:
+            rule: allow
+            port: 53
+            state: reloaded
+          when: ufw_return.stdout=="0"
+      become: true
+      tags: firewall
+
+    - name: Check Pi-hole existence
+      stat:
+        path: /usr/local/bin/pihole
+      register: pihole_exist
+
+    - name: Install Pi-hole
+      block:
+
+        - name: Clone the Pi-hole repository
+          git:
+            repo: https://github.com/pi-hole/pi-hole.git
+            dest: /etc/.pihole
+            version: master
+
+        - name: Create Pi-hole config dir
+          file:
+            path: /etc/pihole
+            state: directory
+            mode: 0775
+
+        - name: Apply Pi-hole setupVars
+          template:
+            src: pihole_setup_vars.conf.j2
+            dest: /etc/pihole/setupVars.conf
+
+        - name: Run the Pi-hole installer
+          command: /etc/.pihole/automated\ install/basic-install.sh --unattended
+
+        - name: Change Pi-hole config dir owner
+          file:
+            path: /etc/pihole
+            owner: pihole
+            state: directory
+
+      become: true
+      # when: not pihole_exist.stat.exists
+
+    - name: Set Pi-hole admin password
+      command: pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
+      no_log: true
+
+    - name: Apply Pi-hole nginx config
+      block:
+        - name: Copy Pi-hole nginx config
+          template:
+            src: pihole_nginx.conf.j2
+            dest: /etc/nginx/sites-available/pihole.conf
+            mode: 0640
+
+        - name: Enable Pi-hole nginx config
+          file:
+            src: /etc/nginx/sites-available/pihole.conf
+            dest: /etc/nginx/sites-enabled/pihole.conf
+            state: link
+
+      become: true
+      notify: Restart nginx
+
+  tags: pihole

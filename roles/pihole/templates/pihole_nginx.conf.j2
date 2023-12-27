@@ -1,0 +1,36 @@
+server {
+    listen 443 ssl http2;
+    server_name {{ PIHOLE_DOMAIN }};
+    root /var/www/html;
+    autoindex off;
+
+    index pihole/index.php index.php index.html index.htm;
+    access_log /var/log/nginx/pihole-access.log;
+    error_log /var/log/nginx/pihole-error.log;
+
+    location / {
+        rewrite ^ /admin redirect;
+        expires max;
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_param FQDN true;
+    }
+
+    location /*.js {
+        index pihole/index.js;
+    }
+
+    location /admin {
+        root /var/www/html;
+        index index.php index.html index.htm;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
