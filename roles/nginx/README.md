@@ -12,6 +12,8 @@ SSH_PORT: 22  # Set ssh port for firewall
 SERVER_SUBNET: 192.168.1.0/24
 
 # NGINX
+DOMAIN_NAME: example.com
+
 SSL_CERT_NAME: cert.crt # SSL Cert name
 SSL_KEY_NAME: cert.key # SSL Key name
 DH_NAME: dhparam.pem # DH group name

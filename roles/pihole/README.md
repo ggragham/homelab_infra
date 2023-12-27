@@ -24,7 +24,7 @@ PIHOLE_CACHE_SIZE: 10000  # DNS cache size.
 PIHOLE_WEBUI_BOXED_LAYOUT: boxed  # Web interface layout.
 PIHOLE_WEBTHEME: default-dark  # Web interface theme.
 
-PIHOLE_DOMAIN: dns.example.com  # Pi-hole server domain name.
+PIHOLE_DOMAIN: dns.{{ DOMAIN_NAME }}
 ```
 
 Dependencies

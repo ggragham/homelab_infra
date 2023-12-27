@@ -23,6 +23,7 @@ SHARE_DISK_USER: diskshareuser
 SHARE_PUBLIC_USER: publicshareuser
 
 # NGINX vars
+DOMAIN_NAME: example.com
 SSL_CERT_NAME: cert.crt
 SSL_KEY_NAME: cert.key
 DH_NAME: dhparam.pem
