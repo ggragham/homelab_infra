@@ -38,7 +38,6 @@
 
     - name: Install Pi-hole
       block:
-
         - name: Clone the Pi-hole repository
           git:
             repo: https://github.com/pi-hole/pi-hole.git
@@ -55,6 +54,25 @@
           template:
             src: pihole_setup_vars.conf.j2
             dest: /etc/pihole/setupVars.conf
+
+        - name: Create custom.list file
+          file:
+            path: /etc/pihole/custom.list
+            state: touch
+            owner: root
+            mode: '0644'
+          become: true
+
+        - name: Add host entries to custom.list
+          lineinfile:
+            path: /etc/pihole/custom.list
+            line: "{{ item }}"
+            owner: root
+            mode: '0644'
+          loop:
+            - "{{ ansible_host }} {{ DOMAIN_NAME }}"
+            - "{{ ansible_host }} {{ PIHOLE_DOMAIN }}"
+          become: true
 
         - name: Run the Pi-hole installer
           command: /etc/.pihole/automated\ install/basic-install.sh --unattended
