@@ -66,12 +66,12 @@
         - name: Add host entries to custom.list
           lineinfile:
             path: /etc/pihole/custom.list
-            line: "{{ item }}"
+            line: '{{ item }}'
             owner: root
             mode: '0644'
           loop:
-            - "{{ ansible_host }} {{ DOMAIN_NAME }}"
-            - "{{ ansible_host }} {{ PIHOLE_DOMAIN }}"
+            - '{{ ansible_host }} {{ DOMAIN_NAME }}'
+            - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'
           become: true
 
         - name: Run the Pi-hole installer
