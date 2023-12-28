@@ -5,8 +5,6 @@ server {
     autoindex off;
 
     index pihole/index.php index.php index.html index.htm;
-    access_log /var/log/nginx/pihole-access.log;
-    error_log /var/log/nginx/pihole-error.log;
 
     location / {
         rewrite ^ /admin redirect;
@@ -33,4 +31,7 @@ server {
     location ~ /\.ht {
         deny all;
     }
+
+    access_log /var/log/nginx/pihole-access.log;
+    error_log /var/log/nginx/pihole-error.log;
 }
