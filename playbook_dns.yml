@@ -9,8 +9,5 @@
     - role: base
       tags: base
 
-    - role: nginx
-      tags: nginx
-
     - role: pihole
       tags: pihole
