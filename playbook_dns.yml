@@ -1,0 +1,16 @@
+---
+- name: Deploy
+  hosts: dns_server
+
+  vars_files:
+    - vars/dns_vars.yml
+
+  roles:
+    - role: base
+      tags: base
+
+    - role: nginx
+      tags: nginx
+
+    - role: pihole
+      tags: pihole
