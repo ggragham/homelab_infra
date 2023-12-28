@@ -41,6 +41,8 @@ server {
         deny all;
     }
 
+    include /etc/nginx/snippets/ssl-params.conf;
+
     access_log /var/log/nginx/pihole-access.log;
     error_log /var/log/nginx/pihole-error.log;
 }
