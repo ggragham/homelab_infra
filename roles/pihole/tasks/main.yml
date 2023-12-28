@@ -84,7 +84,7 @@
             state: directory
 
       become: true
-      # when: not pihole_exist.stat.exists
+      when: not pihole_exist.stat.exists
 
     - name: Set Pi-hole admin password
       command: pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
