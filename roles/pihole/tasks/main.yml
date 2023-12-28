@@ -86,6 +86,13 @@
       become: true
       when: not pihole_exist.stat.exists
 
+    - name: Add www-data user to pihole group
+      user:
+        name: www-data
+        groups: pihole
+        append: true
+      become: true
+
     - name: Set Pi-hole admin password
       command: pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
       no_log: true
