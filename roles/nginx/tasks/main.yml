@@ -70,6 +70,12 @@
         dest: /etc/nginx/snippets/ssl-params.conf
         mode: 0644
 
+    - name: Apply headers config
+      template:
+        src: headers.conf.j2
+        dest: /etc/nginx/snippets/headers.conf
+        mode: 0644
+
     - name: Apply nginx config
       template:
         src: nginx_default.j2

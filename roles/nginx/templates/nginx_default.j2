@@ -21,5 +21,6 @@ server {
     error_log /var/log/nginx/nginx-error.log;
 
     include /etc/nginx/services.d/*.conf;
+    include /etc/nginx/snippets/headers.conf;
     include /etc/nginx/snippets/ssl-params.conf;
 }
