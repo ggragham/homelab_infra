@@ -42,6 +42,7 @@ server {
     }
 
     include /etc/nginx/snippets/ssl-params.conf;
+    include /etc/nginx/snippets/headers.conf;
 
     access_log /var/log/nginx/pihole-access.log;
     error_log /var/log/nginx/pihole-error.log;
