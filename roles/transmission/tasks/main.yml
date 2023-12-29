@@ -13,12 +13,19 @@
         name: transmission-daemon
         state: stopped
 
-    - name: Apply nginx config
-      template:
-        src: nginx_transmission.j2
-        dest: /etc/nginx/services.d/nginx_transmission.conf
-        mode: 0644
-      notify: Restart nginx
+    - name: Apply Transmission nginx config
+      block:
+        - name: Copy Transmission nginx config
+          template:
+            src: nginx_transmission.j2
+            dest: /etc/nginx/sites-available/transmission.conf
+            mode: 0640
+
+        - name: Enable Transmission nginx config
+          file:
+            src: /etc/nginx/sites-available/transmission.conf
+            dest: /etc/nginx/sites-enabled/transmission.conf
+            state: link
 
     - name: Make transmission dir
       file:
