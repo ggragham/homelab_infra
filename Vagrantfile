@@ -6,14 +6,14 @@ MASTER_ENABLED = 1
 MASTER_COUNT = 1
 MASTER_CPU = 2
 MASTER_MEMORY = 768
-MASTER_BOX = "generic/debian11"
+MASTER_BOX = "generic/debian12"
 
 # Backup server config
 BACKUP_ENABLED = 0
 BACKUP_COUNT = 2
 BACKUP_CPU = 1
 BACKUP_MEMORY = 384
-BACKUP_BOX = "generic/debian11"
+BACKUP_BOX = "generic/debian12"
 
 
 Vagrant.configure("2") do |config|
