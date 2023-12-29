@@ -9,6 +9,13 @@
         install_recommends: false
       when: ansible_os_family=="Debian"
 
+    - name: Set MariaDB port
+      lineinfile:
+        path: /etc/mysql/my.cnf
+        regexp: port =
+        line: port = {{ MARIADB_PORT }}
+      notify: Restart MariaDB
+
     - name: Enable MariaDB remote connections
       lineinfile:
         path: /etc/mysql/mariadb.conf.d/50-server.cnf
