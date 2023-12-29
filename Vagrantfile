@@ -20,6 +20,8 @@ Vagrant.configure("2") do |config|
   # Master nodes
   if MASTER_ENABLED == 1
     (1..MASTER_COUNT).each do |i|
+      config.vm.network "forwarded_port", guest: 80, host: 80
+      config.vm.network "forwarded_port", guest: 443, host: 443
       config.vm.define "master_#{i}" do |machine|
         machine.vm.box = MASTER_BOX
         machine.vm.synced_folder "./", "/mnt/vagrant"
