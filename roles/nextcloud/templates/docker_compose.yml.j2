@@ -1,0 +1,24 @@
+---
+version: '2'
+
+services:
+  nextcloud:
+    image: nextcloud:{{ NEXTCLOUD_DOCKER_VERSION }}
+    restart: always
+    environment:
+      MYSQL_HOST: {{ SERVER_IP }}:{{ MARIADB_PORT }}
+      MYSQL_DATABASE: {{ NEXTCLOUD_DB_NAME }}
+      MYSQL_USER: {{ NEXTCLOUD_DB_USER }}
+      MYSQL_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
+    networks:
+      - nc_network
+    ports:
+      - {{ NEXTCLOUD_PORT }}:9000
+    volumes:
+      - {{ NEXTCLOUD_PATH }}:/var/www/html
+
+networks:
+  nc_network:
+    ipam:
+      config:
+        - subnet: {{ NEXTCLOUD_DOCKER_SUBNET }}
