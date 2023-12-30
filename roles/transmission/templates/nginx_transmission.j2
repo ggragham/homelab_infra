@@ -33,7 +33,7 @@ server {
             proxy_pass http://localhost:{{ TRANSMISSION_PORT }};
         }
 
-        location /torrent {
+        location / {
             return 301 http://$host/web/;
         }
     }
