@@ -82,7 +82,7 @@
         dest: /etc/nginx/sites-available/default
         mode: 0644
 
-    - name: Enable ngixn config
+    - name: Enable nginx config
       file:
         src: /etc/nginx/sites-available/default
         dest: /etc/nginx/sites-enabled/default
