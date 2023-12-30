@@ -15,7 +15,7 @@ OFFLINE_MODE     = true
 
 [database]
 DB_TYPE  = mysql
-HOST     = 127.0.0.1:3306
+HOST     = 127.0.0.1:{{ MARIADB_PORT }}
 NAME     = {{ GITEA_DB_NAME }}
 USER     = {{ GITEA_DB_USER }}
 PASSWD   = {{ GITEA_DB_PASSWORD }}
