@@ -3,9 +3,9 @@ RUN_USER = {{ GITEA_USER }}
 RUN_MODE = prod
 
 [server]
-ROOT_URL         = https://{{ ansible_host }}/git/
-SSH_DOMAIN       = localhost
-DOMAIN           = localhost
+ROOT_URL         = https://{{ GITEA_DOMAIN }}/
+SSH_DOMAIN       = {{ GITEA_DOMAIN }}
+DOMAIN           = {{ GITEA_DOMAIN }}
 HTTP_PORT        = {{ GITEA_PORT }}
 DISABLE_SSH      = false
 SSH_PORT         = 22

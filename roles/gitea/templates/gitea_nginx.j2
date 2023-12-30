@@ -1,7 +1,28 @@
-location /git/ { 
+server {
+    server_name {{ GITEA_DOMAIN }};
+    listen 80;
+    return 301 https://$host$request_uri;
+
+    access_log /var/log/nginx/gitea-access.log;
+    error_log /var/log/nginx/gitea-error.log;
+}
+
+
+server {
+    listen 443 ssl http2;
+    server_name {{ GITEA_DOMAIN }};
+
+    location / {
         proxy_pass http://localhost:{{ GITEA_PORT }}/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    include /etc/nginx/snippets/ssl-params.conf;
+    include /etc/nginx/snippets/headers.conf;
+
+    access_log /var/log/nginx/gitea-access.log;
+    error_log /var/log/nginx/gitea-error.log;
 }

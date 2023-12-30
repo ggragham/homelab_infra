@@ -3,6 +3,7 @@
 DISK_LABEL: disk
 
 # Gitea
+GITEA_DOMAIN: git.{{ DOMAIN_NAME }}
 GITEA_APP_NAME: tea
 GITEA_PORT: 3000
 GITEA_USER: gitea_user

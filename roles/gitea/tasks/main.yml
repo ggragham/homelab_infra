@@ -98,12 +98,19 @@
       no_log: true
       notify: Start Gitea
 
-    - name: Nginx config
-      template:
-        src: gitea_nginx.j2
-        dest: /etc/nginx/services.d/gitea.conf
-        mode: 0640
-      notify: Restart nginx
+    - name: Apply Gitea nginx config
+      block:
+        - name: Copy Gitea nginx config
+          template:
+            src: gitea_nginx.j2
+            dest: /etc/nginx/sites-available/gitea.conf
+            mode: 0640
+
+        - name: Enable Gitea nginx config
+          file:
+            src: /etc/nginx/sites-available/gitea.conf
+            dest: /etc/nginx/sites-enabled/gitea.conf
+            state: link
 
   become: true
   tags: gitea
