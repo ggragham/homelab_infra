@@ -13,6 +13,9 @@
     - role: transmission
       tags: transmission
 
+    - role: nextcloud
+      tags: nextcloud
+
     - role: gitea
       tags: gitea
 
