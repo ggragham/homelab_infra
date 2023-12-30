@@ -14,7 +14,7 @@ VPN_SUBNET: 10.8.0.0/24
 
 # External Disk vars
 EXT_DISK_ENABLED: false
-DISK_LABEL: disk  # Exd drive label
+DISK_LABEL: disk
 
 # SFTP vars
 SHARING_ENABLED: false
