@@ -1,16 +1,13 @@
 Gitea role
 =========
 
-Install and config Gitea.
+Install and config Gitea git server.
 
 Role Variables
 --------------
 
 ```yml
-# Other
-DISK_LABEL: disk
-
-# Gitea
+GITEA_DOMAIN: git.{{ DOMAIN_NAME }}
 GITEA_APP_NAME: tea
 GITEA_PORT: 3000
 GITEA_USER: gitea_user
@@ -23,7 +20,15 @@ GITEA_DB_PASSWORD: gitea_db_password
 GITEA_PASSWORD_HASH_ALGO: pbkdf2
 GITEA_LFS_JWT_SECRET: N1tudjNy+lnpUb4HjhVDZnrkIw0LBfuwxK4Pr1tJ
 GITEA_INTERNAL_TOKEN: cgCZZhsH9Y6pYMt8Gp5KfSNqF1Msydd_Zzpal6SwF4HMSGN86ZT2qHjfsQ7y64cPV1ev7HF/jygkFEVvfiCzrKA
+```
 
+Dependencies
+------------
+
+```yml
+dependencies:
+  - role: mariadb
+  - role: nginx
 ```
 
 Example Playbook
