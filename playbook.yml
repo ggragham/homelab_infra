@@ -10,14 +10,8 @@
     - role: base
       tags: base
 
-    - role: nginx
-      tags: nginx
-
     - role: transmission
       tags: transmission
-
-    - role: mariadb
-      tags: mariadb
 
     - role: gitea
       tags: gitea
