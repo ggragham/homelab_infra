@@ -29,7 +29,7 @@ SSL_KEY_NAME: cert.key
 DH_NAME: dhparam.pem
 SSL_CERT_PATH: '{{ ASSETS_PATH }}/{{ SSL_CERT_NAME }}'
 SSL_KEY_PATH: '{{ ASSETS_PATH }}/{{ SSL_KEY_NAME }}'
-DH_PATH: '{{ ASSETS_PATH }}{{ DH_NAME }}'
+DH_PATH: '{{ ASSETS_PATH }}/{{ DH_NAME }}'
 
 # Nextcloud vars
 NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}
