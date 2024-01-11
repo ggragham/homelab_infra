@@ -13,8 +13,8 @@
     - role: transmission
       tags: transmission
 
-    - role: nextcloud
-      tags: nextcloud
+    - role: docker_nextcloud
+      tags: docker_nextcloud
 
     - role: gitea
       tags: gitea
