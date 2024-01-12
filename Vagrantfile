@@ -8,6 +8,7 @@ MASTER_ENABLED = 1
 MASTER_COUNT = 1
 MASTER_CPU = 2
 MASTER_MEMORY = 768
+EXT_DISK_SIZE = "8GB"
 MASTER_BOX = "generic/debian12"
 PORTS = [80, 443]
 
@@ -31,6 +32,7 @@ Vagrant.configure("2") do |config|
         machine.vm.box = MASTER_BOX
         machine.vm.synced_folder "./", "/mnt/vagrant"
         machine.vm.network "private_network", ip: "192.168.66.#{10 + i}"
+        machine.vm.disk :disk, name: "disk", size: EXT_DISK_SIZE
 
         machine.vm.provider VM_PROVIDER do |v|
           v.cpus = MASTER_CPU
