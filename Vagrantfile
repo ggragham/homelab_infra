@@ -9,6 +9,7 @@ MASTER_COUNT = 1
 MASTER_CPU = 2
 MASTER_MEMORY = 768
 MASTER_BOX = "generic/debian12"
+PORTS = [80, 443]
 
 # Backup server config
 BACKUP_ENABLED = 0
@@ -22,8 +23,10 @@ Vagrant.configure("2") do |config|
   # Master nodes
   if MASTER_ENABLED == 1
     (1..MASTER_COUNT).each do |i|
-      config.vm.network "forwarded_port", guest: 80, host: 80
-      config.vm.network "forwarded_port", guest: 443, host: 443
+      PORTS.each do |port|
+        config.vm.network "forwarded_port", guest: port, host: port
+      end
+
       config.vm.define "master_#{i}" do |machine|
         machine.vm.box = MASTER_BOX
         machine.vm.synced_folder "./", "/mnt/vagrant"
