@@ -1,6 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+VM_PROVIDER = "virtualbox"
+
 # Master server config
 MASTER_ENABLED = 1
 MASTER_COUNT = 1
@@ -27,7 +29,7 @@ Vagrant.configure("2") do |config|
         machine.vm.synced_folder "./", "/mnt/vagrant"
         machine.vm.network "private_network", ip: "192.168.66.#{10 + i}"
 
-        machine.vm.provider "libvirt" do |v|
+        machine.vm.provider VM_PROVIDER do |v|
           v.cpus = MASTER_CPU
           v.memory = MASTER_MEMORY
         end
@@ -43,12 +45,11 @@ Vagrant.configure("2") do |config|
         machine.vm.synced_folder "./", "/mnt/vagrant"
         machine.vm.network "private_network", ip: "192.168.66.#{127 + i}"
 
-        machine.vm.provider "libvirt" do |v|
+        machine.vm.provider VM_PROVIDER do |v|
           v.cpus = BACKUP_CPU
           v.memory = BACKUP_MEMORY
         end
       end
     end
   end
-
 end
