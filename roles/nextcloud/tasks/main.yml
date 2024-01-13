@@ -63,4 +63,4 @@
           notify: Restart nginx
       become: true
 
-  tags: docker_nextcloud
+  tags: nextcloud
