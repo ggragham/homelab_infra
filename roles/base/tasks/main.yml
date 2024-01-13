@@ -156,11 +156,14 @@
 
     - name: Mount external disk
       mount:
-        path: /mnt/{{ DISK_LABEL }}
+        path: '{{ item.path }}'
         src: LABEL={{ DISK_LABEL }}
-        fstype: ext4
-        opts: defaults
+        fstype: "{{ 'btrfs' if DISK_FSTYPE == 'btrfs' else 'ext4' }}"
+        opts: "{{ 'subvol=' + item.subvol + ',compress=' + item.compression + ',x-systemd.requires=cryptsetup.target' if DISK_FSTYPE == 'btrfs' else 'defaults' }}"
         state: mounted
+      loop: '{{ DISK_SUBVOLS }}'
+      loop_control:
+        loop_var: item
       when: disk_exists.rc == 0
 
   when: EXT_DISK_ENABLED|bool

@@ -21,6 +21,13 @@ DISK_LABEL: disk  # External disk label
 DISK_ENCRYPTED: false  # Disk encryption status
 DISK_KEYFILE: keyfile.pem  # Encryption key file name
 DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'  # Path to encryption key file
+DISK_FSTYPE: btrfs  # Disk filesystem type
+
+DISK_SUBVOLS:  # List of BTRFS subvolumes
+  - name: storage
+    subvol: '@storage'  # Subvolume name in filesystem
+    path: /mnt/{{ DISK_LABEL }}/storage  # Subvolume mount point
+    compression: zstd:1  # Subvolume compression
 
 # SFTP
 SHARE_DISK_GROUP: sharedisk  # Group name for sftp access to ext drive

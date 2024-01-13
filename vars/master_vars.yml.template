@@ -18,6 +18,13 @@ DISK_LABEL: disk
 DISK_ENCRYPTED: false
 DISK_KEYFILE: keyfile.pem
 DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'
+DISK_FSTYPE: btrfs
+
+DISK_SUBVOLS:
+  - name: storage
+    subvol: '@storage'
+    path: /mnt/{{ DISK_LABEL }}/storage
+    compression: zstd:1
 
 # SFTP vars
 SHARING_ENABLED: false
