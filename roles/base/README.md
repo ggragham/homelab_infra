@@ -12,7 +12,9 @@ SSH_PORT: 22  # Set ssh port for firewall
 SERVER_SUBNET: 192.168.1.0/24
 
 # OpenVPN
-OPENVPN_CONFIG_PATH: ./assets/client.ovpn
+OPENVPN_ENABLED: false
+OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
+OPENVPN_PORT: 1194
 VPN_SUBNET: 10.8.0.0/24
 
 # External Disk
@@ -30,10 +32,10 @@ DISK_SUBVOLS:  # List of BTRFS subvolumes
     compression: zstd:1  # Subvolume compression
 
 # SFTP
-SHARE_DISK_GROUP: sharedisk  # Group name for sftp access to ext drive
-SHARE_DISK_USER: jdshare  # User name for sftp access to an ext drive
-SHARE_PUBLIC_USER: shareuser  # User name for sftp access to public dir on ext drive
-DISK_LABEL: disk  # Exd drive label
+SHARING_ENABLED: false  # Enables or disables SFTP file sharing
+SHARE_DISK_GROUP: disksharegroup  # Group name for sftp access to ext drive
+SHARE_DISK_USER: diskshareuser  # User name for sftp access to an ext drive
+SHARE_PUBLIC_USER: publicshareuser  # User name for sftp access to public dir on ext drive
 ```
 
 Example Playbook
