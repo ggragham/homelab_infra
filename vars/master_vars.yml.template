@@ -15,6 +15,9 @@ VPN_SUBNET: 10.8.0.0/24
 # External Disk vars
 EXT_DISK_ENABLED: false
 DISK_LABEL: disk
+DISK_ENCRYPTED: false
+DISK_KEYFILE: keyfile.pem
+DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'
 
 # SFTP vars
 SHARING_ENABLED: false

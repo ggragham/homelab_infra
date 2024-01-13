@@ -10,8 +10,11 @@ OPENVPN_PORT: 1194
 VPN_SUBNET: 10.8.0.0/24
 
 # External Disk
-EXT_DISK_ENABLED: false
-DISK_LABEL: disk  # Exd drive label
+EXT_DISK_ENABLED: true  # Enables or disables external disk mounting
+DISK_LABEL: disk  # External disk label
+DISK_ENCRYPTED: false  # Disk encryption status
+DISK_KEYFILE: keyfile.pem  # Encryption key file name
+DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'  # Path to encryption key file
 
 # SFTP
 SHARING_ENABLED: false
