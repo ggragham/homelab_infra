@@ -151,7 +151,7 @@
           when: GITEA_DOCKERIZED != true
 
         - name: Run Docker Compose
-          command: docker compose up -d
+          shell: docker compose down && docker compose up -d
           args:
             chdir: '{{ GITEA_PATH }}_docker/'
           when: GITEA_DOCKERIZED == true
