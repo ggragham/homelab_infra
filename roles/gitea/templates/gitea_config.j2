@@ -1,21 +1,36 @@
-APP_NAME = Gitea: Git with a cup of {{ GITEA_APP_NAME }}
-RUN_USER = {{ GITEA_USER }}
-RUN_MODE = prod
+APP_NAME  = Gitea: Git with a cup of {{ GITEA_APP_NAME }}
+RUN_USER  = {{ (GITEA_DOCKERIZED == true) | ternary('git', GITEA_USER) }}
+RUN_MODE  = prod
+WORK_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
+
+[repository]
+ROOT = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/git/repositories', GITEA_DATA_PATH + '/data/gitea-repositories') }}
+DEFAULT_BRANCH = master
+
+[repository.pull-request]
+DEFAULT_MERGE_STYLE = merge
+
+[repository.signing]
+DEFAULT_TRUST_MODEL = committer
 
 [server]
-ROOT_URL         = https://{{ GITEA_DOMAIN }}/
-SSH_DOMAIN       = {{ GITEA_DOMAIN }}
-DOMAIN           = {{ GITEA_DOMAIN }}
-HTTP_PORT        = {{ GITEA_PORT }}
-DISABLE_SSH      = false
-SSH_PORT         = 22
-LFS_START_SERVER = true
-LFS_JWT_SECRET   = {{ GITEA_LFS_JWT_SECRET }}
-OFFLINE_MODE     = true
+APP_DATA_PATH           = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
+ROOT_URL                = https://{{ GITEA_DOMAIN }}/
+SSH_DOMAIN              = {{ GITEA_DOMAIN }}
+DOMAIN                  = {{ GITEA_DOMAIN }}
+HTTP_PORT               = {{ GITEA_PORT }}
+DISABLE_SSH             = false
+START_SSH_SERVER        = {{ (GITEA_DOCKERIZED == true) | ternary('true', 'false') }}
+SSH_PORT                = {{ (GITEA_DOCKERIZED == true) | ternary('2222', '22') }}
+SSH_LISTEN_PORT         = {{ (GITEA_DOCKERIZED == true) | ternary('2222', '22') }}
+BUILTIN_SSH_SERVER_USER = {{ (GITEA_DOCKERIZED == true) | ternary('git', GITEA_USER) }}
+LFS_START_SERVER        = true
+LFS_JWT_SECRET          = {{ GITEA_LFS_JWT_SECRET }}
+OFFLINE_MODE            = true
 
 [database]
 DB_TYPE  = mysql
-HOST     = 127.0.0.1:{{ MARIADB_PORT }}
+HOST     = {{ (GITEA_DOCKERIZED == true) | ternary(SERVER_IP, '127.0.0.1') }}:{{ MARIADB_PORT }}
 NAME     = {{ GITEA_DB_NAME }}
 USER     = {{ GITEA_DB_USER }}
 PASSWD   = {{ GITEA_DB_PASSWORD }}
@@ -24,14 +39,32 @@ SSL_MODE = disable
 CHARSET  = utf8mb4
 LOG_SQL  = false
 
-[repository]
-ROOT = {{ GITEA_DATA_PATH }}/data/gitea-repositories
+[session]
+PROVIDER_CONFIG = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/sessions', GITEA_DATA_PATH + '/data/sessions') }}
+PROVIDER        = file
 
-[lfs]
-PATH = {{ GITEA_DATA_PATH }}/data/lfs
+[picture]
+AVATAR_UPLOAD_PATH            = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/avatars', GITEA_DATA_PATH + '/data/avatars') }}
+REPOSITORY_AVATAR_UPLOAD_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/repo-avatars', GITEA_DATA_PATH + '/data/repo-avatars') }}
 
-[mailer]
-ENABLED = false
+[attachment]
+PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/attachments', GITEA_DATA_PATH + '/data/attachments') }}
+
+[log]
+MODE      = console
+LEVEL     = info
+ROOT_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/log', GITEA_DATA_PATH + '/data/log') }}
+
+[security]
+INSTALL_LOCK                  = true
+REVERSE_PROXY_LIMIT           = 1
+REVERSE_PROXY_TRUSTED_PROXIES = *
+INTERNAL_TOKEN                = {{ GITEA_INTERNAL_TOKEN }}
+PASSWORD_HASH_ALGO            = {{ GITEA_PASSWORD_HASH_ALGO }}
+DISABLE_QUERY_AUTH_TOKEN      = true
+
+[oauth2]
+JWT_SECRET = {{ GITEA_JWT_SECRET }}
 
 [service]
 REGISTER_EMAIL_CONFIRM            = false
@@ -43,34 +76,20 @@ REQUIRE_SIGNIN_VIEW               = false
 DEFAULT_KEEP_EMAIL_PRIVATE        = false
 DEFAULT_ALLOW_CREATE_ORGANIZATION = true
 DEFAULT_ENABLE_TIMETRACKING       = true
-NO_REPLY_ADDRESS                  = noreply.localhost
+NO_REPLY_ADDRESS                  = noreply.{{ GITEA_DOMAIN }}
+
+[lfs]
+PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/lfs', GITEA_DATA_PATH + '/data/lfs') }}
+
+[mailer]
+ENABLED = false
 
 [openid]
 ENABLE_OPENID_SIGNIN = false
 ENABLE_OPENID_SIGNUP = false
 
-[session]
-PROVIDER = file
-
-[log]
-MODE      = console
-LEVEL     = info
-ROOT_PATH = {{ GITEA_DATA_PATH }}/log
-ROUTER    = console
-
-[repository]
-DEFAULT_BRANCH = master
-
-[repository.pull-request]
-DEFAULT_MERGE_STYLE = merge
-
-[repository.signing]
-DEFAULT_TRUST_MODEL = committer
-
-[security]
-INSTALL_LOCK       = true
-INTERNAL_TOKEN     = {{ GITEA_INTERNAL_TOKEN }}
-PASSWORD_HASH_ALGO = {{ GITEA_PASSWORD_HASH_ALGO }}
+[cron.update_checker]
+ENABLED = {{ GITEA_CHECK_UPDATES }}
 
 [ui]
 DEFAULT_THEME = arc-green

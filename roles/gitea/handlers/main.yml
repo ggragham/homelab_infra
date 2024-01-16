@@ -1,10 +1,4 @@
 ---
-- name: Start Gitea
-  service:
-    name: gitea
-    state: started
-  become: true
-
 - name: Restart MariaDB
   service:
     name: mariadb

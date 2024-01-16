@@ -1,0 +1,33 @@
+---
+version: '3'
+
+services:
+  server:
+    image: gitea/gitea:latest-rootless
+    container_name: gitea_rootless
+    environment:
+      USER_UID: {{ GITEA_ID }}
+      USER_GID: {{ GITEA_ID }}
+      GITEA__database__DB_TYPE: mysql
+      GITEA__database__HOST: {{ SERVER_IP }}:{{ MARIADB_PORT }}
+      GITEA__database__NAME: {{ GITEA_DB_NAME }}
+      GITEA__database__USER: {{ GITEA_DB_USER }}
+      GITEA__database__PASSWD: {{ GITEA_DB_PASSWORD }}
+    restart: always
+    user: '{{ GITEA_ID }}'
+    networks:
+      - gitea_network
+    ports:
+      - 3000:3000
+      - 2222:2222
+    volumes:
+      - {{ GITEA_DATA_PATH }}:/var/lib/gitea
+      - {{ GITEA_CONFIG_PATH }}:/etc/gitea
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  gitea_network:
+    ipam:
+      config:
+        - subnet: {{ GITEA_DOCKER_SUBNET }}
