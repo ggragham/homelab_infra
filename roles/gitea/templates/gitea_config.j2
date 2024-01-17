@@ -4,7 +4,7 @@ RUN_MODE  = prod
 WORK_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
 
 [repository]
-ROOT = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/git/repositories', GITEA_DATA_PATH + '/data/gitea-repositories') }}
+ROOT = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/repositories', GITEA_DATA_PATH + '/data/repositories') }}
 DEFAULT_BRANCH = master
 
 [repository.pull-request]
