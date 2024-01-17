@@ -1,0 +1,3 @@
+Match User {{ GITEA_USER }}
+  AuthorizedKeysCommandUser {{ GITEA_USER }}
+  AuthorizedKeysCommand /usr/bin/docker exec -i gitea_rootless /usr/local/bin/gitea keys -c {{ GITEA_CONFIG_PATH }}/app.ini -e git -u %u -t %t -k %k

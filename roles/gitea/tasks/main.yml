@@ -123,6 +123,24 @@
             group: '{{ GITEA_USER }}'
             mode: 0640
 
+        - name: Configure SSH
+          block:
+            - name: Create gitea-shell script
+              copy:
+                src: gitea-shell
+                dest: /usr/local/bin/gitea-shell
+                mode: 0755
+            - name: Change shell for {{ GITEA_USER }} user
+              user:
+                name: '{{ GITEA_USER }}'
+                shell: /usr/local/bin/gitea-shell
+            - name: Add SSH configuration
+              template:
+                src: 20_gitea.conf.j2
+                dest: /etc/ssh/sshd_config.d/20_gitea.conf
+                mode: 0755
+              notify: Restart sshd
+
       when: GITEA_DOCKERIZED == true
 
     - name: Apply config
