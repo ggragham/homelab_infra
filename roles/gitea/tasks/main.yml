@@ -101,6 +101,12 @@
           include_role:
             name: docker
 
+        - name: Add {{ GITEA_USER }} to docker group
+          user:
+            name: '{{ GITEA_USER }}'
+            groups: docker
+            append: true
+
         - name: Create directory
           file:
             path: '{{ GITEA_PATH }}_docker/'
