@@ -24,6 +24,10 @@ GITEA_PASSWORD_HASH_ALGO: pbkdf2  # Gitea's password hashing algorithm.
 GITEA_LFS_JWT_SECRET: N1tudjNy+lnpUb4HjhVDZnrkIw0LBfuwxK4Pr1tJ  # Secret key for Gitea's Large File Storage JWT authentication.
 GITEA_INTERNAL_TOKEN: cgCZZhsH9Y6pYMt8Gp5KfSNqF1Msydd_Zzpal6SwF4HMSGN86ZT2qHjfsQ7y64cPV1ev7HF/jygkFEVvfiCzrKA  # Gitea's internal token.
 GITEA_JWT_SECRET: QTi5BTxUyLEjc36PNSsk7QfFGYi3qmkExPu4kHlVv20d3+0Cl7D5r7KwqpA=  # Secret key for Gitea's JWT authentication.
+
+GITEA_ADMIN_USER: gitea_admin  # Username for the Gitea administrator account.
+GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea administrator account.
+GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
 ```
 
 Dependencies

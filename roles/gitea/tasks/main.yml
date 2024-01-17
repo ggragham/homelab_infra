@@ -156,5 +156,14 @@
             chdir: '{{ GITEA_PATH }}_docker/'
           when: GITEA_DOCKERIZED == true
 
+    - name: Add admin user
+      block:
+        - command: '{% if GITEA_DOCKERIZED == true %}docker exec -i gitea_rootless /app/gitea/gitea{% else %}sudo -u {{ GITEA_USER }} {{ GITEA_PATH }}/gitea{% endif %} admin user create --username {{ GITEA_ADMIN_USER }} --admin --password {{ GITEA_ADMIN_PASSWORD }} --email {{ GITEA_ADMIN_EMAIL }} -c {{ GITEA_CONFIG_PATH }}/app.ini'
+          no_log: true
+      rescue:
+        - debug:
+            msg: Sucksessfully failed
+      tags: gitea_create_admin_user
+
   become: true
   tags: gitea
