@@ -112,7 +112,7 @@
             path: '{{ GITEA_PATH }}_docker/'
             state: directory
             owner: '{{ GITEA_USER }}'
-            group: '{{ GITEA_USER }}'
+            group: root
             mode: 0775
 
         - name: Apply Docker Compose template
@@ -120,7 +120,7 @@
             src: docker_compose.yml.j2
             dest: /opt/gitea_docker/docker-compose.yml
             owner: '{{ GITEA_USER }}'
-            group: '{{ GITEA_USER }}'
+            group: root
             mode: 0640
 
         - name: Configure SSH
