@@ -95,4 +95,4 @@ ENABLED = {{ GITEA_CHECK_UPDATES }}
 DEFAULT_THEME = arc-green
 
 [actions]
-ENABLE = true
+ENABLE = {{ (GITEA_DOCKERIZED == true) | ternary('true', 'false') }}

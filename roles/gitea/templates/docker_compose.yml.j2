@@ -38,7 +38,7 @@ services:
     networks:
       - gitea_network
     volumes:
-      - ./config.yml:/config.yml
+      - ./act_config.yml:/config.yml
       - {{ ACT_DATA_PATH }}:/data
       - /var/run/docker.sock:/var/run/docker.sock
 

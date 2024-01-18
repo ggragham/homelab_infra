@@ -1,6 +1,8 @@
 ---
 # Other
 DISK_LABEL: disk  # External disk label
+NGINX_SITES_AVAILABLE: /etc/nginx/sites-available  # Path to Nginx available site configs
+NGINX_SITES_ENABLED: /etc/nginx/sites-enabled  # Path to Nginx enabled site configs
 
 # Gitea
 GITEA_DOCKERIZED: false  # Specifies whether to install Gitea in Docker or not.
@@ -27,4 +29,4 @@ GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator accoun
 
 ACT_VERSION: latest  # act_runner version.
 ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner  # act_runner data storage path.
-ACT_REREGISTER_RUNNER: false # Re-register runner.
+ACT_REREGISTER_RUNNER: false  # Re-register runner.
