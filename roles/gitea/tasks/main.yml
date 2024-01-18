@@ -154,7 +154,7 @@
 
     - name: Check runner existence
       stat:
-        path: /mnt/{{ ACT_DATA_PATH }}/.runner
+        path: '{{ ACT_DATA_PATH }}/.runner'
       register: runner_exist
       tags: act_runner
 
@@ -208,7 +208,7 @@
           args:
             chdir: '{{ GITEA_PATH }}_docker/'
 
-      when: not runner_exist.stat.exists
+      when: not runner_exist.stat.exists or runner_exist.stat.size == 0
       tags: act_runner
 
     - name: Apply Gitea nginx config
