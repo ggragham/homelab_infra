@@ -152,6 +152,65 @@
         mode: 0600
       no_log: true
 
+    - name: Check runner existence
+      stat:
+        path: /mnt/{{ ACT_DATA_PATH }}/.runner
+      register: runner_exist
+      tags: act_runner
+
+    - name: Gitea Actions
+      block:
+        - name: Create act_runner data dir
+          file:
+            path: '{{ ACT_DATA_PATH }}'
+            state: directory
+            mode: 0775
+
+        - name: Apply act_runner config
+          template:
+            src: act_config.yml.j2
+            dest: /opt/gitea_docker/config.yml
+            owner: '{{ GITEA_USER }}'
+            group: root
+            mode: 0640
+
+        - name: Start Gitea
+          command: docker compose up gitea -d
+          args:
+            chdir: '{{ GITEA_PATH }}_docker/'
+
+        - name: Wait for Gitea to become available
+          wait_for:
+            host: '{{ SERVER_IP }}'
+            port: '{{ GITEA_PORT }}'
+            state: started
+            timeout: 60
+
+        - name: Generate runner token
+          shell: docker exec gitea_rootless /app/gitea/gitea actions generate-runner-token -c /etc/gitea/app.ini | tail -n 1
+          register: act_token
+        - set_fact:
+            runner_token: '{{ act_token.stdout }}'
+
+        - name: Create .runner file
+          file:
+            path: '{{ ACT_DATA_PATH}}/.runner'
+            state: touch
+            mode: '0644'
+
+        - name: Register runner
+          shell: docker run -v {{ ACT_DATA_PATH }}/.runner:/.runner -v ./config.yml:/config.yml -v /var/run/docker.sock:/var/run/docker.sock --entrypoint="" --rm gitea/act_runner:latest act_runner register --no-interactive --instance http://{{ SERVER_IP }}:{{ GITEA_PORT }} --token {{ runner_token }}
+          args:
+            chdir: '{{ GITEA_PATH }}_docker/'
+
+        - name: Stop Gitea
+          command: docker compose down
+          args:
+            chdir: '{{ GITEA_PATH }}_docker/'
+
+      when: not runner_exist.stat.exists
+      tags: act_runner
+
     - name: Apply Gitea nginx config
       block:
         - name: Copy Gitea nginx config

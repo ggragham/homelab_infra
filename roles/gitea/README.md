@@ -28,6 +28,9 @@ GITEA_JWT_SECRET: QTi5BTxUyLEjc36PNSsk7QfFGYi3qmkExPu4kHlVv20d3+0Cl7D5r7KwqpA=  
 GITEA_ADMIN_USER: gitea_admin  # Username for the Gitea administrator account.
 GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea administrator account.
 GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
+
+ACT_VERSION: latest  # act_runner version.
+ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner  # act_runner data storage path.
 ```
 
 Dependencies
