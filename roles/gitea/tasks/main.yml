@@ -152,6 +152,13 @@
         mode: 0600
       no_log: true
 
+    - name: Remove runner
+      file:
+        path: '{{ ACT_DATA_PATH }}/.runner'
+        state: absent
+      when: ACT_REREGISTER_RUNNER|bool
+      tags: act_runner
+
     - name: Check runner existence
       stat:
         path: '{{ ACT_DATA_PATH }}/.runner'

@@ -81,6 +81,7 @@ GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}
 GITEA_ADMIN_PASSWORD: qwerty1234!
 ACT_VERSION: latest
 ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner
+ACT_REREGISTER_RUNNER: false
 
 # Borg vars
 BORG_TYPE: client

@@ -31,6 +31,7 @@ GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator accoun
 
 ACT_VERSION: latest  # act_runner version.
 ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner  # act_runner data storage path.
+ACT_REREGISTER_RUNNER: false # Re-register runner.
 ```
 
 Dependencies
