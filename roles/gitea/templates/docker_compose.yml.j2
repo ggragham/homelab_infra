@@ -18,7 +18,7 @@ services:
     networks:
       - gitea_network
     ports:
-      - 3000:3000
+      - {{ GITEA_PORT }}:3000
       - 2222:2222
     volumes:
       - {{ GITEA_DATA_PATH }}:/var/lib/gitea
