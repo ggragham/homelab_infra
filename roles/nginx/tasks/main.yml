@@ -1,13 +1,6 @@
 ---
 - name: Install and config webserver
   block:
-    - name: Install nginx
-      apt:
-        name: nginx
-        state: latest
-        update_cache: true
-      when: ansible_os_family == "Debian"
-
     - name: Config UFW
       block:
         - name: Check UFW installed
@@ -28,67 +21,144 @@
           when: ufw_return.stdout=="0"
       tags: firewall
 
-    - name: Make webapge dir
-      file:
-        path: /var/www/srv
-        state: directory
-        mode: 0755
+    # Bare Metal Install
+    - name: Nginx bare metal install
+      block:
+        - name: Install nginx
+          apt:
+            name: nginx
+            state: latest
+            update_cache: true
+          when: ansible_os_family == "Debian"
+
+        - name: Apply nginx config
+          template:
+            src: nginx_default.j2
+            dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/default'
+            mode: 0644
+
+        - name: Enable nginx config
+          file:
+            src: '{{ NGINX_SITES_AVAILABLE_PATH }}/default'
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
+            state: link
+            mode: 0644
+
+      when: not DOCKERIZED
+
+    # Dockerized install
+    - name: Nginx containerized install
+      block:
+        - name: Install Docker
+          include_role:
+            name: docker
+
+        - name: Create Nginx directory struct
+          file:
+            path: '{{ directory }}'
+            state: directory
+            owner: '{{ NGINX_USER }}'
+            group: root
+            mode: 0755
+          loop_control:
+            loop_var: directory
+          loop:
+            - '{{ DEFAULT_WWW_PATH }}'
+            - '{{ NGINX_LOG_PATH }}'
+            - '{{ NGINX_DOCKER_PATH }}'
+            - '{{ NGINX_DOCKER_CONF_PATH }}'
+            - '{{ NGINX_SITES_ENABLED_PATH }}'
+            - '{{ NGINX_SNIPPETS_PATH }}'
+
+        - name: Create Nginx ssl directory
+          file:
+            path: '{{ NGINX_DOCKER_SSL_PATH }}'
+            state: directory
+            owner: '{{ NGINX_USER }}'
+            group: root
+            mode: 0500
+
+        - name: Apply Nginx docker config
+          copy:
+            src: default.conf
+            dest: '{{ NGINX_DOCKER_CONF_PATH }}/default.conf'
+            owner: '{{ NGINX_USER }}'
+            group: root
+            mode: 0640
+
+        - name: Apply Nginx Docker Compose template
+          template:
+            src: docker_compose.yml.j2
+            dest: '{{ NGINX_DOCKER_PATH }}/docker-compose.yml'
+            owner: '{{ NGINX_USER }}'
+            group: root
+            mode: 0640
+
+        - name: Create Docker network
+          docker_network:
+            name: '{{ NGINX_DOCKER_NETWORK_NAME }}'
+            state: present
+
+        - name: Apply nginx config
+          template:
+            src: nginx_default.j2
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
+            mode: 0644
+
+      when: DOCKERIZED
 
     - name: Deploy homepage
       template:
         src: index.html
-        dest: /var/www/srv/index.html
+        dest: '{{ DEFAULT_WWW_PATH }}/index.html'
         mode: 0644
-
-    - name: Make services dir
-      file:
-        path: /etc/nginx/services.d
-        state: directory
-        mode: 0755
 
     - name: Copy ssl cert
       copy:
         src: '{{ SSL_CERT_PATH }}'
-        dest: /etc/ssl/certs/{{ SSL_CERT_NAME }}
-        mode: 0444
+        dest: '{{ NGINX_SSL_CERT_PATH }}'
+        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        mode: 0400
 
     - name: Copy ssl key
       copy:
         src: '{{ SSL_KEY_PATH }}'
-        dest: /etc/ssl/private/{{ SSL_KEY_NAME }}
-        mode: 0444
+        dest: '{{ NGINX_SSL_KEY_PATH }}'
+        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        mode: 0400
 
     - name: Copy dh group
       copy:
         src: '{{ DH_PATH }}'
-        dest: /etc/nginx/{{ DH_NAME }}
-        mode: 0444
+        dest: '{{ NGINX_DH_PATH }}'
+        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        mode: 0400
 
     - name: Apply ssl config
       template:
         src: ssl-params.j2
-        dest: /etc/nginx/snippets/ssl-params.conf
+        dest: '{{ NGINX_SNIPPETS_PATH }}/ssl-params.conf'
         mode: 0644
 
     - name: Apply headers config
       template:
         src: headers.conf.j2
-        dest: /etc/nginx/snippets/headers.conf
+        dest: '{{ NGINX_SNIPPETS_PATH }}/headers.conf'
         mode: 0644
 
-    - name: Apply nginx config
-      template:
-        src: nginx_default.j2
-        dest: /etc/nginx/sites-available/default
-        mode: 0644
+    - name: Start Nginx
+      block:
+        - name: Start Nginx service
+          service:
+            name: nginx
+            state: restarted
+          when: not DOCKERIZED
 
-    - name: Enable nginx config
-      file:
-        src: /etc/nginx/sites-available/default
-        dest: /etc/nginx/sites-enabled/default
-        state: link
-        mode: 0644
-      notify: Restart nginx
+        - name: Start Docker Compose
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: DOCKERIZED
 
   become: true
   tags: nginx

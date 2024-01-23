@@ -37,11 +37,11 @@ DOMAIN_NAME: example.com
 SSL_CERT_NAME: cert.crt
 SSL_KEY_NAME: cert.key
 DH_NAME: dhparam.pem
-SSL_CERT_PATH: '{{ ASSETS_PATH }}/{{ SSL_CERT_NAME }}'
-SSL_KEY_PATH: '{{ ASSETS_PATH }}/{{ SSL_KEY_NAME }}'
-DH_PATH: '{{ ASSETS_PATH }}/{{ DH_NAME }}'
-NGINX_SITES_AVAILABLE: /etc/nginx/sites-available
-NGINX_SITES_ENABLED: /etc/nginx/sites-enabled
+SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}
+SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}
+DH_PATH: ./assets/{{ DH_NAME }}
+NGINX_DOCKER_PATH: /opt/nginx_docker
+NGINX_VERSION_DOCKER: latest
 
 # Nextcloud vars
 NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}

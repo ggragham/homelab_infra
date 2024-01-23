@@ -1,0 +1,28 @@
+---
+version: '3'
+
+services:
+  {{ NGINX_DOCKER_SERVICE_NAME }}:
+    image: nginxinc/nginx-unprivileged:{{ NGINX_VERSION_DOCKER }}
+    container_name: {{ NGINX_DOCKER_CONTAINER_NAME }}
+    restart: always
+    user: {{ NGINX_USER }}
+    volumes:
+      - /var/log/nginx:/var/log/nginx
+      - {{ NGINX_DOCKER_CONF_PATH }}/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - {{ NGINX_SNIPPETS_PATH }}:/etc/nginx/snippets:ro
+      - {{ NGINX_SITES_ENABLED_PATH }}:/etc/nginx/sites-enabled:ro
+      - {{ DEFAULT_WWW_PATH }}/index.html:/var/www/html/index.html:ro
+      - {{ NGINX_SSL_CERT_PATH }}:/etc/nginx/default.crt:ro
+      - {{ NGINX_SSL_KEY_PATH }}:/etc/nginx/default.key:ro
+      - {{ NGINX_DH_PATH }}:/etc/nginx/dhparam.pem:ro
+    networks:
+      - nginx_network
+    ports:
+      - 80:80
+      - 443:443
+
+networks:
+  nginx_network:
+    name: {{ NGINX_DOCKER_NETWORK_NAME }}
+    external: true
