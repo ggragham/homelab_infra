@@ -17,6 +17,7 @@ services:
     user: '{{ GITEA_ID }}'
     networks:
       - gitea_network
+      - gitea_nginx_network
     ports:
       - {{ GITEA_PORT }}:3000
       - 2222:2222
@@ -47,3 +48,6 @@ networks:
     ipam:
       config:
         - subnet: {{ GITEA_DOCKER_SUBNET }}
+  gitea_nginx_network:
+    name: {{ NGINX_DOCKER_NETWORK_NAME }}
+    external: true

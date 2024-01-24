@@ -87,6 +87,19 @@
             checksum: sha256:https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}.sha256
             mode: 0755
 
+        - name: Apply Gitea Nginx config
+          template:
+            src: gitea_nginx.j2
+            dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
+            mode: 0644
+
+        - name: Enable Gitea Nginx config
+          file:
+            src: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
+            state: link
+            mode: 0644
+
         - name: Systemd config
           template:
             src: gitea_service.j2
@@ -125,6 +138,12 @@
             owner: '{{ GITEA_USER }}'
             group: root
             mode: 0640
+
+        - name: Apply Gitea Nginx config
+          template:
+            src: gitea_nginx.j2
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
+            mode: 0644
 
         - name: Configure SSH
           block:
@@ -235,20 +254,6 @@
       when: DOCKERIZED and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
       tags: act_runner
 
-    - name: Apply Gitea nginx config
-      block:
-        - name: Copy Gitea nginx config
-          template:
-            src: gitea_nginx.j2
-            dest: '{{ NGINX_SITES_AVAILABLE }}/gitea.conf'
-            mode: 0640
-
-        - name: Enable Gitea nginx config
-          file:
-            src: '{{ NGINX_SITES_AVAILABLE }}/gitea.conf'
-            dest: '{{ NGINX_SITES_ENABLED }}/gitea.conf'
-            state: link
-
     - name: Start gitea
       block:
         - name: Start Gitea service
@@ -265,6 +270,7 @@
             loop_var: service_path
           loop:
             - '{{ GITEA_DOCKER_PATH }}'
+            - '{{ NGINX_DOCKER_PATH }}'
           when: DOCKERIZED
 
     - name: Add admin user
