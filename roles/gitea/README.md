@@ -14,6 +14,9 @@ Role Variables
 ```yml
 # Other
 DOCKERIZED: false  #  Toggle for Docker setup.
+DISK_LABEL: disk  # External disk label
+NGINX_SITES_AVAILABLE: /etc/nginx/sites-available  # Path to Nginx available site configs
+NGINX_SITES_ENABLED: /etc/nginx/sites-enabled  # Path to Nginx enabled site configs
 
 # Gitea
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
@@ -22,9 +25,6 @@ GITEA_APP_NAME: tea  # Name of Gitea application.
 GITEA_PORT: 3000  # Gitea's running port.
 GITEA_USER: gitea_user  # Gitea system username.
 GITEA_ID: 1030  # Gitea system UID/GID.
-GITEA_PATH: /opt/gitea  # Gitea's installation path.
-GITEA_DATA_PATH: /mnt/{{ DISK_LABEL }}/gitea  # Gitea's data storage path.
-GITEA_CONFIG_PATH: /etc/gitea  # Gitea's configuration file path.
 GITEA_DB_NAME: giteadb  # Gitea's database name.
 GITEA_DB_USER: gitea_db_user  # Gitea's database username.
 GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
@@ -38,8 +38,7 @@ GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea 
 GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
 
 ACT_VERSION: latest  # act_runner version.
-ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner  # act_runner data storage path.
-ACT_REREGISTER_RUNNER: false # Re-register runner.
+ACT_REREGISTER_RUNNER: false  # Re-register runner.
 ```
 
 Dependencies
