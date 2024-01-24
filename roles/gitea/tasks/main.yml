@@ -24,7 +24,7 @@
           mysql_user:
             name: '{{ GITEA_DB_USER }}'
             password: '{{ GITEA_DB_PASSWORD }}'
-            host: '{{ (GITEA_DOCKERIZED|bool) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
+            host: '{{ (DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
             priv: '{{ GITEA_DB_NAME }}.*:ALL,GRANT'
             login_unix_socket: /var/run/mysqld/mysqld.sock
             state: present
@@ -95,7 +95,7 @@
             group: '{{ GITEA_USER }}'
             mode: 0640
 
-      when: not GITEA_DOCKERIZED
+      when: not DOCKERIZED
 
     # Dockerized install
     - name: Gitea containerized install
@@ -112,7 +112,7 @@
 
         - name: Create directory
           file:
-            path: '{{ GITEA_PATH_DOCKER }}'
+            path: '{{ GITEA_DOCKER_PATH }}'
             state: directory
             owner: '{{ GITEA_USER }}'
             group: root
@@ -121,7 +121,7 @@
         - name: Apply Docker Compose template
           template:
             src: docker_compose.yml.j2
-            dest: '{{ GITEA_PATH_DOCKER }}/docker-compose.yml'
+            dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
             owner: '{{ GITEA_USER }}'
             group: root
             mode: 0640
@@ -144,7 +144,7 @@
                 mode: 0755
               notify: Restart sshd
 
-      when: GITEA_DOCKERIZED|bool
+      when: DOCKERIZED
 
     - name: Apply config
       template:
@@ -159,7 +159,7 @@
       file:
         path: '{{ ACT_DATA_PATH }}/.runner'
         state: absent
-      when: ACT_REREGISTER_RUNNER|bool
+      when: ACT_REREGISTER_RUNNER
       tags: act_runner
 
     - name: Check runner existence
@@ -180,7 +180,7 @@
         - name: Apply act_runner config
           template:
             src: act_config.yml.j2
-            dest: '{{ GITEA_PATH_DOCKER }}/act_config.yml'
+            dest: '{{ GITEA_DOCKER_PATH }}/act_config.yml'
             owner: '{{ GITEA_USER }}'
             group: root
             mode: 0640
@@ -188,7 +188,7 @@
         - name: Start Gitea
           command: docker compose up gitea -d
           args:
-            chdir: '{{ GITEA_PATH_DOCKER }}'
+            chdir: '{{ GITEA_DOCKER_PATH }}'
 
         - name: Wait for Gitea to become available
           wait_for:
@@ -198,7 +198,10 @@
             timeout: 60
 
         - name: Generate runner token
-          shell: docker exec {{ GITEA_CONTAINER_NAME }} /app/gitea/gitea actions generate-runner-token -c /etc/gitea/app.ini | tail -n 1
+          shell: >
+            docker exec {{ GITEA_CONTAINER_NAME }} \
+            /app/gitea/gitea actions generate-runner-token \
+            -c /etc/gitea/app.ini | tail -n 1
           register: act_token
         - set_fact:
             runner_token: '{{ act_token.stdout }}'
@@ -210,16 +213,26 @@
             mode: '0644'
 
         - name: Register runner
-          shell: docker run -v {{ ACT_DATA_PATH }}/.runner:/.runner -v ./config.yml:/config.yml -v /var/run/docker.sock:/var/run/docker.sock --entrypoint="" --rm gitea/act_runner:latest act_runner register --no-interactive --instance http://{{ SERVER_IP }}:{{ GITEA_PORT }} --token {{ runner_token }}
+          shell: >
+            docker run
+            -v {{ ACT_DATA_PATH }}/.runner:/.runner
+            -v ./config.yml:/config.yml
+            -v /var/run/docker.sock:/var/run/docker.sock
+            --entrypoint=""
+            --rm gitea/act_runner:latest
+            act_runner register
+            --no-interactive
+            --instance http://{{ SERVER_IP }}:{{ GITEA_PORT }}
+            --token {{ runner_token }}
           args:
-            chdir: '{{ GITEA_PATH_DOCKER }}'
+            chdir: '{{ GITEA_DOCKER_PATH }}'
 
         - name: Stop Gitea
           command: docker compose down
           args:
-            chdir: '{{ GITEA_PATH_DOCKER }}'
+            chdir: '{{ GITEA_DOCKER_PATH }}'
 
-      when: GITEA_DOCKERIZED|bool and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
+      when: DOCKERIZED and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
       tags: act_runner
 
     - name: Apply Gitea nginx config
@@ -241,18 +254,28 @@
         - name: Start Gitea service
           service:
             name: gitea
-            state: started
-          when: not GITEA_DOCKERIZED
+            state: restarted
+          when: not DOCKERIZED
 
         - name: Run Docker Compose
           shell: docker compose down && docker compose up -d
           args:
-            chdir: '{{ GITEA_PATH_DOCKER }}'
-          when: GITEA_DOCKERIZED|bool
+            chdir: '{{ service_path }}'
+          loop_control:
+            loop_var: service_path
+          loop:
+            - '{{ GITEA_DOCKER_PATH }}'
+          when: DOCKERIZED
 
     - name: Add admin user
       block:
-        - command: '{% if GITEA_DOCKERIZED|bool %}docker exec -i {{ GITEA_CONTAINER_NAME }} /app/gitea/gitea{% else %}sudo -u {{ GITEA_USER }} {{ GITEA_PATH }}/gitea{% endif %} admin user create --username {{ GITEA_ADMIN_USER }} --admin --password {{ GITEA_ADMIN_PASSWORD }} --email {{ GITEA_ADMIN_EMAIL }} -c {{ GITEA_CONFIG_PATH }}/app.ini'
+        - shell: >
+            {{ (DOCKERIZED) | ternary('docker exec -i ' + GITEA_CONTAINER_NAME + ' /app/gitea/gitea',
+            'sudo -u ' + GITEA_USER + GITEA_PATH + '/gitea') }}
+            admin user create --username {{ GITEA_ADMIN_USER }}
+            --admin --password {{ GITEA_ADMIN_PASSWORD }}
+            --email {{ GITEA_ADMIN_EMAIL }}
+            -c {{ (DOCKERIZED) | ternary('/etc/gitea', GITEA_CONFIG_PATH) }}/app.ini
           no_log: true
       rescue:
         - debug:

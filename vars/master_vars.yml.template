@@ -19,12 +19,13 @@ DISK_ENCRYPTED: false
 DISK_KEYFILE: keyfile.pem
 DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'
 DISK_FSTYPE: btrfs
+DISK_PATH: /mnt/{{ DISK_LABEL }}
 DISK_DATA_PATH: '{{ DISK_PATH }}/data'
 
 DISK_SUBVOLS:
   - name: storage
     subvol: '@storage'
-    path: /mnt/{{ DISK_LABEL }}/storage
+    path: '{{ DISK_DATA_PATH }}'
     compression: zstd:1
 
 # SFTP vars
@@ -62,16 +63,12 @@ TRANSMISSION_USER: transmission
 TRANSMISSION_PASSWORD: qwerty1234!
 
 # Gitea vars
-GITEA_DOCKERIZED: false
 GITEA_CHECK_UPDATES: false
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}
 GITEA_APP_NAME: tea
 GITEA_PORT: 3000
 GITEA_USER: gitea_user
 GITEA_ID: 1030
-GITEA_PATH: /opt/gitea
-GITEA_DATA_PATH: /mnt/{{ DISK_LABEL }}/gitea
-GITEA_CONFIG_PATH: /etc/gitea
 GITEA_DB_NAME: giteadb
 GITEA_DB_USER: gitea_db_user
 GITEA_DB_PASSWORD: gitea_db_password
@@ -83,7 +80,6 @@ GITEA_ADMIN_USER: gitea_admin
 GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}
 GITEA_ADMIN_PASSWORD: qwerty1234!
 ACT_VERSION: latest
-ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner
 ACT_REREGISTER_RUNNER: false
 
 # Borg vars
