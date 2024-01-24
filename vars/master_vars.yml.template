@@ -19,6 +19,7 @@ DISK_ENCRYPTED: false
 DISK_KEYFILE: keyfile.pem
 DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'
 DISK_FSTYPE: btrfs
+DISK_DATA_PATH: '{{ DISK_PATH }}/data'
 
 DISK_SUBVOLS:
   - name: storage
