@@ -4,7 +4,7 @@ version: '3'
 services:
   {{ GITEA_DOCKER_SERVICE_NAME }}:
     image: gitea/gitea:latest-rootless
-    container_name: gitea_rootless
+    container_name: {{ GITEA_CONTAINER_NAME }}
     restart: always
     environment:
       USER_UID: {{ GITEA_ID }}
