@@ -2,7 +2,7 @@
 version: '3'
 
 services:
-  gitea:
+  {{ GITEA_DOCKER_SERVICE_NAME }}:
     image: gitea/gitea:latest-rootless
     container_name: gitea_rootless
     restart: always
