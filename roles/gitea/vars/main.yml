@@ -4,7 +4,6 @@ GITEA_DB_ACCESS_SUBNET: 172.21.%  # Subnet for database access
 GITEA_PATH: /opt/gitea  # Gitea's installation path.
 GITEA_DOCKER_PATH: '{{ GITEA_PATH }}_docker'  # Gitea Docker installation path
 GITEA_CONFIG_PATH: "{{ (DOCKERIZED) | ternary(GITEA_DOCKER_PATH + '/config', '/etc/gitea')}}"  # Gitea's configuration file path.
-GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
 GITEA_CONTAINER_NAME: gitea_rootless  # Gitea Docker container name
 GITEA_DOCKER_SERVICE_NAME: gitea  # Gitea Docker service name
 ACT_DATA_PATH: '{{ GITEA_DOCKER_PATH }}/act_runner'  # act_runner data storage path.

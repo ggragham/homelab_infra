@@ -6,6 +6,7 @@ NGINX_SITES_AVAILABLE: /etc/nginx/sites-available  # Path to Nginx available sit
 NGINX_SITES_ENABLED: /etc/nginx/sites-enabled  # Path to Nginx enabled site configs
 
 # Gitea
+GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_APP_NAME: tea  # Name of Gitea application.
