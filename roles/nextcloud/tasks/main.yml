@@ -22,6 +22,10 @@
             state: present
           notify: Restart MariaDB
           no_log: true
+
+        - name: Flush handlers
+          meta: flush_handlers
+
       become: true
 
     - name: Apply and run NextCloud Docker Compose
