@@ -3,11 +3,19 @@ Gitea role
 
 Install and config Gitea git server.
 
+Requirements
+------------
+
+- Docker is installed or a Docker Ansible role is applied (see [Docker Installation Guide](https://docs.docker.com/engine/install/)). This is required if you choose to use the Dockerized installation.
+
 Role Variables
 --------------
 
 ```yml
-GITEA_DOCKERIZED: false  # Specifies whether to install Gitea in Docker or not.
+# Other
+DOCKERIZED: false  #  Toggle for Docker setup.
+
+# Gitea
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_APP_NAME: tea  # Name of Gitea application.
@@ -39,6 +47,7 @@ Dependencies
 
 ```yml
 dependencies:
+  - role: docker  # Optional
   - role: mariadb
   - role: nginx
 ```
