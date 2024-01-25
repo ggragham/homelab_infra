@@ -2,8 +2,6 @@
 # Other
 DOCKERIZED: false  #  Toggle for Docker setup.
 DISK_LABEL: disk  # External disk label.
-NGINX_SITES_AVAILABLE: /etc/nginx/sites-available  # Path to Nginx available site configs.
-NGINX_SITES_ENABLED: /etc/nginx/sites-enabled  # Path to Nginx enabled site configs.
 
 # NextCloud
 NEXTCLOUD_DATA_PATH: '{{ DISK_DATA_PATH }}/nextcloud'  # Nextcloud data path.
