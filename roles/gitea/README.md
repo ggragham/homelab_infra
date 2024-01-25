@@ -15,8 +15,6 @@ Role Variables
 # Other
 DOCKERIZED: false  #  Toggle for Docker setup.
 DISK_LABEL: disk  # External disk label
-NGINX_SITES_AVAILABLE: /etc/nginx/sites-available  # Path to Nginx available site configs
-NGINX_SITES_ENABLED: /etc/nginx/sites-enabled  # Path to Nginx enabled site configs
 
 # Gitea
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
