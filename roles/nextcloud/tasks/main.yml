@@ -28,7 +28,7 @@
 
       become: true
 
-    - name: Apply and run NextCloud Docker Compose
+    - name: NextCloud containerized install
       block:
         - name: Create Nextcloud Docker directory
           file:
@@ -36,6 +36,17 @@
             state: directory
             owner: '{{ USERNAME }}'
             mode: 0640
+
+        - name: Apply NextCloud Config
+          copy:
+            src: '{{ config }}'
+            dest: '{{ NEXTCLOUD_DOCKER_PATH }}/{{ config }}'
+            mode: 0640
+          loop_control:
+            loop_var: config
+          loop:
+            - 000-default.conf
+            - ports.conf
 
         - name: Apply NextCloud Docker Compose template
           template:
@@ -50,21 +61,24 @@
             chdir: '{{ NEXTCLOUD_DOCKER_PATH }}'
       become: true
 
-    - name: Apply NextCloud nginx config
-      block:
-        - name: Copy NextCloud nginx config
-          template:
-            src: nextcloud_nginx.conf.j2
-            dest: '{{ NGINX_SITES_AVAILABLE }}/nextcloud.conf'
-            mode: 0640
-          notify: Restart nginx
-
-        - name: Enable NextCloud nginx config
-          file:
-            src: '{{ NGINX_SITES_AVAILABLE }}/nextcloud.conf'
-            dest: '{{ NGINX_SITES_ENABLED }}/nextcloud.conf'
-            state: link
-          notify: Restart nginx
+    - name: Copy NextCloud nginx config
+      template:
+        src: nextcloud_nginx.conf.j2
+        dest: '{{ NGINX_SITES_ENABLED_PATH }}/nextcloud.conf'
+        owner: '{{ NGINX_USER }}'
+        mode: 0640
       become: true
 
+    - name: Start Docker Compose
+      shell: docker compose down && docker compose up -d
+      args:
+        chdir: '{{ service_path }}'
+      loop_control:
+        loop_var: service_path
+      loop:
+        - '{{ NEXTCLOUD_DOCKER_PATH }}'
+        - '{{ NGINX_DOCKER_PATH }}'
+      become: true
+
+  when: DOCKERIZED
   tags: nextcloud

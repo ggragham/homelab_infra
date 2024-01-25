@@ -13,14 +13,18 @@ services:
       MYSQL_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
       OVERWRITEPROTOCOL: https
     networks:
-      - nc_network
-    ports:
-      - {{ NEXTCLOUD_PORT }}:80
+      - nextcloud_network
+      - nextcloud_nginx_network
     volumes:
       - {{ NEXTCLOUD_DATA_PATH }}:/var/www/html
+      - {{ NEXTCLOUD_DOCKER_PATH }}/ports.conf:/etc/apache2/ports.conf
+      - {{ NEXTCLOUD_DOCKER_PATH }}/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
 
 networks:
-  nc_network:
+  nextcloud_network:
     ipam:
       config:
         - subnet: {{ NEXTCLOUD_DOCKER_SUBNET }}
+  nextcloud_nginx_network:
+    name: {{ NGINX_DOCKER_NETWORK_NAME }}
+    external: true
