@@ -4,6 +4,7 @@
     - name: Create Gitea system user
       user:
         name: '{{ GITEA_USER }}'
+        uid: '{{ GITEA_ID }}'
         comment: Git Version Control
         home: /home/{{ GITEA_USER }}
         shell: /bin/bash
