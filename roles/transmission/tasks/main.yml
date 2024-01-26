@@ -1,6 +1,14 @@
 ---
 - name: Install and config transmission
   block:
+    - name: Create Transmission system user
+      user:
+        name: '{{ TRANSMISSION_SYSTEM_USER }}'
+        uid: '{{ TRANSMISSION_SYSTEM_USER_ID }}'
+        comment: Transmission System User
+        home: /var/lib/transmission-daemon
+        shell: /usr/sbin/nologin
+
     - name: Install transmission-daemon
       apt:
         name: transmission-daemon
@@ -18,33 +26,39 @@
         - name: Copy Transmission nginx config
           template:
             src: nginx_transmission.j2
-            dest: /etc/nginx/sites-available/transmission.conf
+            dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/transmission.conf'
             mode: 0640
+          notify: Restart Nginx
 
         - name: Enable Transmission nginx config
           file:
-            src: /etc/nginx/sites-available/transmission.conf
-            dest: /etc/nginx/sites-enabled/transmission.conf
+            src: '{{ NGINX_SITES_AVAILABLE_PATH }}/transmission.conf'
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/transmission.conf'
             state: link
+            mode: 0640
+          notify: Restart Nginx
 
-    - name: Make transmission dir
+    - name: Create Transmission data dirs
       file:
-        path: /mnt/{{ DISK_LABEL }}/transmission/{{ item }}
+        path: '{{ dirs }}'
         state: directory
         recurse: true
         mode: 0775
-        owner: '{{ TRANSMISSION_SYSTEM_GROUP }}'
-        group: '{{ SHARE_DISK_GROUP }}'
-      with_items:
-        - downloads
-        - process
+        owner: '{{ TRANSMISSION_SYSTEM_USER }}'
+        group: '{{ (SHARING_ENABLED) | ternary(SHARE_DISK_GROUP, USERNAME) }}'
+      loop_control:
+        loop_var: dirs
+      loop:
+        - '{{ TRANSMISSION_DATA_PATH }}'
+        - '{{ TRANSMISSION_DOWNLOAD_PATH }}'
+        - '{{ TRANSMISSION_PROCESS_PATH }}'
+        - '{{ TRANSMISSION_WATCH_PATH }}'
 
     - name: Apply transmission config
       template:
         src: transmission_settings.j2
-        dest: /etc/transmission-daemon/settings.json
+        dest: '{{ TRANSMISSION_CONFIG_PATH }}/settings.json'
         mode: 0600
-      notify: Start transmission
 
   become: true
   tags: transmission
