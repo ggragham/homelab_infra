@@ -19,11 +19,13 @@ DISK_ENCRYPTED: false
 DISK_KEYFILE: keyfile.pem
 DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'
 DISK_FSTYPE: btrfs
+DISK_PATH: /mnt/{{ DISK_LABEL }}
+DISK_DATA_PATH: '{{ DISK_PATH }}/data'
 
 DISK_SUBVOLS:
   - name: storage
     subvol: '@storage'
-    path: /mnt/{{ DISK_LABEL }}/storage
+    path: '{{ DISK_DATA_PATH }}'
     compression: zstd:1
 
 # SFTP vars
@@ -37,17 +39,17 @@ DOMAIN_NAME: example.com
 SSL_CERT_NAME: cert.crt
 SSL_KEY_NAME: cert.key
 DH_NAME: dhparam.pem
-SSL_CERT_PATH: '{{ ASSETS_PATH }}/{{ SSL_CERT_NAME }}'
-SSL_KEY_PATH: '{{ ASSETS_PATH }}/{{ SSL_KEY_NAME }}'
-DH_PATH: '{{ ASSETS_PATH }}/{{ DH_NAME }}'
-NGINX_SITES_AVAILABLE: /etc/nginx/sites-available
-NGINX_SITES_ENABLED: /etc/nginx/sites-enabled
+SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}
+SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}
+DH_PATH: ./assets/{{ DH_NAME }}
+NGINX_DOCKER_PATH: /opt/nginx_docker
+NGINX_VERSION_DOCKER: latest
 
 # Nextcloud vars
+NEXTCLOUD_DATA_PATH: '{{ DISK_DATA_PATH }}/nextcloud'
 NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}
-NEXTCLOUD_DOCKER_VERSION: 28-fpm-alpine
+NEXTCLOUD_DOCKER_VERSION: stable
 NEXTCLOUD_PORT: 9001
-NEXTCLOUD_PATH: /var/www/html/nextcloud
 NEXTCLOUD_MAX_FILE_SIZE: 4G
 NEXTCLOUD_DB_NAME: nextclouddb
 NEXTCLOUD_DB_USER: nextclouduser
@@ -55,22 +57,17 @@ NEXTCLOUD_DB_PASSWORD: qwerty1234!
 
 # Transmission vars
 TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}
-TRANSMISSION_SYSTEM_GROUP: debian-transmission
 TRANSMISSION_PORT: 9091
+TRANSMISSION_PEER_PORT: 51413
 TRANSMISSION_USER: transmission
 TRANSMISSION_PASSWORD: qwerty1234!
+TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'
 
 # Gitea vars
-GITEA_DOCKERIZED: false
 GITEA_CHECK_UPDATES: false
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}
 GITEA_APP_NAME: tea
 GITEA_PORT: 3000
-GITEA_USER: gitea_user
-GITEA_ID: 1030
-GITEA_PATH: /opt/gitea
-GITEA_DATA_PATH: /mnt/{{ DISK_LABEL }}/gitea
-GITEA_CONFIG_PATH: /etc/gitea
 GITEA_DB_NAME: giteadb
 GITEA_DB_USER: gitea_db_user
 GITEA_DB_PASSWORD: gitea_db_password
@@ -82,7 +79,6 @@ GITEA_ADMIN_USER: gitea_admin
 GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}
 GITEA_ADMIN_PASSWORD: qwerty1234!
 ACT_VERSION: latest
-ACT_DATA_PATH: /mnt/{{ DISK_LABEL }}/act_runner
 ACT_REREGISTER_RUNNER: false
 
 # Borg vars

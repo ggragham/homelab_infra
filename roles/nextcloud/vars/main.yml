@@ -1,4 +1,7 @@
 ---
-USERNAME: '{{ ansible_user }}'
-NEXTCLOUD_DOCKER_SUBNET: 172.20.0.0/16
-NEXTCLOUD_DB_ACCESS_SUBNET: 172.20.%
+USERNAME: '{{ ansible_user }}'  # System username
+NEXTCLOUD_DOCKER_SUBNET: 172.20.0.0/16  # NextCloud Docker network subnet.
+NEXTCLOUD_DB_ACCESS_SUBNET: 172.20.%  # Subnet for database access.
+NEXTCLOUD_DOCKER_PATH: /opt/nextcloud_docker  # NextCloud Docker installation path.
+NEXTCLOUD_CONTAINER_NAME: nextcloud_container  # NextCloud Docker container name.
+NEXTCLOUD_DOCKER_SERVICE_NAME: nextcloud  # NextCloud Docker service name.

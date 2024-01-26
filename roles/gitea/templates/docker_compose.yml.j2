@@ -2,9 +2,9 @@
 version: '3'
 
 services:
-  gitea:
+  {{ GITEA_DOCKER_SERVICE_NAME }}:
     image: gitea/gitea:latest-rootless
-    container_name: gitea_rootless
+    container_name: {{ GITEA_CONTAINER_NAME }}
     restart: always
     environment:
       USER_UID: {{ GITEA_ID }}
@@ -17,8 +17,9 @@ services:
     user: '{{ GITEA_ID }}'
     networks:
       - gitea_network
+      - gitea_nginx_network
     ports:
-      - 3000:3000
+      - {{ GITEA_PORT }}:3000
       - 2222:2222
     volumes:
       - {{ GITEA_DATA_PATH }}:/var/lib/gitea
@@ -47,3 +48,6 @@ networks:
     ipam:
       config:
         - subnet: {{ GITEA_DOCKER_SUBNET }}
+  gitea_nginx_network:
+    name: {{ NGINX_DOCKER_NETWORK_NAME }}
+    external: true

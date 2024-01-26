@@ -1,9 +1,14 @@
 ---
-NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}
-NEXTCLOUD_DOCKER_VERSION: 28-fpm-alpine
-NEXTCLOUD_PORT: 9001
-NEXTCLOUD_PATH: /var/www/html/nextcloud
-NEXTCLOUD_MAX_FILE_SIZE: 4G
-NEXTCLOUD_DB_NAME: nextclouddb
-NEXTCLOUD_DB_USER: nextclouduser
-NEXTCLOUD_DB_PASSWORD: qwerty1234!
+# Other
+DOCKERIZED: false  #  Toggle for Docker setup.
+DISK_LABEL: disk  # External disk label.
+
+# NextCloud
+NEXTCLOUD_DATA_PATH: '{{ DISK_DATA_PATH }}/nextcloud'  # Nextcloud data path.
+NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}  # Nextcloud domain name.
+NEXTCLOUD_DOCKER_VERSION: stable  # NextCloud Docker image version.
+NEXTCLOUD_PORT: 9001  # Nextcloud service port.
+NEXTCLOUD_MAX_FILE_SIZE: 4G  # Maximum upload file size.
+NEXTCLOUD_DB_NAME: nextclouddb  # Nextcloud database name.
+NEXTCLOUD_DB_USER: nextclouduser  # Nextcloud database user.
+NEXTCLOUD_DB_PASSWORD: qwerty1234!  # Nextcloud database password.

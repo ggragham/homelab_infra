@@ -27,8 +27,6 @@ DH_NAME: dhparam.pem
 SSL_CERT_PATH: '{{ ASSETS_PATH }}/{{ SSL_CERT_NAME }}'
 SSL_KEY_PATH: '{{ ASSETS_PATH }}/{{ SSL_KEY_NAME }}'
 DH_PATH: '{{ ASSETS_PATH }}{{ DH_NAME }}'
-NGINX_SITES_AVAILABLE: /etc/nginx/sites-available
-NGINX_SITES_ENABLED: /etc/nginx/sites-enabled
 
 # Pi-hole vars
 PIHOLE_ADMIN_PASSWORD: qwerty1234!

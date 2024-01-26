@@ -1,0 +1,17 @@
+---
+NGINX_USER: www-data  # Nginx service user
+
+DEFAULT_WWW_PATH: /var/www/html  # Website files path
+NGINX_LOG_PATH: /var/log/nginx  # Nginx logs path
+NGINX_SITES_AVAILABLE_PATH: /etc/nginx/sites-available  # Available sites config path
+NGINX_SITES_ENABLED_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_PATH, '/etc/nginx') }}/sites-enabled"  # Enabled sites config path
+NGINX_SNIPPETS_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_PATH, '/etc/nginx') }}/snippets"  # Config snippets path
+NGINX_SSL_CERT_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/ssl/certs') }}/{{ SSL_CERT_NAME }}"  # SSL cert path
+NGINX_SSL_KEY_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/ssl/private') }}/{{ SSL_KEY_NAME }}"  # SSL key path
+NGINX_DH_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/nginx') }}/{{ DH_NAME }}"  # Diffie-Hellman file path
+
+NGINX_DOCKER_CONF_PATH: '{{ NGINX_DOCKER_PATH }}/conf.d'  # Docker Nginx config path
+NGINX_DOCKER_SERVICE_NAME: nginx  # Docker Nginx service name
+NGINX_DOCKER_CONTAINER_NAME: nginx_rootless  # Docker Nginx container name
+NGINX_DOCKER_NETWORK_NAME: nginx_external_network  # Docker Nginx network name
+NGINX_DOCKER_SSL_PATH: '{{ NGINX_DOCKER_PATH }}/ssl'  # Docker SSL files path
