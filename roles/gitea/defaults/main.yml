@@ -9,8 +9,6 @@ GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_APP_NAME: tea  # Name of Gitea application.
 GITEA_PORT: 3000  # Gitea's running port.
-GITEA_USER: gitea_user  # Gitea system username.
-GITEA_ID: 1030  # Gitea system UID/GID.
 GITEA_DB_NAME: giteadb  # Gitea's database name.
 GITEA_DB_USER: gitea_db_user  # Gitea's database username.
 GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.

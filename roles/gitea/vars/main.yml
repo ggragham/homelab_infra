@@ -1,4 +1,6 @@
 ---
+GITEA_USER: gitea_user  # Gitea system username.
+GITEA_ID: 1030  # Gitea system UID/GID.
 GITEA_DOCKER_SUBNET: 172.21.0.0/16  # Gitea Docker network subnet
 GITEA_DB_ACCESS_SUBNET: 172.21.%  # Subnet for database access
 GITEA_PATH: /opt/gitea  # Gitea's installation path.
