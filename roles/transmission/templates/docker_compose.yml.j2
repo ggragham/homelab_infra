@@ -1,0 +1,29 @@
+---
+version: '3'
+
+services:
+  {{ TRANSMISSION_DOCKER_SERVICE_NAME }}:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: {{ TRANSMISSION_CONTAINER_NAME }}
+    restart: unless-stopped
+    environment:
+      PUID: {{ TRANSMISSION_SYSTEM_USER_ID }}
+      PGID: {{ TRANSMISSION_SYSTEM_USER_ID }}
+      TZ: Etc/UTC
+      USER: {{ TRANSMISSION_USER }}
+      PASS: {{ TRANSMISSION_PASSWORD }}
+      WHITELIST:
+      PEERPORT: {{ TRANSMISSION_PEER_PORT }}
+      HOST_WHITELIST:
+    volumes:
+      - {{ TRANSMISSION_CONFIG_PATH }}:/config
+      - {{ TRANSMISSION_DOWNLOAD_PATH }}:/downloads
+      - {{ TRANSMISSION_PROCESS_PATH }}:/process
+      - {{ TRANSMISSION_WATCH_PATH }}:/watch
+    networks:
+      - transmission_nginx_network
+
+networks:
+  transmission_nginx_network:
+    name: nginx_external_network
+    external: true

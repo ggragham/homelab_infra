@@ -24,6 +24,9 @@ server {
         proxy_pass_header X-Transmission-Session-Id;
         add_header Front-End-Https on;
 
+{% if DOCKERIZED %}
+        proxy_pass http://{{ TRANSMISSION_DOCKER_SERVICE_NAME }}:{{ TRANSMISSION_PORT }};
+{% else %}
         location /rpc {
             proxy_pass http://localhost:{{ TRANSMISSION_PORT }};
         }
@@ -39,6 +42,7 @@ server {
         location / {
             return 301 http://$host/web/;
         }
+{% endif %}
     }
 
     include /etc/nginx/snippets/ssl-params.conf;
