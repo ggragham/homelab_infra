@@ -3,6 +3,8 @@ server {
     listen 80;
     return 301 https://$host$request_uri;
 
+    server_tokens off;
+
     access_log /var/log/nginx/transmission-access.log;
     error_log /var/log/nginx/transmission-error.log;
 }
@@ -11,6 +13,7 @@ server {
     listen 443 ssl;
     server_name {{ TRANSMISSION_DOMAIN }};
 
+    server_tokens off;
 
     location ^~ / {
         proxy_set_header X-Real-IP $remote_addr;
