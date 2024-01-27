@@ -18,12 +18,18 @@ DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'  # Path to encryption 
 DISK_FSTYPE: btrfs  # Disk filesystem type
 DISK_PATH: /mnt/{{ DISK_LABEL }}  # Disk mount path
 DISK_DATA_PATH: '{{ DISK_PATH }}/data'  # Data path
+DISK_DB_PATH: '{{ DISK_PATH }}/database'
 
 DISK_SUBVOLS:  # List of BTRFS subvolumes
   - name: storage
     subvol: '@storage'  # Subvolume name in filesystem
     path: '{{ DISK_DATA_PATH }}'  # Subvolume mount point
     compression: zstd:1  # Subvolume compression
+  
+  - name: db
+    subvol: '@db'
+    path: '{{ DISK_DB_PATH }}'
+    compression: zstd:1
 
 # SFTP
 SHARING_ENABLED: false
