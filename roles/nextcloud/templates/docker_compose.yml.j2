@@ -6,8 +6,10 @@ services:
     image: nextcloud:{{ NEXTCLOUD_DOCKER_VERSION }}
     container_name: {{ NEXTCLOUD_CONTAINER_NAME }}
     restart: always
+    depends_on:
+      - {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}
     environment:
-      MYSQL_HOST: {{ SERVER_IP }}:{{ MARIADB_PORT }}
+      MYSQL_HOST: nextcloud_db
       MYSQL_DATABASE: {{ NEXTCLOUD_DB_NAME }}
       MYSQL_USER: {{ NEXTCLOUD_DB_USER }}
       MYSQL_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
@@ -20,11 +22,24 @@ services:
       - {{ NEXTCLOUD_DOCKER_PATH }}/ports.conf:/etc/apache2/ports.conf
       - {{ NEXTCLOUD_DOCKER_PATH }}/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
 
+  {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}:
+    image: mariadb:{{ NEXTCLOUD_DOCKER_MARIADB_VERSION }}
+    container_name: {{ NEXTCLOUD_DB_CONTAINER_NAME }}
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    environment:
+      MARIADB_ROOT_HOST: localhost
+      MARIADB_ROOT_PASSWORD: {{ NEXTCLOUD_DB_ROOT_PASSWORD }}
+      MARIADB_DATABASE: {{ NEXTCLOUD_DB_NAME }}
+      MARIADB_USER: {{ NEXTCLOUD_DB_USER }}
+      MARIADB_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
+    networks:
+      - nextcloud_network
+    volumes:
+      - {{ DISK_DB_PATH }}/nextcloud:/var/lib/mysql
+
 networks:
   nextcloud_network:
-    ipam:
-      config:
-        - subnet: {{ NEXTCLOUD_DOCKER_SUBNET }}
   nextcloud_nginx_network:
     name: {{ NGINX_DOCKER_NETWORK_NAME }}
     external: true
