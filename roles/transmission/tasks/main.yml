@@ -46,10 +46,6 @@
     # Dockerized install
     - name: Transmission containerized install
       block:
-        - name: Install Docker
-          include_role:
-            name: docker
-
         - name: Create Transmission Docker dirs
           file:
             path: '{{ dirs }}'
