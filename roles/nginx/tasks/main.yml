@@ -49,10 +49,6 @@
     # Dockerized install
     - name: Nginx containerized install
       block:
-        - name: Install Docker
-          include_role:
-            name: docker
-
         - name: Create Nginx directory struct
           file:
             path: '{{ directory }}'
