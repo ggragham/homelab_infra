@@ -13,5 +13,6 @@ galaxy_info:
         - all
 
 dependencies:
+  - role: docker
   - role: mariadb
   - role: nginx

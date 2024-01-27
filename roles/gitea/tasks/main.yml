@@ -114,10 +114,6 @@
     # Dockerized install
     - name: Gitea containerized install
       block:
-        - name: Install Docker
-          include_role:
-            name: docker
-
         - name: Add {{ GITEA_USER }} to docker group
           user:
             name: '{{ GITEA_USER }}'
