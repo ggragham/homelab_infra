@@ -24,9 +24,12 @@ NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}  # Nextcloud domain name.
 NEXTCLOUD_DOCKER_VERSION: stable  # NextCloud Docker image version.
 NEXTCLOUD_PORT: 9001  # Nextcloud service port.
 NEXTCLOUD_MAX_FILE_SIZE: 4G  # Maximum upload file size.
+NEXTCLOUD_DB_ROOT_PASSWORD: root1234!  # MariaDB root-user password.
 NEXTCLOUD_DB_NAME: nextclouddb  # Nextcloud database name.
 NEXTCLOUD_DB_USER: nextclouduser  # Nextcloud database user.
 NEXTCLOUD_DB_PASSWORD: qwerty1234!  # Nextcloud database password.
+NEXTCLOUD_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
+NEXTCLOUD_DOCKER_MARIADB_PORT: 3306  # MariaDB Docker port.
 ```
 
 Dependencies
