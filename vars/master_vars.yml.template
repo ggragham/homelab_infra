@@ -68,6 +68,7 @@ TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'
 
 # Gitea vars
 GITEA_CHECK_UPDATES: false
+GITEA_DOCKER_VERSION: latest  # rootless
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}
 GITEA_APP_NAME: tea
 GITEA_PORT: 3000
