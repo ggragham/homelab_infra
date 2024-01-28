@@ -7,6 +7,8 @@ Requirements
 ------------
 
 - Docker is installed or a Docker Ansible role is applied (see [Docker Installation Guide](https://docs.docker.com/engine/install/)). This is required if you choose to use the Dockerized installation.
+- MariaDB is installed or an MariaDB Ansible role is applied (see [MariaDB Installation Guide](https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/)).
+- NGINX is installed or an NGINX Ansible role is applied (see [NGINX Installation Guide](https://nginx.org/en/docs/install.html)).
 
 Role Variables
 --------------
