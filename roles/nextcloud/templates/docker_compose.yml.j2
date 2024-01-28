@@ -9,7 +9,7 @@ services:
     depends_on:
       - {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}
     environment:
-      MYSQL_HOST: nextcloud_db
+      MYSQL_HOST: {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}
       MYSQL_DATABASE: {{ NEXTCLOUD_DB_NAME }}
       MYSQL_USER: {{ NEXTCLOUD_DB_USER }}
       MYSQL_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
