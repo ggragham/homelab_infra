@@ -20,6 +20,7 @@ DISK_LABEL: disk  # External disk label
 
 # Gitea
 GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
+GITEA_DOCKER_VERSION: latest # Gitea Docker image version (rootless).
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_APP_NAME: tea  # Name of Gitea application.
