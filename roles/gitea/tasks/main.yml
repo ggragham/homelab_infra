@@ -10,31 +10,6 @@
         shell: /bin/bash
         password_lock: true
 
-    - name: Config Gitea DataBase
-      block:
-        - name: Create Gitea DB
-          mysql_db:
-            name: '{{ GITEA_DB_NAME }}'
-            collation: utf8mb4_general_ci
-            encoding: utf8mb4
-            login_unix_socket: /var/run/mysqld/mysqld.sock
-            state: present
-          notify: Restart MariaDB
-
-        - name: Create Gitea DB user
-          mysql_user:
-            name: '{{ GITEA_DB_USER }}'
-            password: '{{ GITEA_DB_PASSWORD }}'
-            host: '{{ (DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
-            priv: '{{ GITEA_DB_NAME }}.*:ALL,GRANT'
-            login_unix_socket: /var/run/mysqld/mysqld.sock
-            state: present
-          notify: Restart MariaDB
-          no_log: true
-
-        - name: Flush handlers
-          meta: flush_handlers
-
     - name: Create Gitea data dirs
       file:
         path: '{{ item }}'
@@ -57,6 +32,31 @@
             state: latest
             update_cache: true
           when: ansible_os_family=="Debian"
+
+        - name: Config Gitea DataBase
+          block:
+            - name: Create Gitea DB
+              mysql_db:
+                name: '{{ GITEA_DB_NAME }}'
+                collation: utf8mb4_general_ci
+                encoding: utf8mb4
+                login_unix_socket: /var/run/mysqld/mysqld.sock
+                state: present
+              notify: Restart MariaDB
+
+            - name: Create Gitea DB user
+              mysql_user:
+                name: '{{ GITEA_DB_USER }}'
+                password: '{{ GITEA_DB_PASSWORD }}'
+                host: '{{ (DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
+                priv: '{{ GITEA_DB_NAME }}.*:ALL,GRANT'
+                login_unix_socket: /var/run/mysqld/mysqld.sock
+                state: present
+              notify: Restart MariaDB
+              no_log: true
+
+            - name: Flush handlers
+              meta: flush_handlers
 
         - name: Create Gitea dir
           file:

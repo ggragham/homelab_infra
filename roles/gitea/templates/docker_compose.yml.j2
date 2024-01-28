@@ -6,11 +6,13 @@ services:
     image: gitea/gitea:latest-rootless
     container_name: {{ GITEA_CONTAINER_NAME }}
     restart: always
+    depends_on:
+      - {{ GITEA_DOCKER_DB_SERVICE_NAME }}
     environment:
       USER_UID: {{ GITEA_ID }}
       USER_GID: {{ GITEA_ID }}
       GITEA__database__DB_TYPE: mysql
-      GITEA__database__HOST: {{ SERVER_IP }}:{{ MARIADB_PORT }}
+      GITEA__database__HOST: {{ GITEA_DOCKER_DB_SERVICE_NAME }}
       GITEA__database__NAME: {{ GITEA_DB_NAME }}
       GITEA__database__USER: {{ GITEA_DB_USER }}
       GITEA__database__PASSWD: {{ GITEA_DB_PASSWORD }}
@@ -32,22 +34,33 @@ services:
     container_name: gitea_act_runner
     restart: always
     depends_on:
-      - gitea
+      - {{ GITEA_DOCKER_SERVICE_NAME }}
     environment:
       CONFIG_FILE: /config.yml
       GITEA_INSTANCE_URL: http://{{ SERVER_IP }}:{{ GITEA_PORT }}
-    networks:
-      - gitea_network
     volumes:
       - ./act_config.yml:/config.yml
       - {{ ACT_DATA_PATH }}:/data
       - /var/run/docker.sock:/var/run/docker.sock
 
+  {{ GITEA_DOCKER_DB_SERVICE_NAME }}:
+    image: mariadb:{{ GITEA_DOCKER_MARIADB_VERSION }}
+    container_name: {{ GITEA_DB_CONTAINER_NAME }}
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    environment:
+      MARIADB_ROOT_HOST: localhost
+      MARIADB_ROOT_PASSWORD: {{ GITEA_DB_ROOT_PASSWORD }}
+      MARIADB_DATABASE: {{ GITEA_DB_NAME }}
+      MARIADB_USER: {{ GITEA_DB_USER }}
+      MARIADB_PASSWORD: {{ GITEA_DB_PASSWORD }}
+    networks:
+      - gitea_network
+    volumes:
+      - {{ DISK_DB_PATH }}/gitea:/var/lib/mysql
+
 networks:
   gitea_network:
-    ipam:
-      config:
-        - subnet: {{ GITEA_DOCKER_SUBNET }}
   gitea_nginx_network:
     name: {{ NGINX_DOCKER_NETWORK_NAME }}
     external: true
