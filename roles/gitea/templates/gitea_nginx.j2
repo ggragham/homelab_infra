@@ -3,6 +3,8 @@ server {
     listen 80;
     return 301 https://$host$request_uri;
 
+    server_tokens off;
+
     access_log /var/log/nginx/gitea-access.log;
     error_log /var/log/nginx/gitea-error.log;
 }
@@ -11,6 +13,8 @@ server {
 server {
     listen 443 ssl;
     server_name {{ GITEA_DOMAIN }};
+
+    server_tokens off;
 
     location / {
         proxy_pass http://{{ (DOCKERIZED) | ternary(GITEA_DOCKER_SERVICE_NAME, 'localhost')}}:{{ GITEA_PORT }}/;
