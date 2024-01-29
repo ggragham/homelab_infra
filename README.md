@@ -11,6 +11,7 @@ Automate the deployment of my personal Homelab services with Ansible Roles and P
 - [Tags](#tags)
 - [Author](#author)
 - [License](#license)
+- [To-Do](#to-do)
 
 # Overview
 Homelab Infra Ansible Playbooks is a set of scripts and roles designed for deploying and managing self-hosted services within a homelab environment, primarily on Debian Linux. The playbooks automate the deployment of various services, with some services offering both containerized (Docker) and bare metal installation options. For Dockerized services, Docker Compose is used for deployment.
@@ -103,3 +104,8 @@ This project was created by [Grell Gragham](https://github.com/ggragham).
 
 # License
 This software is published under the DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE license.
+
+# To-Do
+- [ ] Implement database backup functionality using Borgmatic.
+- [ ] Implement Jellyfin deployment.
+- [ ] Move Pi-Hole deployment to a dedicated repository.
