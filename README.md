@@ -26,7 +26,8 @@ Homelab Infra Ansible Playbooks is a set of scripts and roles designed for deplo
 0. If you are setting up a new server, you can use the initial configuration playbook and role provided in the `_init/` directory.
 1. Make a copy of the inventory file template (`inventory.ini.template`) and rename it to `inventory.ini`. Configure it according to your server setup.
 2. Make a copy of the vars file template (e.g., `./vars/vars.yml.template`) and rename it to `vars.yml`. Then, open the file and set the variables according to your server and service setup.
-3. Use the `ansible-playbook` command to run the desired playbook. For example:
+3. Place your SSL certificate, SSH key, and VPN configuration file in the `./assets` directory. Don't forget to specify the names of these files in the `vars.yml` file.
+4. Use the `ansible-playbook` command to run the desired playbook. For example:
 ```bash
 ansible-playbook playbook.yml
 ```
