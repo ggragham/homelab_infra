@@ -1,4 +1,14 @@
 # Homelab Infra Ansible Playbooks
+
+<p align="center">
+  <a href="https://www.ansible.com/"><img src="https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible" alt="ansible"></a>
+  <a href="https://www.debian.org/"><img src="https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white" alt="debian"></a>
+  <br>
+  <img src="https://img.shields.io/github/last-commit/ggragham/homelab_infra" alt="last commit">
+  <img src="https://img.shields.io/github/repo-size/ggragham/homelab_infra" alt="repo size">
+  <a href="http://www.wtfpl.net/about/"><img src="https://img.shields.io/badge/License-WTFPL-brightgreen.svg" alt="license"></a>
+</p>
+
 Automate the deployment of my personal Homelab services with Ansible Roles and Playbooks.
 
 # Table of Contents
