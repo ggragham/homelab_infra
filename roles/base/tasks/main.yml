@@ -154,17 +154,30 @@
           command: cryptdisks_start '{{ DISK_LABEL }}'
       when: DISK_ENCRYPTED|bool and disk_exists.rc == 0
 
-    - name: Mount external disk
+    - name: Mount external disk with ext4
+      mount:
+        path: '{{ DISK_PATH }}'
+        src: LABEL={{ DISK_LABEL }}
+        fstype: ext4
+        opts: defaults
+        state: mounted
+      when:
+        - disk_exists.rc == 0
+        - DISK_FSTYPE == 'ext4'
+
+    - name: Mount external disk with btrfs
       mount:
         path: '{{ item.path }}'
         src: LABEL={{ DISK_LABEL }}
-        fstype: "{{ 'btrfs' if DISK_FSTYPE == 'btrfs' else 'ext4' }}"
-        opts: "{{ 'subvol=' + item.subvol + ',compress=' + item.compression + ',x-systemd.requires=cryptsetup.target' if DISK_FSTYPE == 'btrfs' else 'defaults' }}"
+        fstype: btrfs
+        opts: subvol={{ item.subvol }},compress={{ item.compression }},x-systemd.requires=cryptsetup.target
         state: mounted
       loop: '{{ DISK_SUBVOLS }}'
       loop_control:
         loop_var: item
-      when: disk_exists.rc == 0
+      when:
+        - disk_exists.rc == 0
+        - DISK_FSTYPE == 'btrfs'
 
   when: EXT_DISK_ENABLED|bool
   become: true
