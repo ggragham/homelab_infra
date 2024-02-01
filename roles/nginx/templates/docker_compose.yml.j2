@@ -13,9 +13,9 @@ services:
       - {{ NGINX_SNIPPETS_PATH }}:/etc/nginx/snippets:ro
       - {{ NGINX_SITES_ENABLED_PATH }}:/etc/nginx/sites-enabled:ro
       - {{ DEFAULT_WWW_PATH }}/index.html:/var/www/html/index.html:ro
-      - {{ NGINX_SSL_CERT_PATH }}:/etc/nginx/default.crt:ro
-      - {{ NGINX_SSL_KEY_PATH }}:/etc/nginx/default.key:ro
-      - {{ NGINX_DH_PATH }}:/etc/nginx/dhparam.pem:ro
+      - {{ NGINX_SSL_CERT_PATH }}:/etc/nginx/{{ SSL_CERT_NAME }}:ro
+      - {{ NGINX_SSL_KEY_PATH }}:/etc/nginx/{{ SSL_KEY_NAME }}:ro
+      - {{ NGINX_DH_PATH }}:/etc/nginx/{{ DH_NAME }}:ro
     networks:
       - nginx_network
     ports:
