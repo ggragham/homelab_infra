@@ -18,6 +18,7 @@ DISK_LABEL: disk  # Exd drive label
 
 # Transmission
 TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}  # Domain name for the Transmission service
+TRANSMISSION_DOCKER_VERSION: latest  # Transmission Docker image version.
 TRANSMISSION_PORT: 9091  # Transmission port
 TRANSMISSION_PEER_PORT: 51413  # Transmission peer port
 TRANSMISSION_USER: transmission  # Username used to login
