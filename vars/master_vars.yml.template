@@ -1,4 +1,6 @@
 ---
+DOCKERIZED: false
+
 # Base vars
 ASSETS_PATH: ./assets
 USERNAME: '{{ ansible_user }}'
