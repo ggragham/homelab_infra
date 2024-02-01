@@ -128,7 +128,7 @@
   block:
     - name: Make dir for mountpoint
       file:
-        path: /mnt/{{ DISK_LABEL }}
+        path: '{{ DISK_PATH }}'
         state: directory
         mode: 0755
         owner: root
@@ -204,7 +204,7 @@
 
     - name: Make dir for random files
       file:
-        path: /mnt/{{ DISK_LABEL }}/files
+        path: '{{ DISK_DATA_PATH }}/files'
         state: directory
         recurse: true
         mode: 0775
@@ -213,7 +213,7 @@
 
     - name: Make dir for public user
       file:
-        path: /mnt/{{ DISK_LABEL }}/share
+        path: '{{ DISK_DATA_PATH }}/share'
         state: directory
         mode: 0755
         owner: root
@@ -221,7 +221,7 @@
 
     - name: Make dir for public user
       file:
-        path: /mnt/{{ DISK_LABEL }}/share/files
+        path: '{{ DISK_DATA_PATH }}/share/files'
         state: directory
         mode: 0755
         owner: '{{ SHARE_PUBLIC_USER }}'
