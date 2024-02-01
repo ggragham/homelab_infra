@@ -91,10 +91,8 @@
             - name: Allow outgoing traffic
               ufw:
                 rule: allow
-                interface: eth0
                 direction: out
                 port: '{{ item }}'
-                proto: udp
                 state: reloaded
               with_items:
                 - '{{ OPENVPN_PORT }}'
