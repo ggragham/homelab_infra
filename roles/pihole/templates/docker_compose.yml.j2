@@ -1,0 +1,23 @@
+---
+version: '3'
+
+services:
+  {{ PIHOLE_DOCKER_SERVICE_NAME }}:
+    image: pihole/pihole:{{ PIHOLE_DOCKER_VERSION }}
+    container_name: {{ PIHOLE_CONTAINER_NAME }}
+    restart: unless-stopped
+    environment:
+      TZ: Etc/UTC
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    volumes:
+      - '{{ PIHOLE_CONFIG_PATH }}:/etc/pihole'
+      - '{{ PIHOLE_DNSMASQ_PATH }}:/etc/dnsmasq.d'
+    networks:
+      - pihole_nginx_network
+
+networks:
+  pihole_nginx_network:
+    name: nginx_external_network
+    external: true

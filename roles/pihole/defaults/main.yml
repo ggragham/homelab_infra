@@ -1,5 +1,9 @@
 ---
-PIHOLE_ADMIN_PASSWORD: qwerty1234!
+# Pihole
+PIHOLE_DOMAIN: dns.{{ DOMAIN_NAME }}  # Domain name for the Pi-hole service.
+PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
+PIHOLE_ADMIN_PASSWORD: qwerty1234!  # Password used to login in Pi-hole WebUI.
+
 PIHOLE_INTERFACE: eth0
 PIHOLE_DNS_1: 1.1.1.1
 PIHOLE_DNS_2: 1.0.0.1
@@ -10,5 +14,3 @@ PIHOLE_INSTALL_WEB_INTERFACE: 'true'
 PIHOLE_CACHE_SIZE: 10000
 PIHOLE_WEBUI_BOXED_LAYOUT: boxed
 PIHOLE_WEBTHEME: default-dark
-
-PIHOLE_DOMAIN: dns.{{ DOMAIN_NAME }}

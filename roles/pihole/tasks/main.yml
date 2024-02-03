@@ -1,19 +1,6 @@
 ---
 - name: Pi-hole
   block:
-    - name: Install dependecies
-      apt:
-        name:
-          - git
-          - php8.2-cgi
-          - php8.2-fpm
-          - php8.2-intl
-          - php8.2-sqlite3
-          - php8.2-xml
-        state: latest
-        update_cache: true
-      become: true
-
     - name: Config UFW
       block:
         - name: Check UFW installed
@@ -28,90 +15,140 @@
             port: 53
             state: reloaded
           when: ufw_return.stdout=="0"
-      become: true
       tags: firewall
 
-    - name: Check Pi-hole existence
-      stat:
-        path: /usr/local/bin/pihole
-      register: pihole_exist
+    - name: Create Pi-hole config dir
+      file:
+        path: '{{ PIHOLE_CONFIG_PATH }}'
+        state: directory
+        mode: 0775
 
-    - name: Install Pi-hole
+    - name: Apply Pi-hole setupVars
+      template:
+        src: pihole_setup_vars.conf.j2
+        dest: '{{ PIHOLE_CONFIG_PATH }}/setupVars.conf'
+
+    - name: Create custom.list file
+      file:
+        path: '{{ PIHOLE_CONFIG_PATH }}/custom.list'
+        state: touch
+        owner: root
+        mode: '0644'
+
+    - name: Add host entries to custom.list
+      lineinfile:
+        path: '{{ PIHOLE_CONFIG_PATH }}/custom.list'
+        line: '{{ item }}'
+        owner: root
+        mode: '0644'
+      loop:
+        - '{{ ansible_host }} {{ DOMAIN_NAME }}'
+        - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'
+
+    # Bare Metal install
+    - name: Pi-hole bare metal install
       block:
-        - name: Clone the Pi-hole repository
-          git:
-            repo: https://github.com/pi-hole/pi-hole.git
-            dest: /etc/.pihole
-            version: master
+        - name: Install dependecies
+          apt:
+            name:
+              - git
+              - php8.2-cgi
+              - php8.2-fpm
+              - php8.2-intl
+              - php8.2-sqlite3
+              - php8.2-xml
+            state: latest
+            update_cache: true
 
-        - name: Create Pi-hole config dir
+        - name: Check Pi-hole existence
+          stat:
+            path: /usr/local/bin/pihole
+          register: pihole_exist
+
+        - name: Install Pi-hole
+          block:
+            - name: Clone the Pi-hole repository
+              git:
+                repo: https://github.com/pi-hole/pi-hole.git
+                dest: /etc/.pihole
+                version: master
+
+            - name: Run the Pi-hole installer
+              command: /etc/.pihole/automated\ install/basic-install.sh --unattended
+
+            - name: Change Pi-hole config dir owner
+              file:
+                path: /etc/pihole
+                owner: pihole
+                state: directory
+
+          when: not pihole_exist.stat.exists
+
+        - name: Add www-data user to pihole group
+          user:
+            name: www-data
+            groups: pihole
+            append: true
+
+        - name: Set Pi-hole admin password
+          command: pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
+          no_log: true
+
+        - name: Apply Pi-hole nginx config
+          block:
+            - name: Copy Pi-hole nginx config
+              template:
+                src: pihole_nginx.conf.j2
+                dest: /etc/nginx/sites-available/pihole.conf
+                mode: 0640
+
+            - name: Enable Pi-hole nginx config
+              file:
+                src: /etc/nginx/sites-available/pihole.conf
+                dest: /etc/nginx/sites-enabled/pihole.conf
+                state: link
+
+      notify: Restart nginx
+      when: not DOCKERIZED
+
+    # Dockerized install
+    - name: Pi-hole containerized install
+      block:
+        - name: Create Pi-hole Docker dirs
           file:
-            path: /etc/pihole
+            path: '{{ dirs }}'
             state: directory
-            mode: 0775
-
-        - name: Apply Pi-hole setupVars
-          template:
-            src: pihole_setup_vars.conf.j2
-            dest: /etc/pihole/setupVars.conf
-
-        - name: Create custom.list file
-          file:
-            path: /etc/pihole/custom.list
-            state: touch
-            owner: root
-            mode: '0644'
-          become: true
-
-        - name: Add host entries to custom.list
-          lineinfile:
-            path: /etc/pihole/custom.list
-            line: '{{ item }}'
-            owner: root
-            mode: '0644'
+            mode: 0750
+          loop_control:
+            loop_var: dirs
           loop:
-            - '{{ ansible_host }} {{ DOMAIN_NAME }}'
-            - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'
-          become: true
+            - '{{ PIHOLE_DOCKER_PATH }}'
+            - '{{ PIHOLE_CONFIG_PATH }}'
 
-        - name: Run the Pi-hole installer
-          command: /etc/.pihole/automated\ install/basic-install.sh --unattended
-
-        - name: Change Pi-hole config dir owner
-          file:
-            path: /etc/pihole
-            owner: pihole
-            state: directory
-
-      become: true
-      when: not pihole_exist.stat.exists
-
-    - name: Add www-data user to pihole group
-      user:
-        name: www-data
-        groups: pihole
-        append: true
-      become: true
-
-    - name: Set Pi-hole admin password
-      command: pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
-      no_log: true
-
-    - name: Apply Pi-hole nginx config
-      block:
-        - name: Copy Pi-hole nginx config
+        - name: Apply Pi-hole Docker Compose template
           template:
-            src: pihole_nginx.conf.j2
-            dest: /etc/nginx/sites-available/pihole.conf
+            src: docker_compose.yml.j2
+            dest: '{{ PIHOLE_DOCKER_PATH }}/docker-compose.yml'
+            owner: '{{ USERNAME }}'
             mode: 0640
 
-        - name: Enable Pi-hole nginx config
-          file:
-            src: /etc/nginx/sites-available/pihole.conf
-            dest: /etc/nginx/sites-enabled/pihole.conf
-            state: link
+        - name: Apply nginx config
+          template:
+            src: pihole_nginx.conf.j2
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/pihole.conf'
+            mode: 0644
 
-      become: true
-      notify: Restart nginx
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ service_path }}'
+          loop_control:
+            loop_var: service_path
+          loop:
+            - '{{ PIHOLE_DOCKER_PATH }}'
+            - '{{ NGINX_DOCKER_PATH }}'
 
+      when: DOCKERIZED
+
+  become: true
   tags: pihole
