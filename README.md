@@ -81,6 +81,7 @@ The deployment method is determined by the Ansible variable `DOCKERIZED`, which 
 * Dockerized
 * Bare Metal
 4. **Pi-hole:**
+* Dockerized
 * Bare Metal
 5. **Borgmatic:**
 * Bare Metal
