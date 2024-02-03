@@ -90,10 +90,6 @@
             groups: pihole
             append: true
 
-        - name: Set Pi-hole admin password
-          command: pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
-          no_log: true
-
         - name: Apply Pi-hole nginx config
           block:
             - name: Copy Pi-hole nginx config
@@ -149,6 +145,14 @@
             - '{{ NGINX_DOCKER_PATH }}'
 
       when: DOCKERIZED
+
+    - name: Set Pi-hole admin password
+      shell: >
+        {% if DOCKERIZED %}
+        {{ 'docker exec -it ' + PIHOLE_CONTAINER_NAME }}
+        {% endif %}
+        pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
+      no_log: true
 
   become: true
   tags: pihole
