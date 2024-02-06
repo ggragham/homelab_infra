@@ -1,5 +1,6 @@
 ---
 DOCKERIZED: false
+NETWORK_INTERFACE: eth0
 
 # Base vars
 ASSETS_PATH: ./assets

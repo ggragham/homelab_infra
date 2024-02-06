@@ -1,4 +1,6 @@
 ---
+NETWORK_INTERFACE: eth0
+
 # SSH
 SSH_PORT: 22  # Set ssh port for firewall
 SERVER_SUBNET: 192.168.1.0/24

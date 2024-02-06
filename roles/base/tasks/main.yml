@@ -91,7 +91,7 @@
             - name: Allow outgoing traffic
               ufw:
                 rule: allow
-                interface: eth0
+                interface: '{{ NETWORK_INTERFACE }}'
                 direction: out
                 port: '{{ item }}'
                 proto: udp
