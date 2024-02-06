@@ -19,26 +19,42 @@
         update_cache: true
       when: ansible_os_family == "Debian"
 
-    - name: Config UFW
-      block:
-        - name: Disable ufw IPv6
-          become: true
-          lineinfile:
-            dest: /etc/default/ufw
-            regexp: ^IPV6=
-            line: IPV6=no
-            state: present
-        - name: Allow SSH
-          ufw:
-            rule: allow
-            src: '{{ SERVER_SUBNET }}'
-            port: '{{ SSH_PORT }}'
-            proto: tcp
-            state: enabled
-      tags: firewall
-
   become: true
   tags: prepare
+
+# Firewall
+- name: Config Firewall
+  block:
+    - name: Disable ufw IPv6
+      become: true
+      lineinfile:
+        dest: /etc/default/ufw
+        regexp: ^IPV6=
+        line: IPV6=no
+        state: present
+
+    - name: Allow SSH
+      ufw:
+        rule: allow
+        src: '{{ SERVER_SUBNET }}'
+        port: '{{ SSH_PORT }}'
+        proto: tcp
+        state: reloaded
+
+    - name: Outgoing deny
+      ufw:
+        state: reloaded
+        direction: outgoing
+        policy: deny
+
+    - name: Incoming deny
+      ufw:
+        state: reloaded
+        direction: incoming
+        policy: deny
+
+  become: true
+  tags: firewall
 
 # OpenVPN
 - name: Config OpenVPN
@@ -99,16 +115,6 @@
               with_items:
                 - '{{ OPENVPN_PORT }}'
                 - 53
-            - name: Outgoing deny
-              ufw:
-                state: enabled
-                direction: outgoing
-                policy: deny
-            - name: Incoming deny
-              ufw:
-                state: enabled
-                direction: incoming
-                policy: deny
           tags: firewall
 
         - name: Start OpenVPN
@@ -122,6 +128,13 @@
 
   when: OPENVPN_ENABLED|bool
   tags: openvpn
+
+# Firewall
+- name: Enable UFW
+  ufw:
+    state: enabled
+  become: true
+  tags: firewall
 
 # External Disk
 - name: Configure external disk
