@@ -41,6 +41,13 @@
         proto: tcp
         state: reloaded
 
+    - name: Allow DNS
+      ufw:
+        rule: allow
+        direction: out
+        port: 53
+        state: reloaded
+
     - name: Outgoing deny
       ufw:
         state: reloaded
@@ -114,7 +121,6 @@
                 state: reloaded
               with_items:
                 - '{{ OPENVPN_PORT }}'
-                - 53
           tags: firewall
 
         - name: Start OpenVPN
