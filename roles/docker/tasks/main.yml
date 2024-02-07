@@ -1,6 +1,11 @@
 ---
 - name: Docker
   block:
+    - name: Check if Docker exists
+      stat:
+        path: /usr/bin/docker
+      register: docker_installed
+
     - name: Install Docker
       block:
         - name: Install dependencies
@@ -50,6 +55,8 @@
             name: docker
             enabled: true
             state: restarted
+
+      when: not docker_installed.stat.exists
 
     - name: Config Docker
       block:
