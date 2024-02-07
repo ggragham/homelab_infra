@@ -9,6 +9,10 @@ SSH_PORT: 22
 SERVER_IP: '{{ ansible_host }}'
 SERVER_SUBNET: 192.168.1.0/24
 
+DNS_ENTRIES:
+  - 127.0.0.1
+  - 9.9.9.9
+
 # OpenVPN vars
 OPENVPN_ENABLED: false
 OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'

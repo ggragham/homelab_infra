@@ -1,6 +1,10 @@
 ---
 NETWORK_INTERFACE: eth0
 
+DNS_ENTRIES:
+  - 127.0.0.1
+  - 9.9.9.9
+
 # SSH
 SSH_PORT: 22  # Set ssh port for firewall
 SERVER_SUBNET: 192.168.1.0/24
@@ -27,7 +31,7 @@ DISK_SUBVOLS:  # List of BTRFS subvolumes
     subvol: '@storage'  # Subvolume name in filesystem
     path: '{{ DISK_DATA_PATH }}'  # Subvolume mount point
     compression: zstd:1  # Subvolume compression
-  
+
   - name: db
     subvol: '@db'
     path: '{{ DISK_DB_PATH }}'
