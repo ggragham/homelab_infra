@@ -1,63 +1,88 @@
 ---
-- name: Install and condif Docker
+- name: Docker
   block:
-    - name: Install dependencies
-      apt:
-        name:
-          - ca-certificates
-          - curl
-          - gnupg
-          - python3-requests
-        state: latest
-        update_cache: true
+    - name: Install and config Docker
+      block:
+        - name: Install dependencies
+          apt:
+            name:
+              - ca-certificates
+              - curl
+              - gnupg
+              - python3-requests
+            state: latest
+            update_cache: true
 
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/debian/gpg
-        state: present
+        - name: Add Docker GPG apt Key
+          apt_key:
+            url: https://download.docker.com/linux/debian/gpg
+            state: present
 
-    - name: Add Docker Repository
-      apt_repository:
-        repo: deb https://download.docker.com/linux/debian {{ ansible_lsb.codename }} stable
-        state: present
+        - name: Add Docker Repository
+          apt_repository:
+            repo: deb https://download.docker.com/linux/debian {{ ansible_lsb.codename }} stable
+            state: present
 
-    - name: Install Docker
-      apt:
-        name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-          - docker-buildx-plugin
-          - docker-compose-plugin
-        state: latest
-        update_cache: true
+        - name: Install Docker
+          apt:
+            name:
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
+              - docker-buildx-plugin
+              - docker-compose-plugin
+            state: latest
+            update_cache: true
 
-    - name: Create Docker group
-      group:
-        name: docker
-        state: present
+        - name: Create Docker group
+          group:
+            name: docker
+            state: present
 
-    - name: Add user to docker group
-      user:
-        name: '{{ USERNAME }}'
-        groups: docker
-        append: true
+        - name: Add user to docker group
+          user:
+            name: '{{ USERNAME }}'
+            groups: docker
+            append: true
 
-    - name: Restart Docker service
-      service:
-        name: docker
-        enabled: true
-        state: restarted
+        - name: Restart Docker service
+          service:
+            name: docker
+            enabled: true
+            state: restarted
 
-    - name: Create Docker network
-      docker_network:
-        name: '{{ DOCKER_NETWORK_NAME }}'
-        driver: bridge
-        driver_options:
-          com.docker.network.bridge.name: '{{ DOCKER_BRIDGE_NAME }}'
-        state: present
+        - name: Create Docker network
+          docker_network:
+            name: '{{ DOCKER_NETWORK_NAME }}'
+            driver: bridge
+            driver_options:
+              com.docker.network.bridge.name: '{{ DOCKER_BRIDGE_NAME }}'
+            state: present
+
+    - name: Config firewall
+      block:
+        - name: Restrict non-VPN traffic
+          blockinfile:
+            path: /etc/ufw/before.rules
+            block: |
+              :DOCKER-USER - [0:0]
+              -A DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+              -A DOCKER-USER -s {{ SERVER_SUBNET }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
+              -A DOCKER-USER -d {{ SERVER_SUBNET }} -i {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
+              -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
+              -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} ! -o tun0 -j REJECT --reject-with icmp-port-unreachable
+            append_newline: true
+            prepend_newline: true
+            marker: '# {mark} ANSIBLE MANAGED BLOCK. RESTRICT NON-VPN TRAFFIC FOR DOCKER'
+            insertafter: \\*filter
+
+        - name: Reload UFW
+          ufw:
+            state: reloaded
+
+      when: OPENVPN_ENABLED
+      tags: firewall
 
   when: DOCKERIZED
-
   become: true
   tags: docker
