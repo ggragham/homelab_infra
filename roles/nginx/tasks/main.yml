@@ -80,7 +80,7 @@
             dest: '{{ NGINX_DOCKER_CONF_PATH }}/default.conf'
             owner: '{{ NGINX_USER }}'
             group: root
-            mode: 0640
+            mode: 0644
 
         - name: Apply Nginx Docker Compose template
           template:
@@ -88,7 +88,7 @@
             dest: '{{ NGINX_DOCKER_PATH }}/docker-compose.yml'
             owner: '{{ NGINX_USER }}'
             group: root
-            mode: 0640
+            mode: 0644
 
         - name: Apply nginx config
           template:
