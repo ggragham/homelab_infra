@@ -53,3 +53,7 @@ PIHOLE_INSTALL_WEB_INTERFACE: 'true'
 PIHOLE_CACHE_SIZE: 10000
 PIHOLE_WEBUI_BOXED_LAYOUT: boxed
 PIHOLE_WEBTHEME: default-dark
+
+PIHOLE_DNS_RECORDS:
+  - '{{ ansible_host }} {{ DOMAIN_NAME }}'
+  - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'

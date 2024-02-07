@@ -14,3 +14,7 @@ PIHOLE_INSTALL_WEB_INTERFACE: 'true'  # Toggle web interface installation.
 PIHOLE_CACHE_SIZE: 10000  # DNS cache size.
 PIHOLE_WEBUI_BOXED_LAYOUT: boxed  # Web interface layout.
 PIHOLE_WEBTHEME: default-dark  # Web interface theme.
+
+PIHOLE_DNS_RECORDS:
+  - '{{ ansible_host }} {{ DOMAIN_NAME }}'
+  - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'

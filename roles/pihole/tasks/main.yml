@@ -36,14 +36,11 @@
         mode: '0644'
 
     - name: Add host entries to custom.list
-      lineinfile:
-        path: '{{ PIHOLE_CONFIG_PATH }}/custom.list'
-        line: '{{ item }}'
+      template:
+        src: custom.list.j2
+        dest: '{{ PIHOLE_CONFIG_PATH }}/custom.list'
         owner: root
         mode: '0644'
-      loop:
-        - '{{ ansible_host }} {{ DOMAIN_NAME }}'
-        - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'
 
     # Bare Metal install
     - name: Pi-hole bare metal install
