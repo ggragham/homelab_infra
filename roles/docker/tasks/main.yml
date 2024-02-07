@@ -1,7 +1,7 @@
 ---
 - name: Docker
   block:
-    - name: Install and config Docker
+    - name: Install Docker
       block:
         - name: Install dependencies
           apt:
@@ -51,6 +51,8 @@
             enabled: true
             state: restarted
 
+    - name: Config Docker
+      block:
         - name: Create Docker network
           docker_network:
             name: '{{ DOCKER_NETWORK_NAME }}'
