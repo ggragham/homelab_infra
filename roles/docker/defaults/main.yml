@@ -1,0 +1,3 @@
+---
+DOCKER_NETWORK_NAME: homelab_network
+DOCKER_BRIDGE_NAME: homelab_bridge

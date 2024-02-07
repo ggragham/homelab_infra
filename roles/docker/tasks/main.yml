@@ -49,6 +49,14 @@
         enabled: true
         state: restarted
 
+    - name: Create Docker network
+      docker_network:
+        name: '{{ DOCKER_NETWORK_NAME }}'
+        driver: bridge
+        driver_options:
+          com.docker.network.bridge.name: '{{ DOCKER_BRIDGE_NAME }}'
+        state: present
+
   when: DOCKERIZED
 
   become: true

@@ -90,11 +90,6 @@
             group: root
             mode: 0640
 
-        - name: Create Docker network
-          docker_network:
-            name: '{{ NGINX_DOCKER_NETWORK_NAME }}'
-            state: present
-
         - name: Apply nginx config
           template:
             src: nginx_default.j2

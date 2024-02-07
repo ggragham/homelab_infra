@@ -25,5 +25,5 @@ services:
 
 networks:
   transmission_nginx_network:
-    name: nginx_external_network
+    name: {{ DOCKER_NETWORK_NAME }}
     external: true

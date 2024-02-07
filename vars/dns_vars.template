@@ -22,6 +22,10 @@ DISK_LABEL: disk
 # SFTP vars
 SHARING_ENABLED: false
 
+# Docker vars
+DOCKER_NETWORK_NAME: homelab_network
+DOCKER_BRIDGE_NAME: homelab_bridge
+
 # NGINX vars
 DOMAIN_NAME: example.com
 SSL_CERT_NAME: cert.crt

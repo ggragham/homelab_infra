@@ -13,5 +13,4 @@ NGINX_DH_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/nginx') }
 NGINX_DOCKER_CONF_PATH: '{{ NGINX_DOCKER_PATH }}/conf.d'  # Docker Nginx config path
 NGINX_DOCKER_SERVICE_NAME: nginx  # Docker Nginx service name
 NGINX_DOCKER_CONTAINER_NAME: nginx_rootless  # Docker Nginx container name
-NGINX_DOCKER_NETWORK_NAME: nginx_external_network  # Docker Nginx network name
 NGINX_DOCKER_SSL_PATH: '{{ NGINX_DOCKER_PATH }}/ssl'  # Docker SSL files path
