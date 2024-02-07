@@ -30,7 +30,7 @@
               template:
                 src: nginx_transmission.j2
                 dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/transmission.conf'
-                mode: 0640
+                mode: 0644
               notify: Restart Nginx
 
             - name: Enable Transmission nginx config
@@ -38,7 +38,7 @@
                 src: '{{ NGINX_SITES_AVAILABLE_PATH }}/transmission.conf'
                 dest: '{{ NGINX_SITES_ENABLED_PATH }}/transmission.conf'
                 state: link
-                mode: 0640
+                mode: 0644
               notify: Restart Nginx
 
       when: not DOCKERIZED
@@ -51,7 +51,7 @@
             path: '{{ dirs }}'
             state: directory
             owner: '{{ TRANSMISSION_SYSTEM_USER }}'
-            mode: 0750
+            mode: 0755
           loop_control:
             loop_var: dirs
           loop:
@@ -63,7 +63,7 @@
             src: docker_compose.yml.j2
             dest: '{{ TRANSMISSION_DOCKER_PATH }}/docker-compose.yml'
             owner: '{{ USERNAME }}'
-            mode: 0640
+            mode: 0644
 
         - name: Apply nginx config
           template:
