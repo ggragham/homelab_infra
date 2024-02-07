@@ -3,4 +3,5 @@
   service:
     name: nginx
     state: restarted
+  when: not DOCKERIZED
   become: true
