@@ -36,7 +36,7 @@ services:
     networks:
       - nextcloud_network
     volumes:
-      - {{ DISK_DB_PATH }}/nextcloud:/var/lib/mysql
+      - {{ DISK_DATABASE_PATH }}/nextcloud:/var/lib/mysql
 
 networks:
   nextcloud_network:

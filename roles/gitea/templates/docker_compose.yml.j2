@@ -57,7 +57,7 @@ services:
     networks:
       - gitea_network
     volumes:
-      - {{ DISK_DB_PATH }}/gitea:/var/lib/mysql
+      - {{ DISK_DATABASE_PATH }}/gitea:/var/lib/mysql
 
 networks:
   gitea_network:

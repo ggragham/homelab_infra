@@ -28,11 +28,17 @@ DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'
 DISK_FSTYPE: btrfs
 DISK_PATH: /mnt/{{ DISK_LABEL }}
 DISK_DATA_PATH: '{{ DISK_PATH }}/data'
+DISK_DATABASE_PATH: '{{ DISK_PATH }}/database'
 
 DISK_SUBVOLS:
   - name: storage
     subvol: '@storage'
     path: '{{ DISK_DATA_PATH }}'
+    compression: zstd:1
+
+  - name: db
+    subvol: '@db'
+    path: '{{ DISK_DATABASE_PATH }}'
     compression: zstd:1
 
 # SFTP vars
