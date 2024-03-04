@@ -40,6 +40,9 @@ services:
 
 networks:
   nextcloud_network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: {{ DOCKER_BRIDGE_PREFIX }}_nextcloud
   nextcloud_nginx_network:
     name: {{ DOCKER_NETWORK_NAME }}
     external: true
