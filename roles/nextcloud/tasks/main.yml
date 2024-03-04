@@ -38,8 +38,8 @@
             mode: 0755
 
         - name: Apply NextCloud Config
-          copy:
-            src: '{{ config }}'
+          template:
+            src: '{{ config }}.j2'
             dest: '{{ NEXTCLOUD_DOCKER_PATH }}/{{ config }}'
             mode: 0640
           loop_control:
