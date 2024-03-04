@@ -89,6 +89,7 @@
               -A DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
               -A DOCKER-USER -s {{ SERVER_SUBNET }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
               -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
+              -A DOCKER-USER -i {{ DOCKER_BRIDGE_PREFIX }}+ -o {{ DOCKER_BRIDGE_PREFIX }}+ -j ACCEPT
               -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} ! -o tun0 -j REJECT --reject-with icmp-port-unreachable
             append_newline: true
             prepend_newline: true
