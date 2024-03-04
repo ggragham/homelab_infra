@@ -12,7 +12,7 @@ services:
       MYSQL_HOST: {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}
       MYSQL_DATABASE: {{ NEXTCLOUD_DB_NAME }}
       MYSQL_USER: {{ NEXTCLOUD_DB_USER }}
-      MYSQL_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
+      MYSQL_PASSWORD: '{{ NEXTCLOUD_DB_PASSWORD }}'
       OVERWRITEPROTOCOL: https
     networks:
       - nextcloud_network
@@ -29,10 +29,10 @@ services:
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     environment:
       MARIADB_ROOT_HOST: localhost
-      MARIADB_ROOT_PASSWORD: {{ NEXTCLOUD_DB_ROOT_PASSWORD }}
+      MARIADB_ROOT_PASSWORD: '{{ NEXTCLOUD_DB_ROOT_PASSWORD }}'
       MARIADB_DATABASE: {{ NEXTCLOUD_DB_NAME }}
       MARIADB_USER: {{ NEXTCLOUD_DB_USER }}
-      MARIADB_PASSWORD: {{ NEXTCLOUD_DB_PASSWORD }}
+      MARIADB_PASSWORD: '{{ NEXTCLOUD_DB_PASSWORD }}'
     networks:
       - nextcloud_network
     volumes:
