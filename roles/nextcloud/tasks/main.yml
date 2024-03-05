@@ -55,14 +55,13 @@
             owner: '{{ USERNAME }}'
             mode: 0644
 
-      become: true
+        - name: Copy NextCloud nginx config
+          template:
+            src: nextcloud_nginx.conf.j2
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/nextcloud.conf'
+            owner: '{{ NGINX_USER }}'
+            mode: 0644
 
-    - name: Copy NextCloud nginx config
-      template:
-        src: nextcloud_nginx.conf.j2
-        dest: '{{ NGINX_SITES_ENABLED_PATH }}/nextcloud.conf'
-        owner: '{{ NGINX_USER }}'
-        mode: 0644
       become: true
 
     - name: Start Docker Compose
