@@ -28,7 +28,6 @@ services:
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     environment:
-      MARIADB_ROOT_HOST: localhost
       MARIADB_ROOT_PASSWORD: '{{ NEXTCLOUD_DB_ROOT_PASSWORD }}'
       MARIADB_DATABASE: {{ NEXTCLOUD_DB_NAME }}
       MARIADB_USER: {{ NEXTCLOUD_DB_USER }}
