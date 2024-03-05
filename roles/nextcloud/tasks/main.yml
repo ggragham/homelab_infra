@@ -62,6 +62,17 @@
             owner: '{{ NGINX_USER }}'
             mode: 0644
 
+        - name: Deploy Nextcloud background jobs service and timer
+          template:
+            src: '{{ item }}.j2'
+            dest: /etc/systemd/system/{{ item }}
+            owner: root
+            group: root
+            mode: '0644'
+          loop:
+            - nextcloud_background_job.service
+            - nextcloud_background_job.timer
+
       become: true
 
     - name: Start Docker Compose
@@ -73,6 +84,19 @@
       loop:
         - '{{ NEXTCLOUD_DOCKER_PATH }}'
         - '{{ NGINX_DOCKER_PATH }}'
+      become: true
+
+    - name: Enable background jobs service
+      block:
+        - name: Reload systemd daemon
+          systemd:
+            daemon_reload: true
+
+        - name: Enable and start Nextcloud cron job timer
+          systemd:
+            name: nextcloud_background_job.timer
+            state: started
+            enabled: true
       become: true
 
   when: DOCKERIZED

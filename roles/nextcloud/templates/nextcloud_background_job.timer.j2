@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Nextcloud cron.php every 5 minutes
+
+[Timer]
+User={{ USERNAME }}
+OnBootSec=5min
+OnUnitActiveSec=5min
+Unit=nextcloud_background_job.service
+
+[Install]
+WantedBy=timers.target
