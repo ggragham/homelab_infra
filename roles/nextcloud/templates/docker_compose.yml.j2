@@ -8,7 +8,9 @@ services:
     restart: always
     depends_on:
       - {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}
+      - redis
     environment:
+      REDIS_HOST: redis
       MYSQL_HOST: {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}
       MYSQL_DATABASE: {{ NEXTCLOUD_DB_NAME }}
       MYSQL_USER: {{ NEXTCLOUD_DB_USER }}
@@ -16,11 +18,20 @@ services:
       OVERWRITEPROTOCOL: https
     networks:
       - nextcloud_network
+      - nextcloud_redis_network
       - nextcloud_nginx_network
     volumes:
       - {{ NEXTCLOUD_DATA_PATH }}:/var/www/html
       - {{ NEXTCLOUD_DOCKER_PATH }}/ports.conf:/etc/apache2/ports.conf:ro
       - {{ NEXTCLOUD_DOCKER_PATH }}/000-default.conf:/etc/apache2/sites-enabled/000-default.conf:ro
+
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - nextcloud_redis_network
+    volumes:
+      - redis_volume:/data
 
   {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}:
     image: mariadb:{{ NEXTCLOUD_DOCKER_MARIADB_VERSION }}
@@ -39,6 +50,10 @@ services:
 
 networks:
   nextcloud_network:
+  nextcloud_redis_network:
   nextcloud_nginx_network:
     name: {{ DOCKER_NETWORK_NAME }}
     external: true
+
+volumes:
+  redis_volume:
