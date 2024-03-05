@@ -1,3 +1,2 @@
 ---
 USERNAME: '{{ ansible_user }}'
-DOCKER_BRIDGE_PREFIX: dockbr
