@@ -55,10 +55,6 @@
             owner: '{{ USERNAME }}'
             mode: 0644
 
-        - name: Run NextCloud Docker Compose
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ NEXTCLOUD_DOCKER_PATH }}'
       become: true
 
     - name: Copy NextCloud nginx config
