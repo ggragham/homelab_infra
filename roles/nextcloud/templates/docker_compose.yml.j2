@@ -19,8 +19,8 @@ services:
       - nextcloud_nginx_network
     volumes:
       - {{ NEXTCLOUD_DATA_PATH }}:/var/www/html
-      - {{ NEXTCLOUD_DOCKER_PATH }}/ports.conf:/etc/apache2/ports.conf
-      - {{ NEXTCLOUD_DOCKER_PATH }}/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - {{ NEXTCLOUD_DOCKER_PATH }}/ports.conf:/etc/apache2/ports.conf:ro
+      - {{ NEXTCLOUD_DOCKER_PATH }}/000-default.conf:/etc/apache2/sites-enabled/000-default.conf:ro
 
   {{ NEXTCLOUD_DOCKER_DB_SERVICE_NAME }}:
     image: mariadb:{{ NEXTCLOUD_DOCKER_MARIADB_VERSION }}
