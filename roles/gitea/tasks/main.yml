@@ -208,12 +208,22 @@
           args:
             chdir: '{{ GITEA_DOCKER_PATH }}'
 
-        - name: Wait for Gitea to become available
-          wait_for:
-            host: '{{ SERVER_IP }}'
-            port: '{{ GITEA_PORT }}'
-            state: started
-            timeout: 60
+        - name: Gitea Health Check
+          block:
+            - name: Wait for service to start
+              uri:
+                url: http://{{ GITEA_DOMAIN }}/api/healthz
+                method: GET
+                status_code: 200
+                validate_certs: false
+              register: result
+              until: result.status == 200
+              retries: 30
+              delay: 10
+            - name: Fail if service is not running
+              fail:
+                msg: Service did not start in time
+              when: result.failed
 
         - name: Generate runner token
           shell: >
