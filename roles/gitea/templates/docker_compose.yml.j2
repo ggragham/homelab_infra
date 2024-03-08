@@ -49,7 +49,6 @@ services:
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     environment:
-      MARIADB_ROOT_HOST: localhost
       MARIADB_ROOT_PASSWORD: '{{ GITEA_DB_ROOT_PASSWORD }}'
       MARIADB_DATABASE: {{ GITEA_DB_NAME }}
       MARIADB_USER: {{ GITEA_DB_USER }}
