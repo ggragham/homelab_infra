@@ -234,13 +234,14 @@
           shell: >
             docker run
             -v {{ ACT_DATA_PATH }}/.runner:/.runner
-            -v ./config.yml:/config.yml
+            -v ./act_config.yml:/config.yml
             -v /var/run/docker.sock:/var/run/docker.sock
+            --network={{ GITEA_DOCKER_SERVICE_NAME}}_docker_{{ ACT_DOCKER_NETWORK }}
             --entrypoint=""
             --rm gitea/act_runner:latest
             act_runner register
             --no-interactive
-            --instance http://{{ SERVER_IP }}:{{ GITEA_PORT }}
+            --instance http://{{ GITEA_DOCKER_SERVICE_NAME }}:{{ GITEA_PORT }}
             --token {{ runner_token }}
           args:
             chdir: '{{ GITEA_DOCKER_PATH }}'

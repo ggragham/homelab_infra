@@ -11,3 +11,4 @@ GITEA_DOCKER_DB_SERVICE_NAME: gitea_db  # MariaDB Docker service name.
 GITEA_CONTAINER_NAME: '{{ GITEA_DOCKER_SERVICE_NAME }}_rootless'  # Gitea Docker container name
 GITEA_DB_CONTAINER_NAME: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}_container'  # MariaDB Docker container name.
 ACT_DATA_PATH: '{{ GITEA_DOCKER_PATH }}/act_runner'  # act_runner data storage path.
+ACT_DOCKER_NETWORK: act_network

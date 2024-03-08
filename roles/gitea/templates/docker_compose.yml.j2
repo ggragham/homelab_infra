@@ -19,6 +19,7 @@ services:
     user: '{{ GITEA_ID }}'
     networks:
       - gitea_network
+      - {{ ACT_DOCKER_NETWORK }}
       - gitea_nginx_network
     ports:
       - {{ GITEA_PORT }}:3000
@@ -37,7 +38,9 @@ services:
       - {{ GITEA_DOCKER_SERVICE_NAME }}
     environment:
       CONFIG_FILE: /config.yml
-      GITEA_INSTANCE_URL: http://{{ SERVER_IP }}:{{ GITEA_PORT }}
+      GITEA_INSTANCE_URL: http://{{ GITEA_DOCKER_SERVICE_NAME }}:{{ GITEA_PORT }}
+    networks:
+      - {{ ACT_DOCKER_NETWORK }}
     volumes:
       - ./act_config.yml:/config.yml
       - {{ ACT_DATA_PATH }}:/data
@@ -60,6 +63,7 @@ services:
 
 networks:
   gitea_network:
+  {{ ACT_DOCKER_NETWORK }}:
   gitea_nginx_network:
     name: {{ DOCKER_NETWORK_NAME }}
     external: true
