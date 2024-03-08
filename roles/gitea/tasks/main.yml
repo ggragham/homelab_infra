@@ -171,6 +171,26 @@
         mode: 0600
       no_log: true
 
+    - name: Start gitea
+      block:
+        - name: Start bare metal Gitea service
+          service:
+            name: gitea
+            state: restarted
+          when: not DOCKERIZED
+
+        - name: Start dockerized Gitea service
+          block:
+            - name: Run Docker Compose
+              shell: docker compose down && docker compose up -d {{ GITEA_DOCKER_SERVICE_NAME }}
+              args:
+                chdir: '{{ GITEA_DOCKER_PATH }}'
+            - name: Run Docker Compose
+              shell: docker compose down && docker compose up -d
+              args:
+                chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: DOCKERIZED
+
     - name: Remove runner
       file:
         path: '{{ ACT_DATA_PATH }}/.runner'
@@ -256,32 +276,13 @@
           args:
             chdir: '{{ GITEA_DOCKER_PATH }}'
 
-        - name: Stop Gitea
-          command: docker compose down
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d {{ ACT_DOCKER_SERVICE_NAME }}
           args:
             chdir: '{{ GITEA_DOCKER_PATH }}'
 
       when: DOCKERIZED and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
       tags: act_runner
-
-    - name: Start gitea
-      block:
-        - name: Start Gitea service
-          service:
-            name: gitea
-            state: restarted
-          when: not DOCKERIZED
-
-        - name: Run Docker Compose
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ service_path }}'
-          loop_control:
-            loop_var: service_path
-          loop:
-            - '{{ GITEA_DOCKER_PATH }}'
-            - '{{ NGINX_DOCKER_PATH }}'
-          when: DOCKERIZED
 
     - name: Add admin user
       block:

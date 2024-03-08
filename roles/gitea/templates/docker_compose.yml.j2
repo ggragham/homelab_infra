@@ -30,9 +30,9 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
-  runner:
+  {{ ACT_DOCKER_SERVICE_NAME }}:
     image: gitea/act_runner:latest
-    container_name: gitea_act_runner
+    container_name: {{ ACT_CONTAINER_NAME }}
     restart: always
     depends_on:
       - {{ GITEA_DOCKER_SERVICE_NAME }}
