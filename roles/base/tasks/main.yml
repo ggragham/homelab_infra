@@ -11,7 +11,6 @@
     - name: Install necessary packages
       apt:
         name:
-          - ufw
           - bash-completion
           # - duf
           - vim
@@ -22,45 +21,7 @@
   become: true
   tags: prepare
 
-# Firewall
-- name: Config Firewall
-  block:
-    - name: Disable ufw IPv6
-      become: true
-      lineinfile:
-        dest: /etc/default/ufw
-        regexp: ^IPV6=
-        line: IPV6=no
-        state: present
-
-    - name: Allow SSH
-      ufw:
-        rule: allow
-        src: '{{ SERVER_SUBNET }}'
-        port: '{{ SSH_PORT }}'
-        proto: tcp
-        state: reloaded
-
-    - name: Allow DNS
-      ufw:
-        rule: allow
-        direction: out
-        port: 53
-        state: reloaded
-
-    - name: Outgoing deny
-      ufw:
-        state: reloaded
-        direction: outgoing
-        policy: deny
-
-    - name: Incoming deny
-      ufw:
-        state: reloaded
-        direction: incoming
-        policy: deny
-
-  become: true
+- include_tasks: firewall.yml
   tags: firewall
 
 # OpenVPN
@@ -134,13 +95,6 @@
 
   when: OPENVPN_ENABLED|bool
   tags: openvpn
-
-# Firewall
-- name: Enable UFW
-  ufw:
-    state: enabled
-  become: true
-  tags: firewall
 
 # External Disk
 - name: Configure external disk
