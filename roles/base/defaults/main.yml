@@ -10,10 +10,10 @@ SSH_PORT: 22  # Set ssh port for firewall
 SERVER_SUBNET: 192.168.1.0/24
 
 # OpenVPN
-OPENVPN_ENABLED: false
-OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
-OPENVPN_PORT: 1194
-VPN_SUBNET: 10.8.0.0/24
+# OPENVPN_ENABLED: false
+# OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
+# OPENVPN_PORT: 1194
+# VPN_SUBNET: 10.8.0.0/24
 
 # External Disk
 EXT_DISK_ENABLED: true  # Enables or disables external disk mounting
