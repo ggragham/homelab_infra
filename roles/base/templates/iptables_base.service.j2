@@ -1,0 +1,11 @@
+[Unit]
+Description=Apply Base iptables Rules
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart={{ IPTABLES_RULES_PATH_DEST }}/{{ IPTABLES_BASE_RULES_NAME }}.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

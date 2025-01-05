@@ -4,3 +4,10 @@
     name: sshd
     state: restarted
   become: true
+
+- name: Enable base iptables rules
+  service:
+    name: '{{ IPTABLES_BASE_RULES_NAME }}'
+    state: started
+    enabled: true
+  become: true

@@ -1,78 +1,33 @@
 ---
-- name: Install firewalld
+- name: Install iptables
   block:
-    - name: Install firewalld to Debian
+    - name: Install iptables to Debian
       apt:
-        name: firewalld
+        name: iptables
         state: latest
         update_cache: true
       when: ansible_os_family == 'Debian'
   become: true
 
-- block:
-    - name: Ensure firewalld is started
-      systemd:
-        name: firewalld
-        state: started
-        enabled: true
+- name: Apply iptables config
+  block:
+    - name: Create iptables dir struct
+      file:
+        path: '{{ IPTABLES_RULES_PATH_DEST }}'
+        state: directory
+        mode: 0700
 
-    - name: Create default zone
-      firewalld:
-        zone: default
-        state: present
-        permanent: true
+    - name: Apply base iptables systemd service
+      template:
+        src: '{{ IPTABLES_BASE_RULES_NAME }}.service.j2'
+        dest: '{{ SYSTEMD_SERVICES_PATH }}/{{ IPTABLES_BASE_RULES_NAME }}.service'
+        mode: 0500
 
-    - name: Set DROP target to default zone
-      firewalld:
-        zone: default
-        target: DROP
-        permanent: true
-        state: present
-
-    - name: Allow SSH on default zone
-      firewalld:
-        zone: default
-        port: '{{ SSH_PORT }}/tcp'
-        permanent: true
-        state: enabled
-
-    - name: Allow DNS port on default zone
-      block:
-        - name: Allow 53/TCP port
-          firewalld:
-            zone: default
-            port: 53/tcp
-            permanent: true
-            state: enabled
-        - name: Allow 53/UDP port
-          firewalld:
-            zone: default
-            port: 53/udp
-            permanent: true
-            state: enabled
-
-    - name: Add interface to the default zone
-      firewalld:
-        zone: default
-        interface: '{{ NETWORK_INTERFACE }}'
-        permanent: true
-        state: enabled
-
-    - name: Reload firewalld to apply changes
-      command: firewall-cmd --reload
-
-    - name: Set default zone to default
-      block:
-        - name: Check current default firewalld zone
-          command: firewall-cmd --get-default-zone
-          register: current_zone
-
-        - name: Set default zone if not already set
-          command: firewall-cmd --set-default-zone=default
-          when: current_zone.stdout != "default"
-
-        - name: Reload firewalld initially to apply other changes
-          command: firewall-cmd --reload
-          when: current_zone.stdout != "default"
+    - name: Apply base iptables rules
+      template:
+        src: '{{ IPTABLES_BASE_RULES_NAME }}.sh.j2'
+        dest: '{{ IPTABLES_RULES_PATH_DEST }}/{{ IPTABLES_BASE_RULES_NAME }}.sh'
+        mode: 0500
+      notify: Enable base iptables rules
 
   become: true

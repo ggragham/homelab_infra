@@ -2,3 +2,8 @@
 ASSETS_PATH: ./assets
 USERNAME: '{{ ansible_user }}'
 SERVER_IP: '{{ ansible_host }}'
+
+SYSTEMD_SERVICES_PATH: /etc/systemd/system
+
+IPTABLES_BASE_RULES_NAME: iptables_base
+IPTABLES_RULES_PATH_DEST: /etc/iptables/iptables.conf.d

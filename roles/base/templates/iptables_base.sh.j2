@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# SSH
+iptables -A INPUT -p tcp --dport {{ SSH_PORT }} -s 192.168.0.0/16 -j ACCEPT
+iptables -A INPUT -p tcp --dport {{ SSH_PORT }} -s 10.8.0.0/8 -j ACCEPT
+
+# DNS
+iptables -A INPUT -p udp --dport 53 -j ACCEPT
+iptables -A INPUT -p tcp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+
+iptables -A OUTPUT -o {{ NETWORK_INTERFACE }} -j ACCEPT
