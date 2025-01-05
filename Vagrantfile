@@ -24,15 +24,15 @@ Vagrant.configure("2") do |config|
   # Master nodes
   if MASTER_ENABLED == 1
     (1..MASTER_COUNT).each do |i|
-      PORTS.each do |port|
-        config.vm.network "forwarded_port", guest: port, host: port
-      end
+      # PORTS.each do |port|
+      #   config.vm.network "forwarded_port", guest: port, host: port
+      # end
 
       config.vm.define "master_#{i}" do |machine|
         machine.vm.box = MASTER_BOX
         machine.vm.synced_folder "./", "/mnt/vagrant", type: "sshfs"
-        machine.vm.network "private_network", ip: "192.168.66.#{10 + i}"
-        machine.vm.disk :disk, name: "disk", size: EXT_DISK_SIZE
+        # machine.vm.network "private_network", ip: "192.168.66.#{10 + i}"
+        # machine.vm.disk :disk, name: "disk", size: EXT_DISK_SIZE
 
         machine.vm.provider VM_PROVIDER do |v|
           v.cpus = MASTER_CPU
