@@ -12,6 +12,7 @@
       apt:
         name:
           - bash-completion
+          - curl
           # - duf
           - vim
         state: latest
