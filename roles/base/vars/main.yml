@@ -7,3 +7,6 @@ SYSTEMD_SERVICES_PATH: /etc/systemd/system
 
 IPTABLES_BASE_RULES_NAME: iptables_base
 IPTABLES_RULES_PATH_DEST: /etc/iptables/iptables.conf.d
+
+WIREGUARD_CONFIG_NAME: wg0
+WIREGUARD_CONFIG_PATH_DEST: /etc/wireguard

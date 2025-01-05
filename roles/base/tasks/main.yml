@@ -25,6 +25,10 @@
 - include_tasks: firewall.yml
   tags: firewall
 
+- include_tasks: wireguard.yml
+  when: WIREGUARD_ENABLED
+  tags: wireguard
+
 # OpenVPN
 # - name: Config OpenVPN
 #   block:

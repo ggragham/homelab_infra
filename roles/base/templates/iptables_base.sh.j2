@@ -18,4 +18,9 @@ iptables -A INPUT -p tcp --dport 53 -j ACCEPT
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
 
+{% if WIREGUARD_ENABLED %}
+iptables -A OUTPUT -o {{ WIREGUARD_CONFIG_NAME }} -j ACCEPT
+iptables -A OUTPUT -p udp --dport {{ WIREGUARD_PORT }} -o {{ NETWORK_INTERFACE }} -j ACCEPT 
+{% else %}
 iptables -A OUTPUT -o {{ NETWORK_INTERFACE }} -j ACCEPT
+{% endif %}

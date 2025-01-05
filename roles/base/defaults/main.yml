@@ -15,6 +15,12 @@ SERVER_SUBNET: 192.168.1.0/24
 # OPENVPN_PORT: 1194
 # VPN_SUBNET: 10.8.0.0/24
 
+# WireGuard
+WIREGUARD_ENABLED: false
+WIREGUARD_CONFIG_PATH_SRC: '{{ ASSETS_PATH }}/wg0.conf'
+WIREGUARD_PORT: 51820
+WIREGUARD_SUBNET: 10.8.0.0/24
+
 # External Disk
 EXT_DISK_ENABLED: true  # Enables or disables external disk mounting
 DISK_LABEL: disk  # External disk label
