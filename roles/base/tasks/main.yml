@@ -22,15 +22,19 @@
           when: ansible_os_family == "Debian"
       become: true
 
-    - include_tasks: firewall.yml
+    - name: Firewall config
+      include_tasks: firewall.yml
 
-    - include_tasks: wireguard.yml
+    - name: Install and configure wireguard
+      include_tasks: wireguard.yml
       when: WIREGUARD_ENABLED
 
-    - include_tasks: storage.yml
+    - name: Configure external storage
+      include_tasks: storage.yml
       when: EXT_DISK_ENABLED
 
-    - include_tasks: sftp.yml
+    - name: Configure SFTP sharing
+      include_tasks: sftp.yml
       when: SFTP_ENABLE
 
   tags: base
