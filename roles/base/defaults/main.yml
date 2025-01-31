@@ -44,7 +44,7 @@ DISK_SUBVOLS:  # List of BTRFS subvolumes
     compression: zstd:1
 
 # SFTP
-SHARING_ENABLED: false
+SFTP_ENABLE: false
 SHARE_DISK_GROUP: disksharegroup  # Group name for sftp access to ext drive
 SHARE_DISK_USER: diskshareuser  # User name for sftp access to an ext drive
 SHARE_PUBLIC_USER: publicshareuser  # User name for sftp access to public dir on ext drive
