@@ -1,6 +1,9 @@
 ---
 PIHOLE_DOCKERIZED: true  # Pihole dockerized install toogle.
 PIHOLE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+PIHOLE_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Pi-hole.
+PIHOLE_DOMAIN_NAME: '{{ DOMAIN_NAME }}'
+PIHOLE_DOMAIN: dns.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Pi-hole service.
 PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
 PIHOLE_ADMIN_PASSWORD: qwerty1234!  # Password used to login in Pi-hole WebUI.
 
@@ -15,6 +18,6 @@ PIHOLE_CACHE_SIZE: 10000  # DNS cache size.
 PIHOLE_WEBUI_BOXED_LAYOUT: boxed  # Web interface layout.
 PIHOLE_WEBTHEME: default-dark  # Web interface theme.
 
-PIHOLE_DNS_RECORDS:
-  - '{{ ansible_host }} {{ DOMAIN_NAME }}'
+PIHOLE_DNS_RECORDS:  # List of DNS records to be created in Pi-hole.
+  - '{{ ansible_host }} {{ PIHOLE_DOMAIN_NAME }}'
   - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'

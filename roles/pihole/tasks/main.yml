@@ -84,6 +84,7 @@
                 src: /etc/nginx/sites-available/pihole.conf
                 dest: /etc/nginx/sites-enabled/pihole.conf
                 state: link
+          when: PIHOLE_USE_NGINX
 
       notify: Restart nginx
       when: not PIHOLE_DOCKERIZED
@@ -114,16 +115,18 @@
             src: pihole_nginx.conf.j2
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/pihole.conf'
             mode: 0644
+          when: PIHOLE_USE_NGINX
 
         - name: Run Docker Compose
           shell: docker compose down && docker compose up -d
           args:
-            chdir: '{{ service_path }}'
-          loop_control:
-            loop_var: service_path
-          loop:
-            - '{{ PIHOLE_DOCKER_PATH }}'
-            - '{{ NGINX_DOCKER_PATH }}'
+            chdir: '{{ PIHOLE_DOCKER_PATH }}'
+
+        - name: Restart Nginx
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: PIHOLE_USE_NGINX
 
       when: PIHOLE_DOCKERIZED
 
