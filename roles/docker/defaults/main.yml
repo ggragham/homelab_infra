@@ -1,9 +1,4 @@
 ---
-# Base
-DNS_ENTRIES:
-  - 127.0.0.1
-  - 9.9.9.9
-
 # Docker
 DOCKER_NETWORK_NAME: homelab_network
 DOCKER_BRIDGE_NAME: homelab_bridge

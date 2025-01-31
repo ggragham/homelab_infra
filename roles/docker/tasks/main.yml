@@ -68,40 +68,28 @@
               com.docker.network.bridge.name: '{{ DOCKER_BRIDGE_NAME }}'
             state: present
 
-        - name: Set DNS
-          copy:
-            dest: /etc/docker/daemon.json
-            content: |
-              {
-                "dns": {{ DNS_ENTRIES | to_nice_json }}
-              }
-            owner: root
-            group: root
-            mode: 0644
+    # - name: Config firewall
+    #   block:
+    #     - name: Restrict non-VPN traffic
+    #       blockinfile:
+    #         path: /etc/ufw/before.rules
+    #         block: |
+    #           :DOCKER-USER - [0:0]
+    #           -A DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+    #           -A DOCKER-USER -s {{ SERVER_SUBNET }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
+    #           -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
+    #           -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} ! -o tun0 -j REJECT --reject-with icmp-port-unreachable
+    #         append_newline: true
+    #         prepend_newline: true
+    #         marker: '# {mark} ANSIBLE MANAGED BLOCK. RESTRICT NON-VPN TRAFFIC FOR DOCKER'
+    #         insertafter: \\*filter
 
-    - name: Config firewall
-      block:
-        - name: Restrict non-VPN traffic
-          blockinfile:
-            path: /etc/ufw/before.rules
-            block: |
-              :DOCKER-USER - [0:0]
-              -A DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-              -A DOCKER-USER -s {{ SERVER_SUBNET }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
-              -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} -o {{ DOCKER_BRIDGE_NAME }} -j ACCEPT
-              -A DOCKER-USER -i {{ DOCKER_BRIDGE_NAME }} ! -o tun0 -j REJECT --reject-with icmp-port-unreachable
-            append_newline: true
-            prepend_newline: true
-            marker: '# {mark} ANSIBLE MANAGED BLOCK. RESTRICT NON-VPN TRAFFIC FOR DOCKER'
-            insertafter: \\*filter
+    #     - name: Reload UFW
+    #       ufw:
+    #         state: reloaded
 
-        - name: Reload UFW
-          ufw:
-            state: reloaded
+    #   when: OPENVPN_ENABLED
+    #   tags: firewall
 
-      when: OPENVPN_ENABLED
-      tags: firewall
-
-  when: DOCKERIZED
   become: true
   tags: docker
