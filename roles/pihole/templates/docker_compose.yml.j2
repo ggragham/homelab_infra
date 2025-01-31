@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     environment:
       TZ: Etc/UTC
+      IPv6: false
     ports:
       - 53:53/tcp
       - 53:53/udp
