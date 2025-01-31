@@ -29,65 +29,8 @@
   when: WIREGUARD_ENABLED
   tags: wireguard
 
-# External Disk
-- name: Configure external disk
-  block:
-    - name: Make dir for mountpoint
-      file:
-        path: '{{ DISK_PATH }}'
-        state: directory
-        mode: 0755
-        owner: root
-
-    - name: Check disk with {{ DISK_LABEL }} label exists
-      shell: blkid -o value -s LABEL | grep -q {{ DISK_LABEL }}
-      register: disk_exists
-      ignore_errors: true
-
-    - name: Encrypted disk
-      block:
-        - name: Copy keyfile
-          copy:
-            src: '{{ DISK_KEYFILE_PATH }}'
-            dest: /etc/{{ DISK_KEYFILE }}
-            mode: 0400
-        - name: Add disk to crypttab
-          lineinfile:
-            path: /etc/crypttab
-            line: '{{ DISK_LABEL }} LABEL={{ DISK_LABEL }} /etc/{{ DISK_KEYFILE }} luks'
-            state: present
-        - name: Decrypt disks in cryptab
-          command: cryptdisks_start '{{ DISK_LABEL }}'
-      when: DISK_ENCRYPTED|bool and disk_exists.rc == 0
-
-    - name: Mount external disk with ext4
-      mount:
-        path: '{{ DISK_PATH }}'
-        src: LABEL={{ DISK_LABEL }}
-        fstype: ext4
-        opts: defaults
-        state: mounted
-      when:
-        - disk_exists.rc == 0
-        - DISK_FSTYPE == 'ext4'
-
-    - name: Mount external disk with btrfs
-      mount:
-        path: '{{ item.path }}'
-        src: LABEL={{ DISK_LABEL }}
-        fstype: btrfs
-        opts: subvol={{ item.subvol }},compress={{ item.compression }},x-systemd.requires=cryptsetup.target
-        state: mounted
-      loop: '{{ DISK_SUBVOLS }}'
-      loop_control:
-        loop_var: item
-      when:
-        - disk_exists.rc == 0
-        - DISK_FSTYPE == 'btrfs'
-
-  when: EXT_DISK_ENABLED|bool
-  become: true
-  tags: disk
+- include_tasks: storage.yml
+  when: EXT_DISK_ENABLED
 
 # SFTP
 - name: Configure SFTP file sharing
