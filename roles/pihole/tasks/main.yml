@@ -1,22 +1,6 @@
 ---
 - name: Pi-hole
   block:
-    - name: Config UFW
-      block:
-        - name: Check UFW installed
-          shell:
-            cmd: |
-              ufw --version >/dev/null
-              echo "$?"
-          register: ufw_return
-        - name: Allow DNS
-          ufw:
-            rule: allow
-            port: 53
-            state: reloaded
-          when: ufw_return.stdout=="0"
-      tags: firewall
-
     - name: Create Pi-hole config dir
       file:
         path: '{{ PIHOLE_CONFIG_PATH }}'
