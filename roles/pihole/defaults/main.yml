@@ -1,6 +1,6 @@
 ---
-# Pihole
-PIHOLE_DOMAIN: dns.{{ DOMAIN_NAME }}  # Domain name for the Pi-hole service.
+PIHOLE_DOCKERIZED: true  # Pihole dockerized install toogle.
+PIHOLE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
 PIHOLE_ADMIN_PASSWORD: qwerty1234!  # Password used to login in Pi-hole WebUI.
 

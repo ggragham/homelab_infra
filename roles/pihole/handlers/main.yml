@@ -3,5 +3,5 @@
   service:
     name: nginx
     state: restarted
-  when: not DOCKERIZED
+  when: not PIHOLE_DOCKERIZED
   become: true

@@ -102,7 +102,7 @@
                 state: link
 
       notify: Restart nginx
-      when: not DOCKERIZED
+      when: not PIHOLE_DOCKERIZED
 
     # Dockerized install
     - name: Pi-hole containerized install
@@ -141,11 +141,11 @@
             - '{{ PIHOLE_DOCKER_PATH }}'
             - '{{ NGINX_DOCKER_PATH }}'
 
-      when: DOCKERIZED
+      when: PIHOLE_DOCKERIZED
 
     - name: Set Pi-hole admin password
       shell: >
-        {% if DOCKERIZED %}
+        {% if PIHOLE_DOCKERIZED %}
         {{ 'docker exec -it ' + PIHOLE_CONTAINER_NAME }}
         {% endif %}
         pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
