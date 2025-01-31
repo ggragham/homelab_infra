@@ -52,3 +52,4 @@
 
   when: SFTP_ENABLE
   become: true
+  tags: base

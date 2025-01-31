@@ -1,36 +1,36 @@
 ---
-- name: Prepare steps
+- name: Base tasks
   block:
-    - name: Update deb-based system
-      apt:
-        name: '*'
-        state: latest
-        update_cache: true
-      when: ansible_os_family == "Debian"
+    - name: Prepare steps
+      block:
+        - name: Update deb-based system
+          apt:
+            name: '*'
+            state: latest
+            update_cache: true
+          when: ansible_os_family == "Debian"
 
-    - name: Install necessary packages
-      apt:
-        name:
-          - bash-completion
-          - curl
-          # - duf
-          - vim
-        state: latest
-        update_cache: true
-      when: ansible_os_family == "Debian"
+        - name: Install necessary packages
+          apt:
+            name:
+              - bash-completion
+              - curl
+              # - duf
+              - vim
+            state: latest
+            update_cache: true
+          when: ansible_os_family == "Debian"
+      become: true
 
-  become: true
-  tags: prepare
+    - include_tasks: firewall.yml
 
-- include_tasks: firewall.yml
-  tags: firewall
+    - include_tasks: wireguard.yml
+      when: WIREGUARD_ENABLED
 
-- include_tasks: wireguard.yml
-  when: WIREGUARD_ENABLED
-  tags: wireguard
+    - include_tasks: storage.yml
+      when: EXT_DISK_ENABLED
 
-- include_tasks: storage.yml
-  when: EXT_DISK_ENABLED
+    - include_tasks: sftp.yml
+      when: SFTP_ENABLE
 
-- include_tasks: sftp.yml
-  when: SFTP_ENABLE
+  tags: base

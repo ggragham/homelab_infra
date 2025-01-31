@@ -56,3 +56,4 @@
 
   when: EXT_DISK_ENABLED
   become: true
+  tags: base
