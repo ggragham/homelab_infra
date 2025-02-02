@@ -5,6 +5,7 @@
 
 PIHOLE_DOCKERIZED: true  # Pihole dockerized install toogle.
 PIHOLE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+PIHOLE_DOCKER_WEBSERVER_PORT: false  # Web server port exposure (false to disable or specify a port number).
 PIHOLE_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Pi-hole.
 PIHOLE_DOMAIN_NAME: '{{ DOMAIN_NAME }}'
 PIHOLE_DOMAIN: dns.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Pi-hole service.

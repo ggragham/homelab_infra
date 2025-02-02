@@ -10,6 +10,9 @@ services:
     ports:
       - 53:53/tcp
       - 53:53/udp
+{% if PIHOLE_DOCKER_WEBSERVER_PORT is defined and PIHOLE_DOCKER_WEBSERVER_PORT is not sameas(false) %}
+      - {{ PIHOLE_DOCKER_WEBSERVER_PORT }}:80/tcp
+{% endif %}
     volumes:
       - '{{ PIHOLE_CONFIG_PATH }}:/etc/pihole'
       - '{{ PIHOLE_DNSMASQ_PATH }}:/etc/dnsmasq.d'
