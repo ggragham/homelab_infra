@@ -1,32 +1,34 @@
 ---
-# Other
-DISK_LABEL: disk  # External disk label
-GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
+##############
+###  Gitea  ##
+##############
 
-# Gitea
 GITEA_DOCKERIZED: true  # Gitea dockerized install toogle.
 GITEA_DOCKER_VERSION: latest  # Gitea Docker image version (rootless).
 GITEA_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 GITEA_DOCKER_WEBSERVER_PORT: false  # Web server port exposure (false to disable or specify a port number).
+
 GITEA_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Gitea.
-GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
-GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_APP_NAME: tea  # Name of Gitea application.
+GITEA_ADMIN_USER: gitea_admin  # Username for the Gitea administrator account.
+GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea administrator account.
+GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
+GITEA_LFS_JWT_SECRET: example_of_lfs_jwt_secret  # Secret key for Gitea's Large File Storage JWT authentication.
+GITEA_INTERNAL_TOKEN: example_of_internal_token  # Gitea's internal token.
+GITEA_JWT_SECRET: example_of_jwt_key  # Secret key for Gitea's JWT authentication.
+
+GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_PORT: 3000  # Gitea's running port.
+GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
+GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
+GITEA_PASSWORD_HASH_ALGO: pbkdf2  # Gitea's password hashing algorithm.
+
+GITEA_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
+
 GITEA_DB_ROOT_PASSWORD: root1234!  # MariaDB root-user password.
 GITEA_DB_NAME: giteadb  # Gitea's database name.
 GITEA_DB_USER: gitea_db_user  # Gitea's database username.
 GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
-GITEA_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
-GITEA_DOCKER_MARIADB_PORT: 3306  # MariaDB Docker port.
-GITEA_PASSWORD_HASH_ALGO: pbkdf2  # Gitea's password hashing algorithm.
-GITEA_LFS_JWT_SECRET: N1tudjNy+lnpUb4HjhVDZnrkIw0LBfuwxK4Pr1tJ  # Secret key for Gitea's Large File Storage JWT authentication.
-GITEA_INTERNAL_TOKEN: cgCZZhsH9Y6pYMt8Gp5KfSNqF1Msydd_Zzpal6SwF4HMSGN86ZT2qHjfsQ7y64cPV1ev7HF/jygkFEVvfiCzrKA  # Gitea's internal token.
-GITEA_JWT_SECRET: QTi5BTxUyLEjc36PNSsk7QfFGYi3qmkExPu4kHlVv20d3+0Cl7D5r7KwqpA=  # Secret key for Gitea's JWT authentication.
-
-GITEA_ADMIN_USER: gitea_admin  # Username for the Gitea administrator account.
-GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea administrator account.
-GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
 
 ACT_VERSION: latest  # act_runner version.
 ACT_REREGISTER_RUNNER: false  # Re-register runner.
