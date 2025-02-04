@@ -93,6 +93,7 @@
             src: gitea_nginx.j2
             dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
             mode: 0644
+          when: GITEA_USE_NGINX
 
         - name: Enable Gitea Nginx config
           file:
@@ -100,6 +101,7 @@
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
             state: link
             mode: 0644
+          when: GITEA_USE_NGINX
 
         - name: Systemd config
           template:
@@ -141,6 +143,7 @@
             src: gitea_nginx.j2
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
             mode: 0644
+          when: GITEA_USE_NGINX
 
         - name: Configure SSH
           block:
@@ -185,10 +188,13 @@
               shell: docker compose down && docker compose up -d {{ GITEA_DOCKER_SERVICE_NAME }}
               args:
                 chdir: '{{ GITEA_DOCKER_PATH }}'
+
             - name: Run Docker Compose
               shell: docker compose down && docker compose up -d
               args:
                 chdir: '{{ NGINX_DOCKER_PATH }}'
+              when: GITEA_USE_NGINX
+
           when: GITEA_DOCKERIZED
 
     - name: Remove runner
