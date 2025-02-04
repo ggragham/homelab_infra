@@ -48,7 +48,7 @@
               mysql_user:
                 name: '{{ GITEA_DB_USER }}'
                 password: '{{ GITEA_DB_PASSWORD }}'
-                host: '{{ (DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
+                host: '{{ (GITEA_DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
                 priv: '{{ GITEA_DB_NAME }}.*:ALL,GRANT'
                 login_unix_socket: /var/run/mysqld/mysqld.sock
                 state: present
@@ -109,7 +109,7 @@
             group: '{{ GITEA_USER }}'
             mode: 0644
 
-      when: not DOCKERIZED
+      when: not GITEA_DOCKERIZED
 
     # Dockerized install
     - name: Gitea containerized install
@@ -160,7 +160,7 @@
                 mode: 0755
               notify: Restart sshd
 
-      when: DOCKERIZED
+      when: GITEA_DOCKERIZED
 
     - name: Apply config
       template:
@@ -177,7 +177,7 @@
           service:
             name: gitea
             state: restarted
-          when: not DOCKERIZED
+          when: not GITEA_DOCKERIZED
 
         - name: Start dockerized Gitea service
           block:
@@ -189,7 +189,7 @@
               shell: docker compose down && docker compose up -d
               args:
                 chdir: '{{ NGINX_DOCKER_PATH }}'
-          when: DOCKERIZED
+          when: GITEA_DOCKERIZED
 
     - name: Remove runner
       file:
@@ -281,18 +281,18 @@
           args:
             chdir: '{{ GITEA_DOCKER_PATH }}'
 
-      when: DOCKERIZED and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
+      when: GITEA_DOCKERIZED and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
       tags: act_runner
 
     - name: Add admin user
       block:
         - shell: >
-            {{ (DOCKERIZED) | ternary('docker exec -i ' + GITEA_CONTAINER_NAME + ' /app/gitea/gitea',
+            {{ (GITEA_DOCKERIZED) | ternary('docker exec -i ' + GITEA_CONTAINER_NAME + ' /app/gitea/gitea',
             'sudo -u ' + GITEA_USER + GITEA_PATH + '/gitea') }}
             admin user create --username {{ GITEA_ADMIN_USER }}
             --admin --password {{ GITEA_ADMIN_PASSWORD }}
             --email {{ GITEA_ADMIN_EMAIL }}
-            -c {{ (DOCKERIZED) | ternary('/etc/gitea', GITEA_CONFIG_PATH) }}/app.ini
+            -c {{ (GITEA_DOCKERIZED) | ternary('/etc/gitea', GITEA_CONFIG_PATH) }}/app.ini
           no_log: true
       rescue:
         - debug:

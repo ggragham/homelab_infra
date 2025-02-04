@@ -1,11 +1,12 @@
 ---
 # Other
-DOCKERIZED: false  #  Toggle for Docker setup.
 DISK_LABEL: disk  # External disk label
+GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
 
 # Gitea
-GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
+GITEA_DOCKERIZED: true  # Gitea dockerized install toogle.
 GITEA_DOCKER_VERSION: latest  # Gitea Docker image version (rootless).
+GITEA_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_APP_NAME: tea  # Name of Gitea application.
