@@ -13,13 +13,15 @@
             status_code: 200
             validate_certs: false
           register: result
-          until: result.status == 200
+          until: (result.status is defined) and (result.status == 200)
           retries: 30
           delay: 10
         - name: Fail if service is not running
           fail:
             msg: Service did not start in time
           when: result.failed
+      delegate_to: localhost
+      become: false
 
     - name: Add admin user
       block:
