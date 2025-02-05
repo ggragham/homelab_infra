@@ -61,6 +61,7 @@
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/nextcloud.conf'
             owner: '{{ NGINX_USER }}'
             mode: 0644
+          when: NEXTCLOUD_USE_NGINX
 
         - name: Deploy Nextcloud background jobs service and timer
           template:
@@ -75,16 +76,18 @@
 
       become: true
 
-    - name: Start Docker Compose
-      shell: docker compose down && docker compose up -d
-      args:
-        chdir: '{{ service_path }}'
-      loop_control:
-        loop_var: service_path
-      loop:
-        - '{{ NEXTCLOUD_DOCKER_PATH }}'
-        - '{{ NGINX_DOCKER_PATH }}'
-      become: true
+    - name: Start dockerized NextCloud service
+      block:
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NEXTCLOUD_DOCKER_PATH }}'
+
+        - name: Restart Nginx
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: NEXTCLOUD_USE_NGINX
 
     - name: Enable background jobs service
       block:

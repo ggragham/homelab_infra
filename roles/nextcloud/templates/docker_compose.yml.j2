@@ -14,6 +14,10 @@ services:
       MYSQL_USER: {{ NEXTCLOUD_DB_USER }}
       MYSQL_PASSWORD: '{{ NEXTCLOUD_DB_PASSWORD }}'
       OVERWRITEPROTOCOL: https
+{% if NEXTCLOUD_DOCKER_WEBSERVER_PORT is defined and NEXTCLOUD_DOCKER_WEBSERVER_PORT is not sameas(false) %}
+    ports:
+      - {{ NEXTCLOUD_DOCKER_WEBSERVER_PORT }}:{{ NEXTCLOUD_PORT }}/tcp
+{% endif %}
     networks:
       - nextcloud_network
       - nextcloud_redis_network
