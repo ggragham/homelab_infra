@@ -1,6 +1,33 @@
 ---
 - name: Gitea Actions
   block:
+    - name: Add {{ GITEA_USER }} to docker group
+      user:
+        name: '{{ GITEA_USER }}'
+        groups: docker
+        append: true
+
+    - name: Create directory
+      file:
+        path: '{{ GITEA_DOCKER_PATH }}'
+        state: directory
+        owner: '{{ GITEA_USER }}'
+        group: root
+        mode: 0775
+
+    - name: Apply Docker Compose template
+      template:
+        src: docker_compose.yml.j2
+        dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
+        owner: '{{ GITEA_USER }}'
+        group: root
+        mode: 0644
+
+    - name: Init Docker Compose
+      shell: docker compose up -d --no-deps --no-start
+      args:
+        chdir: '{{ GITEA_DOCKER_PATH }}'
+
     - name: Remove runner
       file:
         path: '{{ ACT_DATA_PATH }}/.runner'
@@ -32,15 +59,6 @@
             group: root
             mode: 0644
 
-        - name: Generate runner token
-          shell: >
-            docker exec {{ GITEA_CONTAINER_NAME }} \
-            /app/gitea/gitea actions generate-runner-token \
-            -c /etc/gitea/app.ini | tail -n 1
-          register: act_token
-        - set_fact:
-            runner_token: '{{ act_token.stdout }}'
-
         - name: Create .runner file
           file:
             path: '{{ ACT_DATA_PATH}}/.runner'
@@ -53,12 +71,12 @@
             -v {{ ACT_DATA_PATH }}/.runner:/.runner
             -v ./act_config.yml:/config.yml
             -v /var/run/docker.sock:/var/run/docker.sock
-            --network={{ GITEA_DOCKER_SERVICE_NAME}}_docker_{{ ACT_DOCKER_NETWORK }}
+            {% if GITEA_DEPLOY and ACTRUNNER_DEPLOY %}--network={{ GITEA_DOCKER_SERVICE_NAME }}_docker_{{ ACT_DOCKER_NETWORK }}{% endif %}
             --entrypoint=""
             --rm gitea/act_runner:latest
             act_runner register
             --no-interactive
-            --instance http://{{ GITEA_DOCKER_SERVICE_NAME }}:{{ GITEA_PORT }}
+            --instance http://{{ GITEA_IP }}:{{ GITEA_PORT }}
             --token {{ runner_token }}
           args:
             chdir: '{{ GITEA_DOCKER_PATH }}'

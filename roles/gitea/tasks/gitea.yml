@@ -1,15 +1,6 @@
 ---
 - name: Install and configure Gitea
   block:
-    - name: Create Gitea system user
-      user:
-        name: '{{ GITEA_USER }}'
-        uid: '{{ GITEA_ID }}'
-        comment: Git Version Control
-        home: /home/{{ GITEA_USER }}
-        shell: /bin/bash
-        password_lock: true
-
     - name: Create Gitea data dirs
       file:
         path: '{{ item }}'

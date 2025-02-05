@@ -1,8 +1,18 @@
 ---
 - name: Gitea
   block:
+    - name: Create Gitea system user
+      user:
+        name: '{{ GITEA_USER }}'
+        uid: '{{ GITEA_ID }}'
+        comment: Git Version Control
+        home: /home/{{ GITEA_USER }}
+        shell: /bin/bash
+        password_lock: true
+
     - name: Install and configure Gitea
       include_tasks: gitea.yml
+      when: GITEA_DEPLOY
 
     - name: Gitea Health Check
       block:
@@ -36,10 +46,30 @@
       rescue:
         - debug:
             msg: Sucksessfully failed
-      tags: gitea_create_admin_user
+      when: GITEA_DEPLOY
+
+    - name: Generate runner token
+      shell: >
+        docker exec {{ GITEA_CONTAINER_NAME }} \
+        /app/gitea/gitea actions generate-runner-token \
+        -c /etc/gitea/app.ini | tail -n 1
+      register: act_token
+      delegate_to: "{{ groups['master_server'][0] }}"
+
+    - name: Set runner token globally
+      set_fact:
+        runner_token: '{{ act_token.stdout }}'
+      delegate_to: localhost
+
+    - name: Distribute runner token to ActRunner servers
+      set_fact:
+        runner_token: '{{ runner_token }}'
+      delegate_to: '{{ item }}'
+      with_items: "{{ groups['actrunner_server'] }}"
 
     - name: Install Act Runner
       include_tasks: actrunner.yml
+      when: ACTRUNNER_DEPLOY
 
   become: true
   tags: gitea

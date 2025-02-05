@@ -1,5 +1,6 @@
 ---
 services:
+{% if GITEA_DEPLOY %}
   {{ GITEA_DOCKER_SERVICE_NAME }}:
     image: gitea/gitea:{{ GITEA_DOCKER_VERSION }}-rootless
     container_name: {{ GITEA_CONTAINER_NAME }}
@@ -28,22 +29,6 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
-  {{ ACT_DOCKER_SERVICE_NAME }}:
-    image: gitea/act_runner:latest
-    container_name: {{ ACT_CONTAINER_NAME }}
-    restart: always
-    depends_on:
-      - {{ GITEA_DOCKER_SERVICE_NAME }}
-    environment:
-      CONFIG_FILE: /config.yml
-      GITEA_INSTANCE_URL: http://{{ GITEA_DOCKER_SERVICE_NAME }}:{{ GITEA_PORT }}
-    networks:
-      - {{ ACT_DOCKER_NETWORK }}
-    volumes:
-      - ./act_config.yml:/config.yml
-      - {{ ACT_DATA_PATH }}:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-
   {{ GITEA_DOCKER_DB_SERVICE_NAME }}:
     image: mariadb:{{ GITEA_DOCKER_MARIADB_VERSION }}
     container_name: {{ GITEA_DB_CONTAINER_NAME }}
@@ -58,6 +43,27 @@ services:
       - gitea_network
     volumes:
       - {{ DISK_DATABASE_PATH }}/gitea:/var/lib/mysql
+{% endif %}
+
+{% if ACTRUNNER_DEPLOY %}
+  {{ ACT_DOCKER_SERVICE_NAME }}:
+    image: gitea/act_runner:latest
+    container_name: {{ ACT_CONTAINER_NAME }}
+    restart: always
+{% if GITEA_DEPLOY and ACTRUNNER_DEPLOY %}
+    depends_on:
+      - {{ GITEA_DOCKER_SERVICE_NAME }}
+{% endif %}
+    environment:
+      CONFIG_FILE: /config.yml
+      GITEA_INSTANCE_URL: http://{{ GITEA_IP }}:{{ GITEA_PORT }}
+    networks:
+      - {{ ACT_DOCKER_NETWORK }}
+    volumes:
+      - ./act_config.yml:/config.yml
+      - {{ ACT_DATA_PATH }}:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+{% endif %}
 
 networks:
   gitea_network:
