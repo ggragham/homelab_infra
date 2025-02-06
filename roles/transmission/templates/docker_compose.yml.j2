@@ -18,6 +18,10 @@ services:
       - {{ TRANSMISSION_DOWNLOAD_PATH }}:/downloads
       - {{ TRANSMISSION_PROCESS_PATH }}:/process
       - {{ TRANSMISSION_WATCH_PATH }}:/watch
+{% if TRANSMISSION_DOCKER_WEBSERVER_PORT is defined and TRANSMISSION_DOCKER_WEBSERVER_PORT is not sameas(false) %}
+    ports:
+      - {{ TRANSMISSION_DOCKER_WEBSERVER_PORT }}:{{ TRANSMISSION_PORT }}/tcp
+{% endif %}
     networks:
       - transmission_nginx_network
 
