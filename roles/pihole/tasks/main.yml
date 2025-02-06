@@ -1,6 +1,18 @@
 ---
 - name: Pi-hole
   block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+      when: PIHOLE_DOCKERIZED
+
     - name: Create Pi-hole config dir
       file:
         path: '{{ PIHOLE_CONFIG_PATH }}'
