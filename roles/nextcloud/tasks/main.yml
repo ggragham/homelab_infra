@@ -102,5 +102,5 @@
             enabled: true
       become: true
 
-  when: DOCKERIZED
+  when: NEXTCLOUD_DOCKERIZED
   tags: nextcloud

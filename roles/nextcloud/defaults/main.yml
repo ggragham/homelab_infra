@@ -1,12 +1,13 @@
 ---
 # Other
-DOCKERIZED: false  #  Toggle for Docker setup.
+NEXTCLOUD_DOCKERIZED: true  #  Toggle for Docker setup.
+NEXTCLOUD_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 DISK_LABEL: disk  # External disk label.
 
 # NextCloud 
 NEXTCLOUD_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for NextCloud.
 NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}  # Domain name for the NextCloud service.
-NEXTCLOUD_DOCKER_WEBSERVER_PORT: 8081
+NEXTCLOUD_DOCKER_WEBSERVER_PORT: false  # Nextcloud web server port configuration (set to false to disable, or specify a port number).
 NEXTCLOUD_DATA_PATH: '{{ DISK_DATA_PATH }}/nextcloud'  # Nextcloud data path.
 NEXTCLOUD_DOCKER_VERSION: stable  # NextCloud Docker image version.
 NEXTCLOUD_PORT: 9001  # Nextcloud service port.
