@@ -81,7 +81,7 @@
         recurse: true
         mode: 0775
         owner: '{{ TRANSMISSION_SYSTEM_USER }}'
-        group: "{{ (SHARING_ENABLED) | ternary(SHARE_DISK_GROUP, USERNAME) }}"
+        group: '{{ (SHARING_ENABLED is defined and SHARING_ENABLED) | ternary(SHARE_DISK_GROUP, USERNAME) }}'
       loop_control:
         loop_var: dirs
       loop:
