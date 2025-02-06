@@ -8,8 +8,9 @@ NGINX_SITES_ENABLED_PATH: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_DOCKER_PATH, '/
 NGINX_SNIPPETS_PATH: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_DOCKER_PATH, '/etc/nginx') }}/snippets"  # Config snippets path
 NGINX_SSL_CERT_PATH: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/ssl/certs') }}/{{ SSL_CERT_NAME }}"  # SSL cert path
 NGINX_SSL_KEY_PATH: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/ssl/private') }}/{{ SSL_KEY_NAME }}"  # SSL key path
-NGINX_DH_PATH: "{{ (DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/nginx') }}/{{ DH_NAME }}"  # Diffie-Hellman file path
+NGINX_SSL_DH_PATH: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_DOCKER_SSL_PATH, '/etc/nginx') }}/{{ SSL_DH_NAME }}"  # Diffie-Hellman file path
 
+NGINX_DOCKER_PATH: /opt/nginx_docker  # Dockerized Nginx Path
 NGINX_DOCKER_CONF_PATH: '{{ NGINX_DOCKER_PATH }}/conf.d'  # Docker Nginx config path
 NGINX_DOCKER_SERVICE_NAME: nginx  # Docker Nginx service name
 NGINX_DOCKER_CONTAINER_NAME: nginx_rootless  # Docker Nginx container name

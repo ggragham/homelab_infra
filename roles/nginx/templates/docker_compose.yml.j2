@@ -13,7 +13,7 @@ services:
       - {{ DEFAULT_WWW_PATH }}/index.html:/var/www/html/index.html:ro
       - {{ NGINX_SSL_CERT_PATH }}:/etc/nginx/{{ SSL_CERT_NAME }}:ro
       - {{ NGINX_SSL_KEY_PATH }}:/etc/nginx/{{ SSL_KEY_NAME }}:ro
-      - {{ NGINX_DH_PATH }}:/etc/nginx/{{ DH_NAME }}:ro
+      - {{ NGINX_SSL_DH_PATH }}:/etc/nginx/{{ SSL_DH_NAME }}:ro
     networks:
       - nginx_network
     ports:

@@ -111,8 +111,8 @@
 
     - name: Copy dh group
       copy:
-        src: '{{ DH_PATH }}'
-        dest: '{{ NGINX_DH_PATH }}'
+        src: '{{ SSL_DH_PATH }}'
+        dest: '{{ NGINX_SSL_DH_PATH }}'
         owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
