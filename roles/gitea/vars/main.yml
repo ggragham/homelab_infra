@@ -5,7 +5,7 @@ GITEA_DOCKER_SUBNET: 172.21.0.0/16  # Gitea Docker network subnet
 GITEA_DB_ACCESS_SUBNET: 172.21.%  # Subnet for database access
 GITEA_PATH: /opt/gitea  # Gitea's installation path.
 GITEA_DOCKER_PATH: '{{ GITEA_PATH }}_docker'  # Gitea Docker installation path
-GITEA_CONFIG_PATH: "{{ (DOCKERIZED) | ternary(GITEA_DOCKER_PATH + '/config', '/etc/gitea')}}"  # Gitea's configuration file path.
+GITEA_CONFIG_PATH: "{{ (GITEA_DOCKERIZED) | ternary(GITEA_DOCKER_PATH + '/config', '/etc/gitea')}}"  # Gitea's configuration file path.
 GITEA_DOCKER_SERVICE_NAME: gitea  # Gitea Docker service name
 GITEA_DOCKER_DB_SERVICE_NAME: gitea_db  # MariaDB Docker service name.
 GITEA_CONTAINER_NAME: '{{ GITEA_DOCKER_SERVICE_NAME }}_rootless'  # Gitea Docker container name
