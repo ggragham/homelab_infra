@@ -10,12 +10,14 @@
     - name: Make disk share user
       user:
         name: '{{ SHARE_DISK_USER }}'
+        create_home: false
         shell: /usr/sbin/nologin
         groups: '{{ SHARE_DISK_GROUP }}'
 
     - name: Make public share user
       user:
         name: '{{ SHARE_PUBLIC_USER }}'
+        create_home: false
         shell: /usr/sbin/nologin
 
     - name: Make dir for random files
