@@ -1,25 +1,14 @@
 ---
-NETWORK_INTERFACE: eth0
+##############
+###  Base  ###
+##############
 
-DNS_ENTRIES:
-  - 127.0.0.1
-  - 9.9.9.9
+DOMAIN_NAME: example.com
+NETWORK_INTERFACE: eth0
 
 # SSH
 SSH_PORT: 22  # Set ssh port for firewall
 SERVER_SUBNET: 192.168.1.0/24
-
-# OpenVPN
-# OPENVPN_ENABLED: false
-# OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
-# OPENVPN_PORT: 1194
-# VPN_SUBNET: 10.8.0.0/24
-
-# WireGuard
-WIREGUARD_ENABLED: false
-WIREGUARD_CONFIG_PATH_SRC: '{{ ASSETS_PATH }}/wg0.conf'
-WIREGUARD_PORT: 51820
-WIREGUARD_SUBNET: 10.8.0.0/24
 
 # External Disk
 EXT_DISK_ENABLED: true  # Enables or disables external disk mounting
@@ -48,3 +37,15 @@ SFTP_ENABLE: false
 SHARE_DISK_GROUP: disksharegroup  # Group name for sftp access to ext drive
 SHARE_DISK_USER: diskshareuser  # User name for sftp access to an ext drive
 SHARE_PUBLIC_USER: publicshareuser  # User name for sftp access to public dir on ext drive
+
+# WireGuard
+WIREGUARD_ENABLED: false
+WIREGUARD_CONFIG_PATH_SRC: '{{ ASSETS_PATH }}/wg0.conf'
+WIREGUARD_PORT: 51820
+WIREGUARD_SUBNET: 10.8.0.0/24
+
+## OpenVPN
+# OPENVPN_ENABLED: false
+# OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
+# OPENVPN_PORT: 1194
+# VPN_SUBNET: 10.8.0.0/24
