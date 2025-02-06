@@ -41,7 +41,7 @@
               notify: Restart Nginx
           when: TRANSMISSION_USE_NGINX
 
-      when: not DOCKERIZED
+      when: not TRANSMISSION_DOCKERIZED
 
     # Dockerized install
     - name: Transmission containerized install
@@ -72,7 +72,7 @@
             mode: 0644
           when: TRANSMISSION_USE_NGINX
 
-      when: DOCKERIZED
+      when: TRANSMISSION_DOCKERIZED
 
     - name: Create Transmission data dirs
       file:
@@ -109,7 +109,7 @@
             chdir: '{{ NGINX_DOCKER_PATH }}'
           when: TRANSMISSION_USE_NGINX
 
-      when: DOCKERIZED
+      when: TRANSMISSION_DOCKERIZED
 
   become: true
   tags: transmission

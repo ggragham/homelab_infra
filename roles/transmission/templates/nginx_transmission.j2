@@ -24,7 +24,7 @@ server {
         proxy_pass_header X-Transmission-Session-Id;
         add_header Front-End-Https on;
 
-{% if DOCKERIZED %}
+{% if TRANSMISSION_DOCKERIZED %}
         proxy_pass http://{{ TRANSMISSION_DOCKER_SERVICE_NAME }}:{{ TRANSMISSION_PORT }};
 {% else %}
         location /rpc {
