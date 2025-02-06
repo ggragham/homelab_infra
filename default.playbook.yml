@@ -1,0 +1,28 @@
+---
+- name: Deploy
+  hosts: all
+
+  vars_files:
+    - default.vars.yml
+
+  roles:
+    - role: base
+      tags: base
+
+    - role: docker
+      tags: docker
+
+    - role: nginx
+      tags: nginx
+
+    - role: nextcloud
+      tags: nextcloud
+
+    - role: gitea
+      tags: gitea
+
+    - role: pihole
+      tags: pihole
+
+    - role: transmission
+      tags: transmission
