@@ -5,7 +5,7 @@
     state: started
   become: true
 
-- name: Restart nginx
+- name: Restart Nginx
   service:
     name: nginx
     state: restarted
