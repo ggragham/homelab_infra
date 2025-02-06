@@ -30,6 +30,17 @@
 
     - name: NextCloud containerized install
       block:
+        - name: Check Docker existence
+          block:
+            - name: Check Docker binary existence
+              stat:
+                path: /usr/bin/docker
+              register: docker_installed
+            - name: Show error if Docker not isntalled
+              fail:
+                msg: Docker is not installed
+              when: not docker_installed.stat.exists
+
         - name: Create Nextcloud Docker directory
           file:
             path: '{{ NEXTCLOUD_DOCKER_PATH }}'
