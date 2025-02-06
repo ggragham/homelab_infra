@@ -24,7 +24,7 @@
             state: link
             mode: 0644
 
-      when: not DOCKERIZED
+      when: not NGINX_DOCKERIZED
 
     # Dockerized install
     - name: Nginx containerized install
@@ -76,7 +76,7 @@
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
             mode: 0644
 
-      when: DOCKERIZED
+      when: NGINX_DOCKERIZED
 
     - name: Deploy homepage
       template:
@@ -88,21 +88,21 @@
       copy:
         src: '{{ SSL_CERT_PATH }}'
         dest: '{{ NGINX_SSL_CERT_PATH }}'
-        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
     - name: Copy ssl key
       copy:
         src: '{{ SSL_KEY_PATH }}'
         dest: '{{ NGINX_SSL_KEY_PATH }}'
-        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
     - name: Copy dh group
       copy:
         src: '{{ DH_PATH }}'
         dest: '{{ NGINX_DH_PATH }}'
-        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
     - name: Apply ssl config
@@ -123,13 +123,13 @@
           service:
             name: nginx
             state: restarted
-          when: not DOCKERIZED
+          when: not NGINX_DOCKERIZED
 
         - name: Start Docker Compose
           shell: docker compose down && docker compose up -d
           args:
             chdir: '{{ NGINX_DOCKER_PATH }}'
-          when: DOCKERIZED
+          when: NGINX_DOCKERIZED
 
   become: true
   tags: nginx

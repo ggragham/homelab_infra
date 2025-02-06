@@ -1,6 +1,7 @@
 ---
 # Other
-DOCKERIZED: false  #  Toggle for Docker setup
+NGINX_DOCKERIZED: false  #  Toggle for Docker setup
+NGINX_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 
 # NGINX
 DOMAIN_NAME: example.com  # Nginx server domain
