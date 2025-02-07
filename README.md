@@ -63,9 +63,13 @@ ansible-playbook master_server.playbook.yml --tags="base,nextcloud" --skip-tags=
 4. [**Docker**](./roles/docker/README.md) - Role for Docker installation and configuration.
 
 # Deployment Options
-The deployment method is determined by the Ansible variable `DOCKERIZED`, which you should set in your `vars.yml` file
-* **Dockerized**: Set `DOCKERIZED=true` in your `vars.yml` file for containerized services.
-* **Bare Metal**: Set `DOCKERIZED=false` in your `vars.yml` file for direct host installation.
+The deployment method for each service is determined by its individual Ansible variable `<SERVICE_NAME>_DOCKERIZED`, which you should set in your `vars.yml` file. For each service, choose:
+* **Dockerized**: Set `<SERVICE_NAME>_DOCKERIZED: true` to deploy the service as a containerized application.
+* **Bare Metal**: Set `<SERVICE_NAME>_DOCKERIZED: false` to deploy the service directly on the host.
+
+For example:
+- To deploy Nextcloud in a containerized manner, set `NEXTCLOUD_DOCKERIZED: true`.
+- To deploy Gitea on the host (bare metal), set `GITEA_DOCKERIZED: false`.
 
 ## Supported Deployment Methods
 1. **Nextcloud:**
