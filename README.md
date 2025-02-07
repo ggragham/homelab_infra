@@ -33,19 +33,17 @@ Homelab Infra Ansible Playbooks provides scripts and roles to deploy and manage 
 * Docker and Docker Compose installed on the server (for Dockerized services)
 
 # Usage
-0. If you are setting up a new server, you can use the initial configuration playbook and role provided in the `_init/` directory.
-1. Make a copy of the inventory file template (`inventory.ini.template`) and rename it to `inventory.ini`. Configure it according to your server setup.
-2. Make a copy of the vars file template (e.g., `./vars/vars.yml.template`) and rename it to `vars.yml`. Then, open the file and set the variables according to your server and service setup.
-3. Place your SSL certificate, SSH key, and VPN configuration file in the `./assets` directory. Don't forget to specify the names of these files in the `vars.yml` file.
-4. Use the `ansible-playbook` command to run the desired playbook. For example:
+1. Copy the inventory file template (`inventory.ini.template`) to `inventory.ini` and adjust it for your server.
+2. Use the default variables file (`default.vars.yml`) and default playbook (`default.playbook.yml`) as templates for your configuration. Rename them as needed (e.g. `master_server.vars.yml`/`master_server.playbook.yml` or `dns_server.vars.yml`/`dns_server.playbook.yml`). These files will be excluded from Git (see [`.gitignore`](./.gitignore)).
+3. Place your SSL certificate, SSH key, VPN configuration, etc in the `./assets` directory, and reference them in your variables file.
+4. Run your chosen playbook using:
 ```bash
-ansible-playbook playbook.yml
+ansible-playbook master_server.playbook.yml
 ```
 You can also use the `--tags=""` and/or `--skip-tags=""` options to include or exclude tasks. For example:
 ```bash
-ansible-playbook playbook.yml --tags="base,nextcloud" --skip-tags="firewall"
+ansible-playbook master_server.playbook.yml --tags="base,nextcloud" --skip-tags="nginx"
 ```
-Refer to the [Playbooks](#playbooks) section for a list of available playbooks and their descriptions. For information about tags, see the [Tags](#tags) section.
 
 # Playbooks
 1. [**default.playbook.yml**](./default.playbook.yml) - Example configuration used as a template.
