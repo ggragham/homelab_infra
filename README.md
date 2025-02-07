@@ -113,4 +113,4 @@ This software is published under the DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 # To-Do
 - [ ] Implement database backup functionality using Borgmatic.
 - [ ] Implement Jellyfin deployment.
-- [ ] Move Pi-Hole deployment to a dedicated repository.
+- [ ] ~~Move Pi-Hole deployment to a dedicated repository.~~
