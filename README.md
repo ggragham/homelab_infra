@@ -24,7 +24,7 @@ Automate the deployment of my personal Homelab services with Ansible Roles and P
 - [To-Do](#to-do)
 
 # Overview
-Homelab Infra Ansible Playbooks is a set of scripts and roles designed for deploying and managing self-hosted services within a homelab environment, primarily on Debian Linux. The playbooks automate the deployment of various services, with some services offering both containerized (Docker) and bare metal installation options. For Dockerized services, Docker Compose is used for deployment.
+Homelab Infra Ansible Playbooks provides scripts and roles to deploy and manage self-hosted services on Debian Linux. It supports both Dockerized and bare-metal deployments.
 
 # Prerequisites
 * Debian Linux server
