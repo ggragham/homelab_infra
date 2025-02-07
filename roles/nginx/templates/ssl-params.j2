@@ -1,6 +1,6 @@
-ssl_certificate {{ (DOCKERIZED) | ternary('/etc/nginx/' + SSL_CERT_NAME, '/etc/ssl/certs/' + SSL_CERT_NAME) }};
-ssl_certificate_key {{ (DOCKERIZED) | ternary('/etc/nginx/' + SSL_KEY_NAME, '/etc/ssl/private/' + SSL_KEY_NAME) }};
-ssl_dhparam /etc/nginx/{{ DH_NAME }};
+ssl_certificate {{ (NGINX_DOCKERIZED) | ternary('/etc/nginx/' + SSL_CERT_NAME, '/etc/ssl/certs/' + SSL_CERT_NAME) }};
+ssl_certificate_key {{ (NGINX_DOCKERIZED) | ternary('/etc/nginx/' + SSL_KEY_NAME, '/etc/ssl/private/' + SSL_KEY_NAME) }};
+ssl_dhparam /etc/nginx/{{ SSL_DH_NAME }};
 ssl_protocols TLSv1.3;
 ssl_prefer_server_ciphers on;
 ssl_ciphers EECDH+AESGCM:EDH+AESGCM;

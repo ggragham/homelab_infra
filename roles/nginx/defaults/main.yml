@@ -1,17 +1,18 @@
 ---
-# Other
-DOCKERIZED: false  #  Toggle for Docker setup
+###############
+###  NGINX  ###
+###############
 
-# NGINX
-DOMAIN_NAME: example.com  # Nginx server domain
+NGINX_DOCKERIZED: false  # Nginx dockerized install toogle.
+NGINX_VERSION_DOCKER: latest  # Nginx version in Docker (rootless).
+NGINX_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 
-SSL_CERT_NAME: cert.crt  # SSL Cert name
-SSL_KEY_NAME: cert.key  # SSL Key name
-DH_NAME: dhparam.pem  # DH group name
+NGINX_DOMAIN_NAME: '{{ DOMAIN_NAME }}'  # Nginx server domain.
 
-SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}  # SSL Cert path
-SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}  # SSL Key path
-DH_PATH: ./assets/{{ DH_NAME }}  # DH group path
+SSL_CERT_NAME: cert.crt  # SSL certificate filename placed in the assets/ directory.
+SSL_KEY_NAME: cert.key  # SSL Key filename placed in the assets/ directory.
+SSL_DH_NAME: dhparam.pem  # DH key filename placed in the assets/ directory.
 
-NGINX_DOCKER_PATH: /opt/nginx_docker  # Dockerized Nginx Path
-NGINX_VERSION_DOCKER: latest  # Nginx version in Docker
+SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}  # SSL Cert path.
+SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}  # SSL Key path.
+SSL_DH_PATH: ./assets/{{ SSL_DH_NAME }}  # DH key path.

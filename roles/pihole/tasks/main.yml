@@ -1,21 +1,17 @@
 ---
 - name: Pi-hole
   block:
-    - name: Config UFW
+    - name: Check Docker existence
       block:
-        - name: Check UFW installed
-          shell:
-            cmd: |
-              ufw --version >/dev/null
-              echo "$?"
-          register: ufw_return
-        - name: Allow DNS
-          ufw:
-            rule: allow
-            port: 53
-            state: reloaded
-          when: ufw_return.stdout=="0"
-      tags: firewall
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+      when: PIHOLE_DOCKERIZED
 
     - name: Create Pi-hole config dir
       file:
@@ -100,9 +96,10 @@
                 src: /etc/nginx/sites-available/pihole.conf
                 dest: /etc/nginx/sites-enabled/pihole.conf
                 state: link
+          when: PIHOLE_USE_NGINX
 
       notify: Restart nginx
-      when: not DOCKERIZED
+      when: not PIHOLE_DOCKERIZED
 
     # Dockerized install
     - name: Pi-hole containerized install
@@ -130,22 +127,24 @@
             src: pihole_nginx.conf.j2
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/pihole.conf'
             mode: 0644
+          when: PIHOLE_USE_NGINX
 
         - name: Run Docker Compose
           shell: docker compose down && docker compose up -d
           args:
-            chdir: '{{ service_path }}'
-          loop_control:
-            loop_var: service_path
-          loop:
-            - '{{ PIHOLE_DOCKER_PATH }}'
-            - '{{ NGINX_DOCKER_PATH }}'
+            chdir: '{{ PIHOLE_DOCKER_PATH }}'
 
-      when: DOCKERIZED
+        - name: Restart Nginx
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: PIHOLE_USE_NGINX
+
+      when: PIHOLE_DOCKERIZED
 
     - name: Set Pi-hole admin password
       shell: >
-        {% if DOCKERIZED %}
+        {% if PIHOLE_DOCKERIZED %}
         {{ 'docker exec -it ' + PIHOLE_CONTAINER_NAME }}
         {% endif %}
         pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}

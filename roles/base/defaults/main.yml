@@ -1,36 +1,25 @@
 ---
-NETWORK_INTERFACE: eth0
+##############
+###  Base  ###
+##############
 
-DNS_ENTRIES:
-  - 127.0.0.1
-  - 9.9.9.9
+DOMAIN_NAME: example.com  # Domain name for server.
+NETWORK_INTERFACE: eth0  # Network interface to be used.
 
 # SSH
-SSH_PORT: 22  # Set ssh port for firewall
-SERVER_SUBNET: 192.168.1.0/24
-
-# OpenVPN
-# OPENVPN_ENABLED: false
-# OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'
-# OPENVPN_PORT: 1194
-# VPN_SUBNET: 10.8.0.0/24
-
-# WireGuard
-WIREGUARD_ENABLED: false
-WIREGUARD_CONFIG_PATH_SRC: '{{ ASSETS_PATH }}/wg0.conf'
-WIREGUARD_PORT: 51820
-WIREGUARD_SUBNET: 10.8.0.0/24
+SSH_PORT: 22  # Set ssh port for firewall.
+SERVER_SUBNET: 192.168.1.0/24  # Server subnet for network configuration.
 
 # External Disk
-EXT_DISK_ENABLED: true  # Enables or disables external disk mounting
-DISK_LABEL: disk  # External disk label
-DISK_ENCRYPTED: false  # Disk encryption status
-DISK_KEYFILE: keyfile.pem  # Encryption key file name
-DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'  # Path to encryption key file
-DISK_FSTYPE: btrfs  # Disk filesystem type
-DISK_PATH: /mnt/{{ DISK_LABEL }}  # Disk mount path
-DISK_DATA_PATH: '{{ DISK_PATH }}/data'  # Data path
-DISK_DATABASE_PATH: '{{ DISK_PATH }}/database'
+EXT_DISK_ENABLED: true  # Enables or disables external disk mounting.
+DISK_LABEL: disk  # External disk label.
+DISK_ENCRYPTED: false  # Disk encryption status.
+DISK_KEYFILE: keyfile.pem  # Encryption key file name.
+DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'  # Path to encryption key file.
+DISK_FSTYPE: btrfs  # Disk filesystem type.
+DISK_PATH: /mnt/{{ DISK_LABEL }}  # Disk mount path.
+DISK_DATA_PATH: '{{ DISK_PATH }}/data'  # Data path.
+DISK_DATABASE_PATH: '{{ DISK_PATH }}/database'  # Database path on external disk.
 
 DISK_SUBVOLS:  # List of BTRFS subvolumes
   - name: storage
@@ -44,7 +33,19 @@ DISK_SUBVOLS:  # List of BTRFS subvolumes
     compression: zstd:1
 
 # SFTP
-SHARING_ENABLED: false
+SFTP_ENABLE: false  # Enable or disable SFTP access.
 SHARE_DISK_GROUP: disksharegroup  # Group name for sftp access to ext drive
 SHARE_DISK_USER: diskshareuser  # User name for sftp access to an ext drive
 SHARE_PUBLIC_USER: publicshareuser  # User name for sftp access to public dir on ext drive
+
+# WireGuard
+WIREGUARD_ENABLED: false  # Enable or disable WireGuard VPN.
+WIREGUARD_CONFIG_PATH_SRC: '{{ ASSETS_PATH }}/wg0.conf'  # Source path for WireGuard configuration.
+WIREGUARD_PORT: 51820  # Port for WireGuard VPN.
+WIREGUARD_SUBNET: 10.8.0.0/24  # Subnet for WireGuard VPN.
+
+## OpenVPN
+OPENVPN_ENABLED: false  # Enable or disable OpenVPN.
+OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'  # Path to OpenVPN configuration file.
+OPENVPN_PORT: 1194  # Port for OpenVPN.
+VPN_SUBNET: 10.8.0.0/24  # Subnet for OpenVPN VPN.

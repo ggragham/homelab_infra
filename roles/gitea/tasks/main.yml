@@ -1,6 +1,18 @@
 ---
-- name: Install and config Gitea
+- name: Gitea
   block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+      when: GITEA_DOCKERIZED
+
     - name: Create Gitea system user
       user:
         name: '{{ GITEA_USER }}'
@@ -10,294 +22,66 @@
         shell: /bin/bash
         password_lock: true
 
-    - name: Create Gitea data dirs
-      file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ GITEA_USER }}'
-        group: '{{ GITEA_USER }}'
-        mode: 0755
-        recurse: true
-      with_items:
-        - '{{ GITEA_CONFIG_PATH }}'
-        - '{{ GITEA_DATA_PATH }}'
-        - '{{ GITEA_DATA_PATH }}/data'
+    - name: Install and configure Gitea
+      include_tasks: gitea.yml
+      when: GITEA_DEPLOY
 
-    # Bare metal install
-    - name: Gitea bare metal install
+    - name: Gitea Health Check
       block:
-        - name: Install deps
-          apt:
-            name: [git, jq]
-            state: latest
-            update_cache: true
-          when: ansible_os_family=="Debian"
-
-        - name: Config Gitea DataBase
-          block:
-            - name: Create Gitea DB
-              mysql_db:
-                name: '{{ GITEA_DB_NAME }}'
-                collation: utf8mb4_general_ci
-                encoding: utf8mb4
-                login_unix_socket: /var/run/mysqld/mysqld.sock
-                state: present
-              notify: Restart MariaDB
-
-            - name: Create Gitea DB user
-              mysql_user:
-                name: '{{ GITEA_DB_USER }}'
-                password: '{{ GITEA_DB_PASSWORD }}'
-                host: '{{ (DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
-                priv: '{{ GITEA_DB_NAME }}.*:ALL,GRANT'
-                login_unix_socket: /var/run/mysqld/mysqld.sock
-                state: present
-              notify: Restart MariaDB
-              no_log: true
-
-            - name: Flush handlers
-              meta: flush_handlers
-
-        - name: Create Gitea dir
-          file:
-            path: '{{ GITEA_PATH }}'
-            state: directory
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0775
-
-        - name: Get Gitea latest version
-          shell:
-            cmd: curl -s "https://api.github.com/repos/go-gitea/gitea/releases/latest" | jq -r '.tag_name' 2>&1 | sed -e 's|.*-||' -e 's|^v||'
-          register: gitea_latest_version
-
-        - name: x86_64
-          set_fact:
-            gitea_arch: amd64
-          when: ansible_architecture=="x86_64"
-
-        - name: armv7
-          set_fact:
-            gitea_arch: arm-6
-          when: ansible_architecture=="armv7l"
-
-        - name: Get Gitea
-          get_url:
-            url: https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}
-            dest: '{{ GITEA_PATH }}/gitea'
-            checksum: sha256:https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}.sha256
-            mode: 0755
-
-        - name: Apply Gitea Nginx config
-          template:
-            src: gitea_nginx.j2
-            dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
-            mode: 0644
-
-        - name: Enable Gitea Nginx config
-          file:
-            src: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
-            dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
-            state: link
-            mode: 0644
-
-        - name: Systemd config
-          template:
-            src: gitea_service.j2
-            dest: /etc/systemd/system/gitea.service
-            owner: '{{ GITEA_USER }}'
-            group: '{{ GITEA_USER }}'
-            mode: 0644
-
-      when: not DOCKERIZED
-
-    # Dockerized install
-    - name: Gitea containerized install
-      block:
-        - name: Add {{ GITEA_USER }} to docker group
-          user:
-            name: '{{ GITEA_USER }}'
-            groups: docker
-            append: true
-
-        - name: Create directory
-          file:
-            path: '{{ GITEA_DOCKER_PATH }}'
-            state: directory
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0775
-
-        - name: Apply Docker Compose template
-          template:
-            src: docker_compose.yml.j2
-            dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0644
-
-        - name: Apply Gitea Nginx config
-          template:
-            src: gitea_nginx.j2
-            dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
-            mode: 0644
-
-        - name: Configure SSH
-          block:
-            - name: Create gitea-shell script
-              copy:
-                src: gitea-shell
-                dest: /usr/local/bin/gitea-shell
-                mode: 0755
-            - name: Change shell for {{ GITEA_USER }} user
-              user:
-                name: '{{ GITEA_USER }}'
-                shell: /usr/local/bin/gitea-shell
-            - name: Add SSH configuration
-              template:
-                src: 20_gitea.conf.j2
-                dest: /etc/ssh/sshd_config.d/20_gitea.conf
-                mode: 0755
-              notify: Restart sshd
-
-      when: DOCKERIZED
-
-    - name: Apply config
-      template:
-        src: gitea_config.j2
-        dest: '{{ GITEA_CONFIG_PATH }}/app.ini'
-        owner: '{{ GITEA_USER }}'
-        group: '{{ GITEA_USER }}'
-        mode: 0600
-      no_log: true
-
-    - name: Start gitea
-      block:
-        - name: Start bare metal Gitea service
-          service:
-            name: gitea
-            state: restarted
-          when: not DOCKERIZED
-
-        - name: Start dockerized Gitea service
-          block:
-            - name: Run Docker Compose
-              shell: docker compose down && docker compose up -d {{ GITEA_DOCKER_SERVICE_NAME }}
-              args:
-                chdir: '{{ GITEA_DOCKER_PATH }}'
-            - name: Run Docker Compose
-              shell: docker compose down && docker compose up -d
-              args:
-                chdir: '{{ NGINX_DOCKER_PATH }}'
-          when: DOCKERIZED
-
-    - name: Remove runner
-      file:
-        path: '{{ ACT_DATA_PATH }}/.runner'
-        state: absent
-      when: ACT_REREGISTER_RUNNER
-      tags: act_runner
-
-    - name: Check runner existence
-      stat:
-        path: '{{ ACT_DATA_PATH }}/.runner'
-      register: runner_exist
-      tags: act_runner
-
-    # act_runner
-    - name: Gitea Actions
-      block:
-        - name: Create act_runner data dir
-          file:
-            path: '{{ ACT_DATA_PATH }}'
-            owner: '{{ GITEA_USER }}'
-            group: '{{ GITEA_USER }}'
-            state: directory
-            mode: 0775
-
-        - name: Apply act_runner config
-          template:
-            src: act_config.yml.j2
-            dest: '{{ GITEA_DOCKER_PATH }}/act_config.yml'
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0644
-
-        - name: Start Gitea
-          command: docker compose up gitea -d
-          args:
-            chdir: '{{ GITEA_DOCKER_PATH }}'
-
-        - name: Gitea Health Check
-          block:
-            - name: Wait for service to start
-              uri:
-                url: http://{{ GITEA_DOMAIN }}/api/healthz
-                method: GET
-                status_code: 200
-                validate_certs: false
-              register: result
-              until: result.status == 200
-              retries: 30
-              delay: 10
-            - name: Fail if service is not running
-              fail:
-                msg: Service did not start in time
-              when: result.failed
-
-        - name: Generate runner token
-          shell: >
-            docker exec {{ GITEA_CONTAINER_NAME }} \
-            /app/gitea/gitea actions generate-runner-token \
-            -c /etc/gitea/app.ini | tail -n 1
-          register: act_token
-        - set_fact:
-            runner_token: '{{ act_token.stdout }}'
-
-        - name: Create .runner file
-          file:
-            path: '{{ ACT_DATA_PATH}}/.runner'
-            state: touch
-            mode: '0644'
-
-        - name: Register runner
-          shell: >
-            docker run
-            -v {{ ACT_DATA_PATH }}/.runner:/.runner
-            -v ./act_config.yml:/config.yml
-            -v /var/run/docker.sock:/var/run/docker.sock
-            --network={{ GITEA_DOCKER_SERVICE_NAME}}_docker_{{ ACT_DOCKER_NETWORK }}
-            --entrypoint=""
-            --rm gitea/act_runner:latest
-            act_runner register
-            --no-interactive
-            --instance http://{{ GITEA_DOCKER_SERVICE_NAME }}:{{ GITEA_PORT }}
-            --token {{ runner_token }}
-          args:
-            chdir: '{{ GITEA_DOCKER_PATH }}'
-
-        - name: Run Docker Compose
-          shell: docker compose down && docker compose up -d {{ ACT_DOCKER_SERVICE_NAME }}
-          args:
-            chdir: '{{ GITEA_DOCKER_PATH }}'
-
-      when: DOCKERIZED and (not runner_exist.stat.exists or runner_exist.stat.size == 0)
-      tags: act_runner
+        - name: Wait for service to start
+          uri:
+            url: http://{{ GITEA_DOMAIN }}/api/healthz
+            method: GET
+            status_code: 200
+            validate_certs: false
+          register: result
+          until: (result.status is defined) and (result.status == 200)
+          retries: 30
+          delay: 10
+        - name: Fail if service is not running
+          fail:
+            msg: Service did not start in time
+          when: result.failed
+      delegate_to: localhost
+      become: false
 
     - name: Add admin user
       block:
         - shell: >
-            {{ (DOCKERIZED) | ternary('docker exec -i ' + GITEA_CONTAINER_NAME + ' /app/gitea/gitea',
+            {{ (GITEA_DOCKERIZED) | ternary('docker exec -i ' + GITEA_CONTAINER_NAME + ' /app/gitea/gitea',
             'sudo -u ' + GITEA_USER + GITEA_PATH + '/gitea') }}
             admin user create --username {{ GITEA_ADMIN_USER }}
             --admin --password {{ GITEA_ADMIN_PASSWORD }}
             --email {{ GITEA_ADMIN_EMAIL }}
-            -c {{ (DOCKERIZED) | ternary('/etc/gitea', GITEA_CONFIG_PATH) }}/app.ini
-          no_log: true
+            -c {{ (GITEA_DOCKERIZED) | ternary('/etc/gitea', GITEA_CONFIG_PATH) }}/app.ini
+          # no_log: true
       rescue:
         - debug:
             msg: Sucksessfully failed
-      tags: gitea_create_admin_user
+      when: GITEA_DEPLOY
+
+    - name: Generate runner token
+      shell: >
+        docker exec {{ GITEA_CONTAINER_NAME }} \
+        /app/gitea/gitea actions generate-runner-token \
+        -c /etc/gitea/app.ini | tail -n 1
+      register: act_token
+      delegate_to: "{{ groups['master_server'][0] }}"
+
+    - name: Set runner token globally
+      set_fact:
+        runner_token: '{{ act_token.stdout }}'
+      delegate_to: localhost
+
+    - name: Distribute runner token to ActRunner servers
+      set_fact:
+        runner_token: '{{ runner_token }}'
+      delegate_to: '{{ item }}'
+      with_items: "{{ groups['actrunner_server'] }}"
+
+    - name: Install Act Runner
+      include_tasks: actrunner.yml
+      when: ACTRUNNER_DEPLOY
 
   become: true
   tags: gitea

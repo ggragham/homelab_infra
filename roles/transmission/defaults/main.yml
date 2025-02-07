@@ -1,13 +1,20 @@
 ---
-# SFTP
-SHARE_DISK_GROUP: sharedisk  # Group name for sftp access to ext drive
-DISK_LABEL: disk  # Exd drive label
+######################
+###  Transmission  ###
+######################
 
 # Transmission
-TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}  # Domain name for the Transmission service
+TRANSMISSION_DOCKERIZED: true  # Transmission dockerized install toogle.
 TRANSMISSION_DOCKER_VERSION: latest  # Transmission Docker image version.
-TRANSMISSION_PORT: 9091  # Transmission port
-TRANSMISSION_PEER_PORT: 51413  # Transmission peer port
-TRANSMISSION_USER: transmission  # Username used to login
-TRANSMISSION_PASSWORD: qwerty1234!  # Password used to login
-TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'  # Transmission data directory path
+TRANSMISSION_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+TRANSMISSION_DOCKER_WEBSERVER_PORT: false  # Transmission web server port configuration (set to false to disable, or specify a port number).
+
+TRANSMISSION_USE_NGINX: false  # Toggle to use Transmission as a reverse proxy for Gitea.
+TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'  # Transmission data directory path.
+
+TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}  # Domain name for the Transmission service.
+TRANSMISSION_PORT: 9091  # Transmission port.
+TRANSMISSION_PEER_PORT: 51413  # Transmission peer port.
+
+TRANSMISSION_USER: transmission  # Username used to login.
+TRANSMISSION_PASSWORD: qwerty1234!  # Password used to login.

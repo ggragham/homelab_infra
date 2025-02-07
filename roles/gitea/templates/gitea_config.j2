@@ -1,10 +1,10 @@
 APP_NAME  = Gitea: Git with a cup of {{ GITEA_APP_NAME }}
-RUN_USER  = {{ (DOCKERIZED == true) | ternary('git', GITEA_USER) }}
+RUN_USER  = {{ (GITEA_DOCKERIZED == true) | ternary('git', GITEA_USER) }}
 RUN_MODE  = prod
-WORK_PATH = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
+WORK_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
 
 [repository]
-ROOT = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/repositories', GITEA_DATA_PATH + '/data/repositories') }}
+ROOT = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/repositories', GITEA_DATA_PATH + '/data/repositories') }}
 DEFAULT_BRANCH = master
 
 [repository.pull-request]
@@ -14,23 +14,23 @@ DEFAULT_MERGE_STYLE = merge
 DEFAULT_TRUST_MODEL = committer
 
 [server]
-APP_DATA_PATH           = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
+APP_DATA_PATH           = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea', GITEA_DATA_PATH) }}
 ROOT_URL                = https://{{ GITEA_DOMAIN }}/
 SSH_DOMAIN              = {{ GITEA_DOMAIN }}
 DOMAIN                  = {{ GITEA_DOMAIN }}
 HTTP_PORT               = {{ GITEA_PORT }}
 DISABLE_SSH             = false
-START_SSH_SERVER        = {{ (DOCKERIZED == true) | ternary('true', 'false') }}
-SSH_PORT                = {{ (DOCKERIZED == true) | ternary('2222', '22') }}
-SSH_LISTEN_PORT         = {{ (DOCKERIZED == true) | ternary('2222', '22') }}
-BUILTIN_SSH_SERVER_USER = {{ (DOCKERIZED == true) | ternary('git', GITEA_USER) }}
+START_SSH_SERVER        = {{ (GITEA_DOCKERIZED == true) | ternary('true', 'false') }}
+SSH_PORT                = {{ (GITEA_DOCKERIZED == true) | ternary('2222', '22') }}
+SSH_LISTEN_PORT         = {{ (GITEA_DOCKERIZED == true) | ternary('2222', '22') }}
+BUILTIN_SSH_SERVER_USER = {{ (GITEA_DOCKERIZED == true) | ternary('git', GITEA_USER) }}
 LFS_START_SERVER        = true
 LFS_JWT_SECRET          = {{ GITEA_LFS_JWT_SECRET }}
 OFFLINE_MODE            = true
 
 [database]
 DB_TYPE  = mysql
-HOST     = {{ (DOCKERIZED == true) | ternary(SERVER_IP, '127.0.0.1') }}:{{ MARIADB_PORT }}
+HOST     = {{ (GITEA_DOCKERIZED == true) | ternary(SERVER_IP, '127.0.0.1') }}:{{ MARIADB_PORT }}
 NAME     = {{ GITEA_DB_NAME }}
 USER     = {{ GITEA_DB_USER }}
 PASSWD   = {{ GITEA_DB_PASSWORD }}
@@ -40,20 +40,20 @@ CHARSET  = utf8mb4
 LOG_SQL  = false
 
 [session]
-PROVIDER_CONFIG = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/sessions', GITEA_DATA_PATH + '/data/sessions') }}
+PROVIDER_CONFIG = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/sessions', GITEA_DATA_PATH + '/data/sessions') }}
 PROVIDER        = file
 
 [picture]
-AVATAR_UPLOAD_PATH            = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/avatars', GITEA_DATA_PATH + '/data/avatars') }}
-REPOSITORY_AVATAR_UPLOAD_PATH = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/repo-avatars', GITEA_DATA_PATH + '/data/repo-avatars') }}
+AVATAR_UPLOAD_PATH            = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/avatars', GITEA_DATA_PATH + '/data/avatars') }}
+REPOSITORY_AVATAR_UPLOAD_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/repo-avatars', GITEA_DATA_PATH + '/data/repo-avatars') }}
 
 [attachment]
-PATH = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/attachments', GITEA_DATA_PATH + '/data/attachments') }}
+PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/attachments', GITEA_DATA_PATH + '/data/attachments') }}
 
 [log]
 MODE      = console
 LEVEL     = info
-ROOT_PATH = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/log', GITEA_DATA_PATH + '/data/log') }}
+ROOT_PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/log', GITEA_DATA_PATH + '/data/log') }}
 
 [security]
 INSTALL_LOCK                  = true
@@ -79,7 +79,7 @@ DEFAULT_ENABLE_TIMETRACKING       = true
 NO_REPLY_ADDRESS                  = noreply.{{ GITEA_DOMAIN }}
 
 [lfs]
-PATH = {{ (DOCKERIZED == true) | ternary('/var/lib/gitea/data/lfs', GITEA_DATA_PATH + '/data/lfs') }}
+PATH = {{ (GITEA_DOCKERIZED == true) | ternary('/var/lib/gitea/data/lfs', GITEA_DATA_PATH + '/data/lfs') }}
 
 [mailer]
 ENABLED = false
@@ -95,4 +95,4 @@ ENABLED = {{ GITEA_CHECK_UPDATES }}
 DEFAULT_THEME = arc-green
 
 [actions]
-ENABLE = {{ (DOCKERIZED == true) | ternary('true', 'false') }}
+ENABLE = {{ (GITEA_DOCKERIZED == true) | ternary('true', 'false') }}

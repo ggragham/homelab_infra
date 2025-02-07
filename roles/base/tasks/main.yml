@@ -1,217 +1,40 @@
 ---
-- name: Prepare steps
+- name: Base tasks
   block:
-    - name: Update deb-based system
-      apt:
-        name: '*'
-        state: latest
-        update_cache: true
-      when: ansible_os_family == "Debian"
-
-    - name: Install necessary packages
-      apt:
-        name:
-          - bash-completion
-          - curl
-          # - duf
-          - vim
-        state: latest
-        update_cache: true
-      when: ansible_os_family == "Debian"
-
-  become: true
-  tags: prepare
-
-- include_tasks: firewall.yml
-  tags: firewall
-
-- include_tasks: wireguard.yml
-  when: WIREGUARD_ENABLED
-  tags: wireguard
-
-# OpenVPN
-# - name: Config OpenVPN
-#   block:
-#     - name: Check openvpn config existence
-#       stat:
-#         path: '{{ OPENVPN_CONFIG_PATH }}'
-#       delegate_to: localhost
-#       register: ovpn_config_existence
-
-#     - name: Install and config OpenVPN
-#       block:
-#         - name: Install OpenVPN
-#           apt:
-#             name: openvpn
-#             state: latest
-#             update_cache: true
-#           when: ansible_os_family == "Debian"
-
-#         - name: Apply config
-#           copy:
-#             src: '{{ OPENVPN_CONFIG_PATH }}'
-#             dest: /etc/openvpn/client/client.conf
-#             mode: 0400
-
-#         - name: Config UFW
-#           block:
-#             - name: Allow SSH from VPN
-#               ufw:
-#                 rule: allow
-#                 src: '{{ VPN_SUBNET }}'
-#                 port: '{{ SSH_PORT }}'
-#                 proto: tcp
-#                 state: enabled
-#             - name: Allow HTTP(S) from VPN
-#               ufw:
-#                 rule: allow
-#                 src: '{{ VPN_SUBNET }}'
-#                 port: '{{ item }}'
-#                 state: reloaded
-#               with_items:
-#                 - 80
-#                 - 443
-#             - name: Allow out from tun0
-#               ufw:
-#                 rule: allow
-#                 interface: tun0
-#                 direction: out
-#                 state: reloaded
-#             - name: Allow outgoing traffic
-#               ufw:
-#                 rule: allow
-#                 interface: '{{ NETWORK_INTERFACE }}'
-#                 direction: out
-#                 port: '{{ item }}'
-#                 proto: udp
-#                 state: reloaded
-#               with_items:
-#                 - '{{ OPENVPN_PORT }}'
-#           tags: firewall
-
-#         - name: Start OpenVPN
-#           service:
-#             name: openvpn-client@client.service
-#             state: started
-#             enabled: true
-
-#       when: ovpn_config_existence.stat.exists
-#       become: true
-
-#   when: OPENVPN_ENABLED|bool
-#   tags: openvpn
-
-# External Disk
-- name: Configure external disk
-  block:
-    - name: Make dir for mountpoint
-      file:
-        path: '{{ DISK_PATH }}'
-        state: directory
-        mode: 0755
-        owner: root
-
-    - name: Check disk with {{ DISK_LABEL }} label exists
-      shell: blkid -o value -s LABEL | grep -q {{ DISK_LABEL }}
-      register: disk_exists
-      ignore_errors: true
-
-    - name: Encrypted disk
+    - name: Prepare steps
       block:
-        - name: Copy keyfile
-          copy:
-            src: '{{ DISK_KEYFILE_PATH }}'
-            dest: /etc/{{ DISK_KEYFILE }}
-            mode: 0400
-        - name: Add disk to crypttab
-          lineinfile:
-            path: /etc/crypttab
-            line: '{{ DISK_LABEL }} LABEL={{ DISK_LABEL }} /etc/{{ DISK_KEYFILE }} luks'
-            state: present
-        - name: Decrypt disks in cryptab
-          command: cryptdisks_start '{{ DISK_LABEL }}'
-      when: DISK_ENCRYPTED|bool and disk_exists.rc == 0
+        - name: Update deb-based system
+          apt:
+            name: '*'
+            state: latest
+            update_cache: true
+          when: ansible_os_family == "Debian"
 
-    - name: Mount external disk with ext4
-      mount:
-        path: '{{ DISK_PATH }}'
-        src: LABEL={{ DISK_LABEL }}
-        fstype: ext4
-        opts: defaults
-        state: mounted
-      when:
-        - disk_exists.rc == 0
-        - DISK_FSTYPE == 'ext4'
+        - name: Install necessary packages
+          apt:
+            name:
+              - bash-completion
+              - curl
+              # - duf
+              - vim
+            state: latest
+            update_cache: true
+          when: ansible_os_family == "Debian"
+      become: true
 
-    - name: Mount external disk with btrfs
-      mount:
-        path: '{{ item.path }}'
-        src: LABEL={{ DISK_LABEL }}
-        fstype: btrfs
-        opts: subvol={{ item.subvol }},compress={{ item.compression }},x-systemd.requires=cryptsetup.target
-        state: mounted
-      loop: '{{ DISK_SUBVOLS }}'
-      loop_control:
-        loop_var: item
-      when:
-        - disk_exists.rc == 0
-        - DISK_FSTYPE == 'btrfs'
+    - name: Firewall config
+      include_tasks: firewall.yml
 
-  when: EXT_DISK_ENABLED|bool
-  become: true
-  tags: disk
+    - name: Install and configure wireguard
+      include_tasks: wireguard.yml
+      when: WIREGUARD_ENABLED
 
-# SFTP
-- name: Configure SFTP file sharing
-  block:
-    - name: Make disk share group
-      group:
-        name: '{{ SHARE_DISK_GROUP }}'
-        state: present
+    - name: Configure external storage
+      include_tasks: storage.yml
+      when: EXT_DISK_ENABLED
 
-    - name: Make disk share user
-      user:
-        name: '{{ SHARE_DISK_USER }}'
-        shell: /usr/sbin/nologin
-        groups: '{{ SHARE_DISK_GROUP }}'
+    - name: Configure SFTP sharing
+      include_tasks: sftp.yml
+      when: SFTP_ENABLE
 
-    - name: Make public share user
-      user:
-        name: '{{ SHARE_PUBLIC_USER }}'
-        shell: /usr/sbin/nologin
-
-    - name: Make dir for random files
-      file:
-        path: '{{ DISK_DATA_PATH }}/files'
-        state: directory
-        recurse: true
-        mode: 0775
-        owner: '{{ SHARE_DISK_USER }}'
-        group: '{{ SHARE_DISK_GROUP }}'
-
-    - name: Make dir for public user
-      file:
-        path: '{{ DISK_DATA_PATH }}/share'
-        state: directory
-        mode: 0755
-        owner: root
-        group: root
-
-    - name: Make dir for public user
-      file:
-        path: '{{ DISK_DATA_PATH }}/share/files'
-        state: directory
-        mode: 0755
-        owner: '{{ SHARE_PUBLIC_USER }}'
-        group: '{{ SHARE_PUBLIC_USER }}'
-
-    - name: Apply sftp config
-      template:
-        src: 05_sftp.j2
-        dest: /etc/ssh/sshd_config.d/05_sftp.conf
-        mode: 0600
-      notify: Restart sshd
-
-  when: SHARING_ENABLED|bool
-  become: true
-  tags: sftp
+  tags: base

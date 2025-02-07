@@ -1,6 +1,18 @@
 ---
 - name: Install and config transmission
   block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+      when: TRANSMISSION_DOCKERIZED
+
     - name: Create Transmission system user
       user:
         name: '{{ TRANSMISSION_SYSTEM_USER }}'
@@ -32,7 +44,6 @@
                 dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/transmission.conf'
                 mode: 0644
               notify: Restart Nginx
-
             - name: Enable Transmission nginx config
               file:
                 src: '{{ NGINX_SITES_AVAILABLE_PATH }}/transmission.conf'
@@ -40,8 +51,9 @@
                 state: link
                 mode: 0644
               notify: Restart Nginx
+          when: TRANSMISSION_USE_NGINX
 
-      when: not DOCKERIZED
+      when: not TRANSMISSION_DOCKERIZED
 
     # Dockerized install
     - name: Transmission containerized install
@@ -70,8 +82,9 @@
             src: nginx_transmission.j2
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/transmission.conf'
             mode: 0644
+          when: TRANSMISSION_USE_NGINX
 
-      when: DOCKERIZED
+      when: TRANSMISSION_DOCKERIZED
 
     - name: Create Transmission data dirs
       file:
@@ -80,7 +93,7 @@
         recurse: true
         mode: 0775
         owner: '{{ TRANSMISSION_SYSTEM_USER }}'
-        group: "{{ (SHARING_ENABLED) | ternary(SHARE_DISK_GROUP, USERNAME) }}"
+        group: '{{ (SHARING_ENABLED is defined and SHARING_ENABLED) | ternary(SHARE_DISK_GROUP, USERNAME) }}'
       loop_control:
         loop_var: dirs
       loop:
@@ -95,16 +108,20 @@
         dest: '{{ TRANSMISSION_CONFIG_PATH }}/settings.json'
         mode: 0600
 
-    - name: Run Docker Compose
-      shell: docker compose down && docker compose up -d
-      args:
-        chdir: '{{ service_path }}'
-      loop_control:
-        loop_var: service_path
-      loop:
-        - '{{ TRANSMISSION_DOCKER_PATH }}'
-        - '{{ NGINX_DOCKER_PATH }}'
-      when: DOCKERIZED
+    - name: Start dockerized Transmission service
+      block:
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ TRANSMISSION_DOCKER_PATH }}'
+
+        - name: Restart Nginx
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: TRANSMISSION_USE_NGINX
+
+      when: TRANSMISSION_DOCKERIZED
 
   become: true
   tags: transmission

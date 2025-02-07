@@ -11,8 +11,3 @@ galaxy_info:
     - name: Debian
       versions:
         - all
-
-dependencies:
-  - role: docker
-  - role: mariadb
-  - role: nginx

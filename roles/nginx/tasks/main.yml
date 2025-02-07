@@ -1,26 +1,6 @@
 ---
 - name: Install and config webserver
   block:
-    - name: Config UFW
-      block:
-        - name: Check UFW installed
-          shell:
-            cmd: |
-              ufw --version >/dev/null
-              echo "$?"
-          register: ufw_return
-        - name: Allow HTTP(S)
-          ufw:
-            rule: allow
-            src: '{{ SERVER_SUBNET }}'
-            port: '{{ item }}'
-            state: reloaded
-          with_items:
-            - 80
-            - 443
-          when: ufw_return.stdout=="0"
-      tags: firewall
-
     # Bare Metal Install
     - name: Nginx bare metal install
       block:
@@ -44,11 +24,22 @@
             state: link
             mode: 0644
 
-      when: not DOCKERIZED
+      when: not NGINX_DOCKERIZED
 
     # Dockerized install
     - name: Nginx containerized install
       block:
+        - name: Check Docker existence
+          block:
+            - name: Check Docker binary existence
+              stat:
+                path: /usr/bin/docker
+              register: docker_installed
+            - name: Show error if Docker not isntalled
+              fail:
+                msg: Docker is not installed
+              when: not docker_installed.stat.exists
+
         - name: Create Nginx directory struct
           file:
             path: '{{ directory }}'
@@ -96,7 +87,7 @@
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
             mode: 0644
 
-      when: DOCKERIZED
+      when: NGINX_DOCKERIZED
 
     - name: Deploy homepage
       template:
@@ -108,21 +99,21 @@
       copy:
         src: '{{ SSL_CERT_PATH }}'
         dest: '{{ NGINX_SSL_CERT_PATH }}'
-        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
     - name: Copy ssl key
       copy:
         src: '{{ SSL_KEY_PATH }}'
         dest: '{{ NGINX_SSL_KEY_PATH }}'
-        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
     - name: Copy dh group
       copy:
-        src: '{{ DH_PATH }}'
-        dest: '{{ NGINX_DH_PATH }}'
-        owner: "{{ (DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
+        src: '{{ SSL_DH_PATH }}'
+        dest: '{{ NGINX_SSL_DH_PATH }}'
+        owner: "{{ (NGINX_DOCKERIZED) | ternary(NGINX_USER, 'root') }}"
         mode: 0400
 
     - name: Apply ssl config
@@ -143,13 +134,13 @@
           service:
             name: nginx
             state: restarted
-          when: not DOCKERIZED
+          when: not NGINX_DOCKERIZED
 
         - name: Start Docker Compose
           shell: docker compose down && docker compose up -d
           args:
             chdir: '{{ NGINX_DOCKER_PATH }}'
-          when: DOCKERIZED
+          when: NGINX_DOCKERIZED
 
   become: true
   tags: nginx

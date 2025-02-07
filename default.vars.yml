@@ -1,0 +1,184 @@
+---
+##############
+###  Base  ###
+##############
+
+DOMAIN_NAME: example.com  # Domain name for server.
+NETWORK_INTERFACE: eth0  # Network interface to be used.
+
+# SSH
+SSH_PORT: 22  # Set ssh port for firewall.
+SERVER_SUBNET: 192.168.1.0/24  # Server subnet for network configuration.
+
+# External Disk
+EXT_DISK_ENABLED: true  # Enables or disables external disk mounting.
+DISK_LABEL: disk  # External disk label.
+DISK_ENCRYPTED: false  # Disk encryption status.
+DISK_KEYFILE: keyfile.pem  # Encryption key file name.
+DISK_KEYFILE_PATH: '{{ ASSETS_PATH }}/{{ DISK_KEYFILE }}'  # Path to encryption key file.
+DISK_FSTYPE: btrfs  # Disk filesystem type.
+DISK_PATH: /mnt/{{ DISK_LABEL }}  # Disk mount path.
+DISK_DATA_PATH: '{{ DISK_PATH }}/data'  # Data path.
+DISK_DATABASE_PATH: '{{ DISK_PATH }}/database'  # Database path on external disk.
+
+DISK_SUBVOLS:  # List of BTRFS subvolumes
+  - name: storage
+    subvol: '@storage'  # Subvolume name in filesystem
+    path: '{{ DISK_DATA_PATH }}'  # Subvolume mount point
+    compression: zstd:1  # Subvolume compression
+
+  - name: db
+    subvol: '@db'
+    path: '{{ DISK_DATABASE_PATH }}'
+    compression: zstd:1
+
+# SFTP
+SFTP_ENABLE: false  # Enable or disable SFTP access.
+SHARE_DISK_GROUP: disksharegroup  # Group name for sftp access to ext drive
+SHARE_DISK_USER: diskshareuser  # User name for sftp access to an ext drive
+SHARE_PUBLIC_USER: publicshareuser  # User name for sftp access to public dir on ext drive
+
+# WireGuard
+WIREGUARD_ENABLED: false  # Enable or disable WireGuard VPN.
+WIREGUARD_CONFIG_PATH_SRC: '{{ ASSETS_PATH }}/wg0.conf'  # Source path for WireGuard configuration.
+WIREGUARD_PORT: 51820  # Port for WireGuard VPN.
+WIREGUARD_SUBNET: 10.8.0.0/24  # Subnet for WireGuard VPN.
+
+## OpenVPN
+OPENVPN_ENABLED: false  # Enable or disable OpenVPN.
+OPENVPN_CONFIG_PATH: '{{ ASSETS_PATH }}/client.ovpn'  # Path to OpenVPN configuration file.
+OPENVPN_PORT: 1194  # Port for OpenVPN.
+VPN_SUBNET: 10.8.0.0/24  # Subnet for OpenVPN VPN.
+
+################
+###  Docker  ###
+################
+
+DOCKER_NETWORK_NAME: homelab_network  # Name of the Docker network.
+DOCKER_BRIDGE_NAME: homelab_bridge  # Name of the bridge interface for the Docker network.
+
+###############
+###  NGINX  ###
+###############
+
+NGINX_DOCKERIZED: false  # Nginx dockerized install toogle.
+NGINX_VERSION_DOCKER: latest  # Nginx version in Docker (rootless).
+NGINX_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+
+NGINX_DOMAIN_NAME: '{{ DOMAIN_NAME }}'  # Nginx server domain.
+
+SSL_CERT_NAME: cert.crt  # SSL certificate filename placed in the assets/ directory.
+SSL_KEY_NAME: cert.key  # SSL Key filename placed in the assets/ directory.
+SSL_DH_NAME: dhparam.pem  # DH key filename placed in the assets/ directory.
+
+SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}  # SSL Cert path.
+SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}  # SSL Key path.
+SSL_DH_PATH: ./assets/{{ SSL_DH_NAME }}  # DH key path.
+
+###################
+###  NextCloud  ###
+###################
+
+NEXTCLOUD_DOCKERIZED: true  #  Toggle for Docker setup.
+NEXTCLOUD_DOCKER_VERSION: stable  # NextCloud Docker image version.
+NEXTCLOUD_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+
+NEXTCLOUD_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for NextCloud.
+NEXTCLOUD_DOCKER_WEBSERVER_PORT: false  # Nextcloud web server port configuration (set to false to disable, or specify a port number).
+NEXTCLOUD_DOMAIN: cloud.{{ DOMAIN_NAME }}  # Domain name for the NextCloud service.
+NEXTCLOUD_PORT: 9001  # Nextcloud service port.
+NEXTCLOUD_DATA_PATH: '{{ DISK_DATA_PATH }}/nextcloud'  # Nextcloud data path.
+NEXTCLOUD_MAX_FILE_SIZE: 4G  # Maximum upload file size.
+
+NEXTCLOUD_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
+NEXTCLOUD_DB_ROOT_PASSWORD: root1234!  # MariaDB root-user password.
+NEXTCLOUD_DB_NAME: nextclouddb  # Nextcloud database name.
+NEXTCLOUD_DB_USER: nextclouduser  # Nextcloud database user.
+NEXTCLOUD_DB_PASSWORD: qwerty1234!  # Nextcloud database password.
+
+###############
+###  Gitea  ###
+###############
+
+GITEA_DEPLOY: "{{ inventory_hostname == 'gitea_host' }}"  # Service variable. For separate installation Gitea and ActRunner by host.
+GITEA_IP: 192.168.1.30
+
+GITEA_DOCKERIZED: true  # Gitea dockerized install toogle.
+GITEA_DOCKER_VERSION: latest  # Gitea Docker image version (rootless).
+GITEA_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+
+GITEA_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Gitea.
+GITEA_APP_NAME: tea  # Name of Gitea application.
+GITEA_ADMIN_USER: gitea_admin  # Username for the Gitea administrator account.
+GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea administrator account.
+GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
+GITEA_LFS_JWT_SECRET: example_of_lfs_jwt_secret  # Secret key for Gitea's Large File Storage JWT authentication.
+GITEA_INTERNAL_TOKEN: example_of_internal_token  # Gitea's internal token.
+GITEA_JWT_SECRET: example_of_jwt_key  # Secret key for Gitea's JWT authentication.
+
+GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
+GITEA_PORT: 3000  # Gitea's running port.
+GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
+GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
+GITEA_PASSWORD_HASH_ALGO: pbkdf2  # Gitea's password hashing algorithm.
+
+GITEA_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
+
+GITEA_DB_ROOT_PASSWORD: root1234!  # MariaDB root-user password.
+GITEA_DB_NAME: giteadb  # Gitea's database name.
+GITEA_DB_USER: gitea_db_user  # Gitea's database username.
+GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
+
+ACTRUUNER_DEPLOY: "{{ inventory_hostname == 'actrunner_host' }}"  # Service variable. For separate installation Gitea and ActRunner.
+
+ACT_VERSION: latest  # act_runner version.
+ACT_REREGISTER_RUNNER: false  # Re-register runner.
+
+################
+###  PiHole  ###
+################
+
+PIHOLE_DOCKERIZED: true  # Pihole dockerized install toogle.
+PIHOLE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+PIHOLE_DOCKER_WEBSERVER_PORT: false  # Web server port exposure (false to disable or specify a port number).
+PIHOLE_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Pi-hole.
+PIHOLE_DOMAIN_NAME: '{{ DOMAIN_NAME }}'
+PIHOLE_DOMAIN: dns.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Pi-hole service.
+PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
+PIHOLE_ADMIN_PASSWORD: qwerty1234!  # Password used to login in Pi-hole WebUI.
+
+PIHOLE_DNS_1: 1.1.1.1  # Primary DNS server.
+PIHOLE_DNS_2: 1.0.0.1  # Secondary DNS server.
+PIHOLE_DNS_3: 9.9.9.9  # Tertiary DNS server.
+PIHOLE_DNS_4: 149.112.112.112  # Quaternary DNS server.
+PIHOLE_QUERY_LOGGING: 'true'  # Toggle query logging.
+PIHOLE_CACHE_SIZE: 10000  # DNS cache size.
+PIHOLE_WEBUI_BOXED_LAYOUT: boxed  # Web interface layout.
+PIHOLE_WEBTHEME: default-dark  # Web interface theme.
+
+PIHOLE_DNS_RECORDS:  # List of DNS records to be created in Pi-hole.
+  - '{{ ansible_host }} {{ PIHOLE_DOMAIN_NAME }}'
+  - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'
+
+## Only for baremetal installation. 
+PIHOLE_INTERFACE: '{{ NETWORK_INTERFACE }}'  # Network interface for Pi-hole.
+PIHOLE_INSTALL_WEB_INTERFACE: 'true'  # Toggle web interface installation.
+
+######################
+###  Transmission  ###
+######################
+
+TRANSMISSION_DOCKERIZED: true  # Transmission dockerized install toogle.
+TRANSMISSION_DOCKER_VERSION: latest  # Transmission Docker image version.
+TRANSMISSION_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+TRANSMISSION_DOCKER_WEBSERVER_PORT: false  # Transmission web server port configuration (set to false to disable, or specify a port number).
+
+TRANSMISSION_USE_NGINX: false  # Toggle to use Transmission as a reverse proxy for Gitea.
+TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'  # Transmission data directory path.
+
+TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}  # Domain name for the Transmission service.
+TRANSMISSION_PORT: 9091  # Transmission port.
+TRANSMISSION_PEER_PORT: 51413  # Transmission peer port.
+
+TRANSMISSION_USER: transmission  # Username used to login.
+TRANSMISSION_PASSWORD: qwerty1234!  # Password used to login.
