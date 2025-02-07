@@ -48,10 +48,8 @@ ansible-playbook playbook.yml --tags="base,nextcloud" --skip-tags="firewall"
 Refer to the [Playbooks](#playbooks) section for a list of available playbooks and their descriptions. For information about tags, see the [Tags](#tags) section.
 
 # Playbooks
-1. [**playbook.yml**](./playbook.yml) - Main playbook for deploying the master server with various services like Nextcloud, Gitea, etc.
-2. [**playbook_dns.yml**](./playbook_dns.yml) - Playbook for deploying a DNS server with Pi-hole.
-3. [**playbook_backup.yml**](./playbook_backup.yml) - Playbook for deploying a backup server with Borgmatic.
-4. [**playbook_update.yml**](./playbook_update.yml) - Playbook for updating all nodes and rebooting if necessary. Originally authored by [Jeff Geerling](https://github.com/geerlingguy/pi-cluster/blob/master/upgrade.yml).
+1. [**default.playbook.yml**](./default.playbook.yml) - Example configuration used as a template.
+2. [**playbook_update.yml**](./playbook_update.yml) - Playbook for updating all nodes and rebooting if necessary. Originally authored by [Jeff Geerling](https://github.com/geerlingguy/pi-cluster/blob/master/upgrade.yml).
 
 # Roles
 1. [**Nextcloud**](./roles/nextcloud/README.md) - Personal cloud storage solution.
