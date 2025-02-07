@@ -50,17 +50,15 @@ ansible-playbook master_server.playbook.yml --tags="base,nextcloud" --skip-tags=
 2. [**playbook_update.yml**](./playbook_update.yml) - Playbook for updating all nodes and rebooting if necessary. Originally authored by [Jeff Geerling](https://github.com/geerlingguy/pi-cluster/blob/master/upgrade.yml).
 
 # Roles
-1. [**Nextcloud**](./roles/nextcloud/README.md) - Personal cloud storage solution.
-2. [**Gitea**](./roles/gitea/README.md) - Lightweight self-hosted Git service.
-3. [**Transmission**](./roles/transmission/README.md) - Fast, easy and free BitTorrent client.
-4. [**Pi-hole**](./roles/pihole/README.md) - Network-wide ad blocking via your own Linux hardware.
-5. [**Borgmatic**](./roles/borg/README.md) - Simple, configuration-driven backup software for servers and workstations.
-
-## Additional Roles
 1. [**Base**](./roles/base/README.md) - Base role for configuring the server, including system updates, essential package installations, VPN setup, disk mounting, and SFTP configuration.
-2. [**Nginx**](./roles/nginx/README.md) - High-performance HTTP server and reverse proxy.
-3. [**Mariadb**](./roles/mariadb/README.md) - Role for MariaDB installation and configuration.
-4. [**Docker**](./roles/docker/README.md) - Role for Docker installation and configuration.
+2. [**Docker**](./roles/docker/README.md) - Role for Docker installation and configuration.
+3. [**Nginx**](./roles/nginx/README.md) - High-performance HTTP server and reverse proxy.
+4. [**MariaDB**](./roles/mariadb/README.md) - Role for MariaDB installation and configuration.
+5. [**Nextcloud**](./roles/nextcloud/README.md) - Personal cloud storage solution.
+6. [**Gitea**](./roles/gitea/README.md) - Lightweight self-hosted Git service.
+7. [**Transmission**](./roles/transmission/README.md) - Fast, easy and free BitTorrent client.
+8. [**Pi-hole**](./roles/pihole/README.md) - Network-wide ad blocking via your own Linux hardware.
+9. **(WIP)** [**Borgmatic**](./roles/borg/README.md) - Simple, configuration-driven backup software for servers and workstations.
 
 # Deployment Options
 The deployment method for each service is determined by its individual Ansible variable `<SERVICE_NAME>_DOCKERIZED`, which you should set in your `vars.yml` file. For each service, choose:
