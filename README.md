@@ -97,11 +97,6 @@ The deployment method is determined by the Ansible variable `DOCKERIZED`, which 
 # Tags
 Tags are used to control which tasks are executed during playbook run. Here is a list of available tags and their descriptions:
 * **base** - Tasks for general system configuration and updates.
-* **prepare** - Tasks for initial server setup, including SSH configuration.
-* **firewall** - Tasks for setting up server firewall rules and policies.
-* **openvpn** - Tasks for installing and configuring OpenVPN.
-* **disk** - Tasks for mounting disk drives and setting up file systems.
-* **sftp** - Tasks for setting up secure file transfer via SFTP.
 * **nginx** - Tasks for installing and configuring the Nginx web server.
 * **mariadb** - Tasks for setting up the MariaDB database server.
 * **docker** - Tasks for Docker installation and service management.
