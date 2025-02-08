@@ -1,1 +1,38 @@
 ---
+- name: Install and config Nging Proxy Manager
+  block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+
+    - name: Create Nging Proxy Manager Docker directory
+      file:
+        path: '{{ NPM_DOCKER_PATH }}'
+        state: directory
+        owner: '{{ USERNAME }}'
+        mode: 0755
+      become: true
+
+    - name: Apply Nging Proxy Manager Docker Compose template
+      template:
+        src: docker_compose.yml.j2
+        dest: '{{ NPM_DOCKER_PATH }}/docker-compose.yml'
+        owner: '{{ USERNAME }}'
+        mode: 0644
+
+    - name: Start Nging Proxy Manager service
+      block:
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NPM_DOCKER_PATH }}'
+
+  when: NPM_DOCKERIZED
+  tags: npm

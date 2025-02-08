@@ -1,0 +1,22 @@
+---
+services:
+  {{ NPM_DOCKER_SERVICE_NAME }}:
+    image: jc21/nginx-proxy-manager:{{ NPM_DOCKER_VERSION }}
+    container_name: {{ NPM_DOCKER_CONTAINER_NAME }}
+    restart: unless-stopped
+    environment:
+      DISABLE_IPV6: 'true'
+    volumes:
+      - {{ NPM_DOCKER_DATA_PATH }}:/data
+      - {{ NPM_DOCKER_LETSENCTYPT_PATH }}:/etc/letsencrypt
+    networks:
+      - npm_network
+    ports:
+      - '80:80/tcp'
+      - '443:443/tcp'
+      - '81:81/tcp'
+
+networks:
+  npm_network:
+    name: {{ NPM_DOCKER_NETWORK_NAME }}
+    external: true

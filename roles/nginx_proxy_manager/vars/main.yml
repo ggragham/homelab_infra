@@ -1,1 +1,7 @@
 ---
+USERNAME: '{{ ansible_user }}'  # System username
+NPM_DOCKER_SERVICE_NAME: npm
+NPM_DOCKER_CONTAINER_NAME: npm_container
+NPM_DOCKER_PATH: /opt/nginx_proxy_manager_docker
+NPM_DOCKER_DATA_PATH: '{{ NPM_DOCKER_PATH }}/data'
+NPM_DOCKER_LETSENCTYPT_PATH: '{{ NPM_DOCKER_PATH }}/letsencrypt'
