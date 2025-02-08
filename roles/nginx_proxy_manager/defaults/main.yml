@@ -3,6 +3,7 @@
 ###  NGINX PROXY MANAGER  ###
 #############################
 
-NPM_DOCKERIZED: true
-NPM_DOCKER_VERSION: latest
-NPM_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'
+NPM_DOCKERIZED: true  # Nginx Proxy Manager dockerized install toogle.
+NPM_DOCKER_VERSION: latest  # Nginx Proxy Manager Docker image version.
+NPM_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+NPM_DOMAIN: proxy.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Nginx Proxy Manager service.
