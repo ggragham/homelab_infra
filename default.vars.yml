@@ -132,7 +132,7 @@ GITEA_DB_NAME: giteadb  # Gitea's database name.
 GITEA_DB_USER: gitea_db_user  # Gitea's database username.
 GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
 
-ACTRUUNER_DEPLOY: "{{ inventory_hostname == 'actrunner_host' }}"  # Service variable. For separate installation Gitea and ActRunner.
+ACTRUNNER_DEPLOY: "{{ inventory_hostname == 'actrunner_host' }}"  # Service variable. For separate installation Gitea and ActRunner.
 
 ACT_VERSION: latest  # act_runner version.
 ACT_REREGISTER_RUNNER: false  # Re-register runner.
