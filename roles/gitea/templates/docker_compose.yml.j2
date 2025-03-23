@@ -5,13 +5,15 @@ services:
     image: gitea/gitea:{{ GITEA_DOCKER_VERSION }}-rootless
     container_name: {{ GITEA_CONTAINER_NAME }}
     restart: always
+{% if GITEA_DB_DEPLOY %}
     depends_on:
       - {{ GITEA_DOCKER_DB_SERVICE_NAME }}
+{% endif %}
     environment:
       USER_UID: {{ GITEA_ID }}
       USER_GID: {{ GITEA_ID }}
       GITEA__database__DB_TYPE: mysql
-      GITEA__database__HOST: {{ GITEA_DOCKER_DB_SERVICE_NAME }}
+      GITEA__database__HOST: {{ GITEA_DB_HOST }}:{{ GITEA_DB_PORT }}
       GITEA__database__NAME: {{ GITEA_DB_NAME }}
       GITEA__database__USER: {{ GITEA_DB_USER }}
       GITEA__database__PASSWD: '{{ GITEA_DB_PASSWORD }}'
@@ -21,7 +23,7 @@ services:
       - {{ ACT_DOCKER_NETWORK }}
       - gitea_nginx_network
     ports:
-      - {{ GITEA_PORT }}:3000
+      - {{ GITEA_PORT }}:{{ GITEA_PORT }}
       - 2222:2222
     volumes:
       - {{ GITEA_DATA_PATH }}:/var/lib/gitea
@@ -29,6 +31,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
+{% if GITEA_DB_DEPLOY %}
   {{ GITEA_DOCKER_DB_SERVICE_NAME }}:
     image: mariadb:{{ GITEA_DOCKER_MARIADB_VERSION }}
     container_name: {{ GITEA_DB_CONTAINER_NAME }}
@@ -43,6 +46,7 @@ services:
       - gitea_network
     volumes:
       - {{ DISK_DATABASE_PATH }}/gitea:/var/lib/mysql
+{% endif %}
 {% endif %}
 
 {% if ACTRUNNER_DEPLOY %}
