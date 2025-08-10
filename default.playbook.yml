@@ -6,7 +6,7 @@
     - default.vars.yml
 
   roles:
-    - role: base
+    - role: base_config_role
       tags: base
 
     - role: docker

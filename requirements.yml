@@ -1,0 +1,5 @@
+---
+- name: base_config_role
+  src: git+https://github.com/ggragham/base_config_role.git
+  scm: git
+  version: master
