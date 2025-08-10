@@ -5,11 +5,11 @@
 assets/*
 !assets/README.md
 
-inventory.yml
-inventory.ini
-
+*inventory.yml
+!default.inventory.yml
+*inventory.ini
+default.inventory.ini
 *vars.yml
 !default.vars.yml
-
 *playbook.yml
 !default.playbook.yml
