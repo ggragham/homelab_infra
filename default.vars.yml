@@ -7,6 +7,7 @@ DOMAIN_NAME: example.com  # Domain name for server.
 USERNAME: user  # Default system user.
 NETWORK_INTERFACE: eth0  # Network interface to be used.
 SSH_PORT: 22  # SSH port.
+VPN_PORT: 38224  # VPN port.
 
 ###############################
 ###  Base Config Role Vars  ###

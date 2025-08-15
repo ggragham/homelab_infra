@@ -4,6 +4,7 @@
 
 assets/*
 !assets/README.md
+!assets/default.*
 .external_roles/
 
 *inventory.yml
