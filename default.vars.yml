@@ -4,7 +4,9 @@
 ##############
 
 DOMAIN_NAME: example.com  # Domain name for server.
+USERNAME: user  # Default system user.
 NETWORK_INTERFACE: eth0  # Network interface to be used.
+SSH_PORT: 22  # SSH port.
 
 ###############################
 ###  Base Config Role Vars  ###
@@ -174,6 +176,50 @@ SAMBA_SHARES_LIST:  # List of SAMBA shares.
     browseable: true
     writable: true
     force_user: nobody
+
+#############################
+###  Hardening role vars  ###
+#############################
+
+# Misc
+HARDENING_MISC_CONFIG_ENABLED: true  # Enable or disable miscellaneous hardening tasks.
+HARDENING_MISC_YESCRYPT_HOST_FACTOR: 8  # Yescrypt factor for password hashing difficulty.
+HARDENING_MISC_NODE_TYPE: server  # Specify the type of node (server or desktop).
+
+# Auth
+HARDENING_AUTH_FAILLOCK_CONFIG_ENABLED: true  # Enable or disable faillock.
+HARDENING_AUTH_FAILLOCK_MAX_ATTEMPTS: 3  # Maximum number of failed login attempts.
+HARDENING_AUTH_FAILLOCK_UNLOCK_TIME: 600  # Time (in seconds) to unlock after exceeding attempts.
+
+# Network
+HARDENING_NETWORK_CONFIG_ENABLED: true  # Enable or disable network configuration.
+HARDENING_NETWORK_DISABLE_IPV6: true  # Enable or disable IPv6 stack disabling.
+
+# Debian-based
+HARDENING_DEBIAN_HARDENING_ENABLED: true  # Enable or disable Debian-based configuration.
+
+# RedHat family
+HARDENING_REDHAT_HARDENING_ENABLED: true  # Enable or disable RedHat-based configuration.
+
+# SSH
+HARDENING_SSH_CONFIG_ENABLED: true  # Enable or disable SSH configuration.
+HARDENING_SSH_REMOVE_ROOT_PASSWORD_ENABLED: true  # Enable or disable root password removal.
+HARDENING_SSH_PERMIT_ROOT_LOGIN: false  # Allow or disallow root login via SSH.
+
+# Fail2ban
+HARDENING_FAIL2BAN_ENABLED: true  # Enable or disable Fail2Ban installation.
+HARDENING_FAIL2BAN_BANTIME: 5m  # Duration for which IPs are banned.
+HARDENING_FAIL2BAN_FINDTIME: 3m  # Time window to consider failed login attempts.
+HARDENING_FAIL2BAN_MAXRETRY: 5  # Number of allowed failed login attempts before banning IP.
+
+# Chrony
+HARDENING_CHRONY_ENABLED: true  # Enable or disable Chrony installation.
+
+# Firewall
+HARDENING_FIREWALL_ENABLED: true  # Enable or disable firewall hardening.
+HARDENING_FIREWALL_BACKEND: iptables  # Firewall backend.
+HARDENING_FIREWALL_RESET: false  # Enable or disable resetting the firewall rules.
+HARDENING_FIREWALL_IPTABLES_CONFIG_SRC: ./assets/default.iptables.rules.j2  # Path to the iptables configuration template file.
 
 ################
 ###  Docker  ###
