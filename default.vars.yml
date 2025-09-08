@@ -222,13 +222,6 @@ HARDENING_FIREWALL_BACKEND: iptables  # Firewall backend.
 HARDENING_FIREWALL_RESET: false  # Enable or disable resetting the firewall rules.
 HARDENING_FIREWALL_IPTABLES_CONFIG_SRC: ./assets/default.iptables.rules.j2  # Path to the iptables configuration template file.
 
-################
-###  Docker  ###
-################
-
-DOCKER_NETWORK_NAME: homelab_network  # Name of the Docker network.
-DOCKER_BRIDGE_NAME: homelab_bridge  # Name of the bridge interface for the Docker network.
-
 ###############
 ###  NGINX  ###
 ###############
