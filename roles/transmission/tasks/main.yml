@@ -110,18 +110,21 @@
 
     - name: Start dockerized Transmission service
       block:
-        - name: Run Docker Compose
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ TRANSMISSION_DOCKER_PATH }}'
+        - name: Restart Transmission
+          community.docker.docker_compose_v2:
+            project_src: '{{ TRANSMISSION_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
 
         - name: Restart Nginx
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ NGINX_DOCKER_PATH }}'
+          community.docker.docker_compose_v2:
+            project_src: '{{ NGINX_DOCKER_PATH }}'
+            state: present
+            recreate: smart
+            remove_orphans: true
           when: TRANSMISSION_USE_NGINX
 
       when: TRANSMISSION_DOCKERIZED
 
   become: true
-  tags: transmission
