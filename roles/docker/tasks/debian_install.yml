@@ -1,0 +1,39 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - python3-requests
+    state: latest
+    update_cache: true
+    become: true
+
+- name: Add Docker apt key.
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: '{{ DOCKER_APT_GPG_KEY_PATH }}'
+    mode: '0644'
+    force: false
+    checksum: '{{ docker_apt_gpg_key_checksum | default(omit) }}'
+    become: true
+
+- name: Add Docker Repository
+  apt_repository:
+    filename: docker
+    repo: deb [signed-by={{ DOCKER_APT_GPG_KEY_PATH }}] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable
+    state: present
+    become: true
+
+- name: Install Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+    update_cache: true
+    become: true

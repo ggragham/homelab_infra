@@ -1,2 +1,6 @@
 ---
 USERNAME: '{{ ansible_user }}'
+DOCKER_APT_GPG_KEY_PATH: /etc/apt/keyrings/docker.asc  # Path to the Docker GPG key file for APT.
+DOCKER_NETWORK_NAME: homelab_network  # Name of the Docker network.
+DOCKER_BRIDGE_NAME: homelab  # Name of the bridge interface for the Docker network.
+DOCKER_SERVICES_NETWORK_SUBNET: 172.18.0.0/24  # Subnet for the Docker services network.
