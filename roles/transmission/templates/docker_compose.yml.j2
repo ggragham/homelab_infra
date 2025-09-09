@@ -18,10 +18,12 @@ services:
       - {{ TRANSMISSION_DOWNLOAD_PATH }}:/downloads
       - {{ TRANSMISSION_PROCESS_PATH }}:/process
       - {{ TRANSMISSION_WATCH_PATH }}:/watch
-{% if TRANSMISSION_DOCKER_WEBSERVER_PORT is defined and TRANSMISSION_DOCKER_WEBSERVER_PORT is not sameas(false) %}
     ports:
-      - {{ TRANSMISSION_DOCKER_WEBSERVER_PORT }}:{{ TRANSMISSION_PORT }}/tcp
+{% if TRANSMISSION_RPC_PORT is defined and TRANSMISSION_RPC_PORT is not sameas(false) %}
+      - {{ TRANSMISSION_RPC_PORT }}:9091/tcp
 {% endif %}
+      - {{ TRANSMISSION_PEER_PORT }}:{{ TRANSMISSION_PEER_PORT }}/tcp
+      - {{ TRANSMISSION_PEER_PORT }}:{{ TRANSMISSION_PEER_PORT }}/udp
     networks:
       - transmission_nginx_network
 
