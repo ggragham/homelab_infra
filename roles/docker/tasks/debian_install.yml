@@ -8,7 +8,7 @@
       - python3-requests
     state: latest
     update_cache: true
-    become: true
+  become: true
 
 - name: Add Docker apt key.
   ansible.builtin.get_url:
@@ -17,14 +17,14 @@
     mode: '0644'
     force: false
     checksum: '{{ docker_apt_gpg_key_checksum | default(omit) }}'
-    become: true
+  become: true
 
 - name: Add Docker Repository
   apt_repository:
     filename: docker
     repo: deb [signed-by={{ DOCKER_APT_GPG_KEY_PATH }}] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable
     state: present
-    become: true
+  become: true
 
 - name: Install Docker
   apt:
@@ -36,4 +36,4 @@
       - docker-compose-plugin
     state: latest
     update_cache: true
-    become: true
+  become: true
