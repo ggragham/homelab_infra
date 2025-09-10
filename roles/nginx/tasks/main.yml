@@ -1,6 +1,16 @@
 ---
 - name: Install and config webserver
   block:
+    - name: Ensure www-data user is present
+      user:
+        name: www-data
+        uid: 33
+        comment: www-data
+        home: /var/www
+        shell: /usr/sbin/nologin
+        state: present
+      become: true
+
     # Bare Metal Install
     - name: Nginx bare metal install
       block:
