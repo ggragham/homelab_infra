@@ -159,10 +159,12 @@
             state: restarted
           when: not NGINX_DOCKERIZED
 
-        - name: Start Docker Compose
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ NGINX_DOCKER_PATH }}'
+        - name: Restart Nginx
+          community.docker.docker_compose_v2:
+            project_src: '{{ NGINX_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
           when: NGINX_DOCKERIZED
 
   become: true
