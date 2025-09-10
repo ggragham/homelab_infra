@@ -1,10 +1,10 @@
 {% if TRANSMISSION_DOCKERIZED %}
 upstream transmission_backend {
-    server {{ TRANSMISSION_DOCKER_SERVICE_NAME }}:{{ TRANSMISSION_PORT }};
+    server {{ TRANSMISSION_DOCKER_SERVICE_NAME }}:9091;
 }
 {% else %}
 upstream transmission_backend {
-    server 127.0.0.1:{{ TRANSMISSION_PORT }};
+    server 127.0.0.1:{{ TRANSMISSION_RPC_PORT }};
 }
 {% endif %}
 
