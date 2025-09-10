@@ -11,18 +11,28 @@
             update_cache: true
           when: ansible_os_family == "Debian"
 
-        - name: Apply nginx config
-          template:
-            src: nginx_default.j2
-            dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/default'
-            mode: 0644
-
-        - name: Enable nginx config
+        - name: Remove default site config
           file:
-            src: '{{ NGINX_SITES_AVAILABLE_PATH }}/default'
-            dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
-            state: link
-            mode: 0644
+            path: '{{ NGINX_SITES_ENABLED_PATH }}/default'
+            state: absent
+          when: not NGINX_DEPLOY_DEMO
+
+        - name: Deploy demo page
+          block:
+            - name: Apply demo page nginx config
+              template:
+                src: nginx_default.j2
+                dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/default'
+                mode: 0644
+
+            - name: Enable demo page nginx config
+              file:
+                src: '{{ NGINX_SITES_AVAILABLE_PATH }}/default'
+                dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
+                state: link
+                mode: 0644
+
+          when: NGINX_DEPLOY_DEMO
 
       when: not NGINX_DOCKERIZED
 
@@ -42,20 +52,21 @@
 
         - name: Create Nginx directory struct
           file:
-            path: '{{ directory }}'
+            path: '{{ item.path }}'
             state: directory
             owner: '{{ NGINX_USER }}'
             group: root
             mode: 0755
-          loop_control:
-            loop_var: directory
           loop:
-            - '{{ DEFAULT_WWW_PATH }}'
-            - '{{ NGINX_LOG_PATH }}'
-            - '{{ NGINX_DOCKER_PATH }}'
-            - '{{ NGINX_DOCKER_CONF_PATH }}'
-            - '{{ NGINX_SITES_ENABLED_PATH }}'
-            - '{{ NGINX_SNIPPETS_PATH }}'
+            - {path: '{{ DEFAULT_WWW_PATH }}', when: '{{ NGINX_DEPLOY_DEMO }}'}
+            - {path: '{{ NGINX_LOG_PATH }}', when: true}
+            - {path: '{{ NGINX_DOCKER_PATH }}', when: true}
+            - {path: '{{ NGINX_DOCKER_CONF_PATH }}', when: true}
+            - {path: '{{ NGINX_SITES_ENABLED_PATH }}', when: true}
+            - {path: '{{ NGINX_SNIPPETS_PATH }}', when: true}
+          when: item.when | bool
+          loop_control:
+            label: '{{ item.path }}'
 
         - name: Create Nginx ssl directory
           file:
@@ -81,11 +92,12 @@
             group: root
             mode: 0644
 
-        - name: Apply nginx config
+        - name: Apply demo page nginx config
           template:
             src: nginx_default.j2
             dest: '{{ NGINX_SITES_ENABLED_PATH }}/default'
             mode: 0644
+          when: NGINX_DEPLOY_DEMO
 
       when: NGINX_DOCKERIZED
 
@@ -94,6 +106,7 @@
         src: index.html
         dest: '{{ DEFAULT_WWW_PATH }}/index.html'
         mode: 0644
+      when: NGINX_DEPLOY_DEMO
 
     - name: Copy ssl cert
       copy:
