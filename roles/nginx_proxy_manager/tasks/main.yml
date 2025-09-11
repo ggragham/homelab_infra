@@ -27,9 +27,9 @@
         owner: '{{ USERNAME }}'
         mode: 0644
 
-    - name: Start Nging Proxy Manager service
-      block:
-        - name: Run Docker Compose
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ NPM_DOCKER_PATH }}'
+    - name: Start Nginx Proxy Manager
+      community.docker.docker_compose_v2:
+        project_src: '{{ NPM_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true
