@@ -241,6 +241,14 @@ SSL_CERT_PATH: ./assets/{{ SSL_CERT_NAME }}  # SSL Cert path.
 SSL_KEY_PATH: ./assets/{{ SSL_KEY_NAME }}  # SSL Key path.
 SSL_DH_PATH: ./assets/{{ SSL_DH_NAME }}  # DH key path.
 
+#############################
+###  NGINX PROXY MANAGER  ###
+#############################
+
+NPM_DOCKER_VERSION: latest  # Nginx Proxy Manager Docker image version.
+NPM_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+NPM_DOMAIN: proxy.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Nginx Proxy Manager service.
+
 ###################
 ###  NextCloud  ###
 ###################
