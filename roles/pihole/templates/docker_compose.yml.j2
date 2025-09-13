@@ -5,8 +5,9 @@ services:
     container_name: {{ PIHOLE_CONTAINER_NAME }}
     restart: unless-stopped
     environment:
-      TZ: Etc/UTC
-      IPv6: false
+      TZ: {{ PIHOLE_TIMEZONE }}
+    networks:
+      pihole_nginx_network:
     ports:
       - 53:53/tcp
       - 53:53/udp
@@ -14,12 +15,10 @@ services:
       - {{ PIHOLE_DOCKER_WEBSERVER_PORT }}:80/tcp
 {% endif %}
     volumes:
-      - '{{ PIHOLE_CONFIG_PATH }}:/etc/pihole'
-      - '{{ PIHOLE_DNSMASQ_PATH }}:/etc/dnsmasq.d'
-    networks:
-      - pihole_nginx_network
+      - {{ PIHOLE_CONFIG_PATH }}:/etc/pihole
+      - {{ PIHOLE_DNSMASQ_PATH }}:/etc/dnsmasq.d
 
 networks:
   pihole_nginx_network:
-    name: {{ PIHOLE_DOCKER_NETWORK_NAME }}
+    name: {{ DOCKER_NETWORK_NAME }}
     external: true

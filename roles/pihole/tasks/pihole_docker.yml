@@ -1,0 +1,59 @@
+---
+# Dockerized install
+- name: Pi-hole containerized install
+  block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+
+    - name: Create Pi-hole Docker dirs
+      file:
+        path: '{{ dirs }}'
+        state: directory
+        mode: 0755
+      loop_control:
+        loop_var: dirs
+      loop:
+        - '{{ PIHOLE_DOCKER_PATH }}'
+        - '{{ PIHOLE_CONFIG_PATH }}'
+      become: true
+
+    - name: Apply Pi-hole config
+      template:
+        src: pihole.toml.j2
+        dest: '{{ PIHOLE_CONFIG_PATH }}/pihole.toml'
+      become: true
+
+    - name: Apply Pi-hole Docker Compose template
+      template:
+        src: docker_compose.yml.j2
+        dest: '{{ PIHOLE_DOCKER_PATH }}/docker-compose.yml'
+        owner: '{{ USERNAME }}'
+        mode: 0644
+      become: true
+
+    - name: Apply nginx config
+      template:
+        src: pihole_nginx.conf.j2
+        dest: '{{ NGINX_SITES_ENABLED_PATH }}/pihole.conf'
+        mode: 0644
+      when: PIHOLE_USE_NGINX
+      become: true
+
+    - name: Run Docker Compose
+      shell: docker compose down && docker compose up -d
+      args:
+        chdir: '{{ PIHOLE_DOCKER_PATH }}'
+
+    - name: Restart Nginx
+      shell: docker compose down && docker compose up -d
+      args:
+        chdir: '{{ NGINX_DOCKER_PATH }}'
+      when: PIHOLE_USE_NGINX

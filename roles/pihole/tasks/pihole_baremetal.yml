@@ -1,0 +1,81 @@
+---
+    # Bare Metal install
+  - name: Pi-hole bare metal install
+    block:
+      - name: Create Pi-hole config dir
+        file:
+          path: '{{ PIHOLE_CONFIG_PATH }}'
+          state: directory
+          mode: 0775
+        become: true
+
+      - name: Apply Pi-hole config
+        template:
+          src: pihole.toml.j2
+          dest: '{{ PIHOLE_CONFIG_PATH }}/pihole.toml'
+        become: true
+
+      - name: Install dependecies
+        apt:
+          name:
+            - git
+            - php8.2-cgi
+            - php8.2-fpm
+            - php8.2-intl
+            - php8.2-sqlite3
+            - php8.2-xml
+          state: latest
+          update_cache: true
+        become: true
+
+      - name: Check Pi-hole existence
+        stat:
+          path: /usr/local/bin/pihole
+        register: pihole_exist
+
+      - name: Install Pi-hole
+        block:
+          - name: Clone the Pi-hole repository
+            git:
+              repo: https://github.com/pi-hole/pi-hole.git
+              dest: /etc/.pihole
+              version: master
+            become: true
+
+          - name: Run the Pi-hole installer
+            command: /etc/.pihole/automated\ install/basic-install.sh --unattended
+            become: true
+
+          - name: Change Pi-hole config dir owner
+            file:
+              path: /etc/pihole
+              owner: pihole
+              state: directory
+            become: true
+
+        when: not pihole_exist.stat.exists
+
+      - name: Add www-data user to pihole group
+        user:
+          name: www-data
+          groups: pihole
+          append: true
+        become: true
+
+      - name: Apply Pi-hole nginx config
+        block:
+          - name: Copy Pi-hole nginx config
+            template:
+              src: pihole_nginx.conf.j2
+              dest: /etc/nginx/sites-available/pihole.conf
+              mode: 0644
+
+          - name: Enable Pi-hole nginx config
+            file:
+              src: /etc/nginx/sites-available/pihole.conf
+              dest: /etc/nginx/sites-enabled/pihole.conf
+              state: link
+        when: PIHOLE_USE_NGINX
+        become: true
+
+    notify: Restart nginx

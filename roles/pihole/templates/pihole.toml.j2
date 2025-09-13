@@ -1,0 +1,28 @@
+[dns]
+  hosts = [
+{% for record in PIHOLE_DNS_RECORDS %}
+    "{{ record }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+  ]
+
+  dnssec = true
+
+  interface = "eth0"
+  listeningMode = "ALL"
+  queryLogging = {{ PIHOLE_QUERY_LOGGING }}
+
+  [dns.cache]
+    size = {{ PIHOLE_CACHE_SIZE }}
+    optimizer = 3600
+    upstreamBlockedTTL = 86400
+
+  [dns.specialDomains]
+    mozillaCanary = true
+    iCloudPrivateRelay = true
+
+[webserver]
+  port = "80o,443os"
+
+  [webserver.interface]
+    boxed = {{ PIHOLE_WEBUI_BOXED_LAYOUT }}
+    theme = {{ PIHOLE_WEBUI_THEME }}

@@ -1,8 +1,7 @@
 ---
-PIHOLE_INSTALL_WEB_SERVER: 'false'
-PIHOLE_LIGHTTPD_ENABLED: 'false'
 PIHOLE_DOCKER_PATH: /opt/pihole_docker  # Pi-hole Docker installation path
 PIHOLE_CONFIG_PATH: "{{ (PIHOLE_DOCKERIZED) | ternary(PIHOLE_DOCKER_PATH + '/config', '/etc/pihole') }}"  # Pi-hole configuration path.
 PIHOLE_DNSMASQ_PATH: "{% if PIHOLE_DOCKERIZED %}{{ PIHOLE_DOCKER_PATH + '/dnsmasq.d' }}{% endif %}"  # Pi-hole dnsmasq.d path.
 PIHOLE_DOCKER_SERVICE_NAME: pihole  # Pi-hole Docker service name.
 PIHOLE_CONTAINER_NAME: pihole_container  # Pi-hole Docker container name.
+PIHOLE_TIMEZONE: '{{ TIMEZONE }}'  # Timezone for the Pi-hole instance.
