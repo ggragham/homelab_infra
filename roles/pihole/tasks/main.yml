@@ -17,5 +17,5 @@
         {% if PIHOLE_DOCKERIZED %}
         {{ 'docker exec -it ' + PIHOLE_CONTAINER_NAME }}
         {% endif %}
-        pihole admin password {{ PIHOLE_ADMIN_PASSWORD }}
+        pihole setpassword  {{ PIHOLE_ADMIN_PASSWORD }}
       no_log: true
