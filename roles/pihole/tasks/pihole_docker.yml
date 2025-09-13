@@ -47,13 +47,19 @@
       when: PIHOLE_USE_NGINX
       become: true
 
-    - name: Run Docker Compose
-      shell: docker compose down && docker compose up -d
-      args:
-        chdir: '{{ PIHOLE_DOCKER_PATH }}'
+    - name: Start dockerized Pi-hole service
+      block:
+        - name: Start Pi-hole
+          community.docker.docker_compose_v2:
+            project_src: '{{ PIHOLE_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
 
-    - name: Restart Nginx
-      shell: docker compose down && docker compose up -d
-      args:
-        chdir: '{{ NGINX_DOCKER_PATH }}'
-      when: PIHOLE_USE_NGINX
+        - name: Restart Nginx
+          community.docker.docker_compose_v2:
+            project_src: '{{ NGINX_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
+          when: PIHOLE_USE_NGINX
