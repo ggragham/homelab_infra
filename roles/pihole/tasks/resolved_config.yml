@@ -1,0 +1,31 @@
+---
+- name: Ensure systemd-resolved is active
+  command: systemctl is-active --quiet systemd-resolved
+  failed_when: false
+  changed_when: false
+  register: resolved_status
+
+- block:
+    - name: Create resolved config directory
+      file:
+        path: /etc/systemd/resolved.conf.d/
+        state: directory
+        mode: 0755
+
+    - name: Apply stub-listener.conf
+      copy:
+        src: stub-listener.conf
+        dest: /etc/systemd/resolved.conf.d/stub-listener.conf
+        owner: root
+        group: root
+        mode: 0644
+      register: apply_stub_config_status
+
+    - name: Restart systemd-resolved service
+      systemd:
+        name: systemd-resolved
+        state: restarted
+      when: apply_stub_config_status.changed
+
+  when: resolved_status.rc == 0
+  become: true

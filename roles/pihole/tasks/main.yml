@@ -1,6 +1,9 @@
 ---
 - name: Pi-hole
   block:
+    - name: Apply resolved config
+      include_tasks: resolved_config.yml
+
     - name: Pi-hole bare metal install
       include_tasks: pihole_baremetal.yml
       when: not PIHOLE_DOCKERIZED
