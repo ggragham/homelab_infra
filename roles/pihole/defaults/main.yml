@@ -20,3 +20,6 @@ PIHOLE_DNS_RECORDS:  # List of DNS records to be created in Pi-hole.
   - 10.8.0.2 example.com
   - 10.8.0.3 link1.example.com
   - 10.8.0.4 link2.example.com
+
+CLOUDFLARED_DOCKER_IMAGE_VERSION: latest  # Cloudflared Docker image version.
+CLOUDFLARED_TUNNEL_DNS_UPSTREAM: https://1.1.1.1/dns-query,https://1.0.0.1/dns-query  # Upstream DoH servers for Cloudflared tunnel.

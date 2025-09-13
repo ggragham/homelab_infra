@@ -5,3 +5,11 @@ PIHOLE_DNSMASQ_PATH: "{% if PIHOLE_DOCKERIZED %}{{ PIHOLE_DOCKER_PATH + '/dnsmas
 PIHOLE_DOCKER_SERVICE_NAME: pihole  # Pi-hole Docker service name.
 PIHOLE_CONTAINER_NAME: pihole_container  # Pi-hole Docker container name.
 PIHOLE_TIMEZONE: '{{ TIMEZONE }}'  # Timezone for the Pi-hole instance.
+
+CLOUDFLARED_DOCKER_SERVICE_NAME: cloudflared  # Cloudflared Docker service name.
+CLOUDFLARED_DOCKER_CONTAINER_NAME: cloudflared_container  # Cloudflared container name.
+CLOUDFLARED_TIMEZONE: '{{ TIMEZONE }}'  # Timezone for the Cloudflared service.
+CLOUDFLARE_DOCKER_NETWORK_SUBNET: 172.27.0.0/24  # Subnet for the Cloudflare Docker network.
+CLOUDFLARED_DOCKER_NETWORK_IPV4: 172.27.0.53  # IPv4 address assigned to the Cloudflared container on the DNS Docker network, used as the upstream DNS service for Pi-hole.
+CLOUDFLARED_TUNNEL_DNS_PORT: 5053  # DNS port used by Cloudflare Tunnel for DNS queries.
+CLOUDFLARED_TUNNEL_DNS_ADDRESS: 0.0.0.0  # Address on which the Cloudflare Tunnel will listen for incoming DNS requests.

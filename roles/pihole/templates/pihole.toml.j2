@@ -1,4 +1,8 @@
 [dns]
+  upstreams = [
+    "{{ CLOUDFLARED_DOCKER_NETWORK_IPV4 }}#{{ CLOUDFLARED_TUNNEL_DNS_PORT }}"
+  ]
+  
   hosts = [
 {% for record in PIHOLE_DNS_RECORDS %}
     "{{ record }}"{% if not loop.last %},{% endif %}
