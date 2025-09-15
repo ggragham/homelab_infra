@@ -300,42 +300,39 @@ NEXTCLOUD_DB_PASSWORD: qwerty1234!  # Nextcloud database password.
 ###  Gitea  ###
 ###############
 
-GITEA_DEPLOY: "{{ inventory_hostname == 'gitea_host' }}"  # Service variable. For separate installation Gitea and ActRunner by host.
-GITEA_IP: 192.168.1.30
+GITEA_GROUP: gitea_host  # The group of nodes designated to install Gitea (defined in the inventory file).
+GITEA_IP: 192.168.1.30  # The IP address of the Gitea instance.
 
 GITEA_DOCKERIZED: true  # Gitea dockerized install toogle.
 GITEA_DOCKER_VERSION: latest  # Gitea Docker image version (rootless).
 GITEA_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
-
 GITEA_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Gitea.
+
 GITEA_APP_NAME: tea  # Name of Gitea application.
 GITEA_ADMIN_USER: gitea_admin  # Username for the Gitea administrator account.
 GITEA_ADMIN_EMAIL: gitea_admin@{{ DOMAIN_NAME }}  # Email address for the Gitea administrator account.
-GITEA_ADMIN_PASSWORD: qwerty1234!  # Password for the Gitea administrator account.
+GITEA_ADMIN_PASSWORD: foobar123  # Password for the Gitea administrator account.
 GITEA_LFS_JWT_SECRET: example_of_lfs_jwt_secret  # Secret key for Gitea's Large File Storage JWT authentication.
 GITEA_INTERNAL_TOKEN: example_of_internal_token  # Gitea's internal token.
 GITEA_JWT_SECRET: example_of_jwt_key  # Secret key for Gitea's JWT authentication.
-
 GITEA_DOMAIN: git.{{ DOMAIN_NAME }}  # Gitea's domain name.
 GITEA_PORT: 3000  # Gitea's running port.
-GITEA_DATA_PATH: '{{ DISK_DATA_PATH }}/gitea'  # Gitea's data storage path.
+GITEA_DATA_PATH: /mnt/storage/gitea  # Gitea's data storage path.
 GITEA_CHECK_UPDATES: false  # Controls Gitea's update checks.
 GITEA_PASSWORD_HASH_ALGO: pbkdf2  # Gitea's password hashing algorithm.
 
-GITEA_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
-
 GITEA_DB_DEPLOY: false  # Toggle to include database service in Docker Compose.
-GITEA_DB_HOST: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'  # Database host for Gitea.
+GITEA_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
+GITEA_DB_HOST: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'  # Database host for Gitea. Change this if not using the DB from Docker Compose.
 GITEA_DB_PORT: 3306  # Port for the Gitea database server.
 GITEA_DB_ROOT_PASSWORD: root1234!  # MariaDB root-user password.
 GITEA_DB_NAME: giteadb  # Gitea's database name.
 GITEA_DB_USER: gitea_db_user  # Gitea's database username.
 GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
 
-ACTRUNNER_DEPLOY: "{{ inventory_hostname == 'actrunner_host' }}"  # Service variable. For separate installation Gitea and ActRunner.
-
-ACT_VERSION: latest  # act_runner version.
-ACT_REREGISTER_RUNNER: false  # Re-register runner.
+ACTRUNNER_GROUP: actrunner_host  # The group of nodes designated to install Act Runner (workers) (defined in the inventory file).
+ACTRUNNER_DOCKER_VERSION: latest  # act_runner version.
+ACTRUNNER_REREGISTER_RUNNER: false  # Re-register runner.
 
 ######################
 ###  Transmission  ###
