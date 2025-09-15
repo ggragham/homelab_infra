@@ -49,28 +49,37 @@
             msg: Sucksessfully failed
       when: GITEA_DEPLOY
 
-    - name: Generate runner token
-      shell: >
-        docker exec {{ GITEA_CONTAINER_NAME }} \
-        /app/gitea/gitea actions generate-runner-token \
-        -c /etc/gitea/app.ini | tail -n 1
-      register: act_token
-      delegate_to: '{{ GITEA_CONTROLLER }}'
+    - name: Check if runner exists
+      stat:
+        path: '{{ ACT_DATA_PATH }}/.runner'
+      register: runner_file
 
-    - name: Set runner token globally
-      set_fact:
-        runner_token: '{{ act_token.stdout }}'
-      delegate_to: localhost
+    - name: Generate and distribute runner token
+      block:
+        - name: Generate runner token
+          shell: >
+            docker exec {{ GITEA_CONTAINER_NAME }} \
+            /app/gitea/gitea actions generate-runner-token \
+            -c /etc/gitea/app.ini | tail -n 1
+          register: act_token
+          delegate_to: '{{ GITEA_CONTROLLER }}'
 
-    - name: Distribute runner token to ActRunner servers
-      set_fact:
-        runner_token: '{{ runner_token }}'
-      delegate_to: '{{ item }}'
-      delegate_facts: true
-      run_once: true
-      when: ACTRUNNER_DEPLOY
-      loop: '{{ ACTRUNNER_CONTROLLERS }}'
+        - name: Set runner token globally
+          set_fact:
+            runner_token: '{{ act_token.stdout }}'
+          delegate_to: localhost
 
-    - name: Install Act Runner
-      include_tasks: actrunner.yml
-      when: ACTRUNNER_DEPLOY
+        - name: Distribute runner token to ActRunner servers
+          set_fact:
+            runner_token: '{{ runner_token }}'
+          delegate_to: '{{ item }}'
+          delegate_facts: true
+          run_once: true
+          when: ACTRUNNER_DEPLOY
+          loop: '{{ ACTRUNNER_CONTROLLERS }}'
+
+        - name: Install Act Runner
+          include_tasks: actrunner.yml
+          when: ACTRUNNER_DEPLOY
+
+      when: not runner_file.stat.exists
