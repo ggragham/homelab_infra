@@ -51,7 +51,9 @@
         mode: 0644
       become: true
 
-    - name: Run Docker Compose
-      shell: docker compose down && docker compose up -d {{ ACT_DOCKER_SERVICE_NAME }}
-      args:
-        chdir: '{{ GITEA_DOCKER_PATH }}'
+    - name: Start ActRunner
+      community.docker.docker_compose_v2:
+        project_src: '{{ GITEA_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true

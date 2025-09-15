@@ -76,13 +76,17 @@
   block:
     - name: Start dockerized Gitea service
       block:
-        - name: Run Docker Compose
-          shell: docker compose down && docker compose up -d {{ GITEA_DOCKER_SERVICE_NAME }}
-          args:
-            chdir: '{{ GITEA_DOCKER_PATH }}'
+        - name: Start Gitea
+          community.docker.docker_compose_v2:
+            project_src: '{{ GITEA_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
 
-        - name: Run Docker Compose
-          shell: docker compose down && docker compose up -d
-          args:
-            chdir: '{{ NGINX_DOCKER_PATH }}'
+        - name: Restart Nginx
+          community.docker.docker_compose_v2:
+            project_src: '{{ NGINX_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
           when: GITEA_USE_NGINX
