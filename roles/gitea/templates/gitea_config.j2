@@ -30,7 +30,7 @@ OFFLINE_MODE            = true
 
 [database]
 DB_TYPE  = mysql
-HOST     = {{ (GITEA_DOCKERIZED == true) | ternary(SERVER_IP, '127.0.0.1') }}:{{ GITEA_DB_PORT }}
+HOST     = {{ (GITEA_DOCKERIZED == true) | ternary(GITEA_DB_HOST, '127.0.0.1') }}:{{ GITEA_DB_PORT }}
 NAME     = {{ GITEA_DB_NAME }}
 USER     = {{ GITEA_DB_USER }}
 PASSWD   = {{ GITEA_DB_PASSWORD }}

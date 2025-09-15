@@ -1,191 +1,33 @@
 ---
-- name: Install and configure Gitea
-  block:
-    - name: Create Gitea data dirs
-      file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ GITEA_USER }}'
-        group: '{{ GITEA_USER }}'
-        mode: 0755
-        recurse: true
-      with_items:
-        - '{{ GITEA_CONFIG_PATH }}'
-        - '{{ GITEA_DATA_PATH }}'
-        - '{{ GITEA_DATA_PATH }}/data'
+- name: Create Gitea data dirs
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: 0755
+    recurse: true
+  with_items:
+    - '{{ GITEA_CONFIG_PATH }}'
+    - '{{ GITEA_DATA_PATH }}'
+    - '{{ GITEA_DATA_PATH }}/data'
+  become: true
 
-    # Bare metal install
-    - name: Gitea bare metal install
-      block:
-        - name: Install deps
-          apt:
-            name: [git, jq]
-            state: latest
-            update_cache: true
-          when: ansible_os_family=="Debian"
+- name: Create Gitea database dir
+  file:
+    path: '{{ GITEA_DB_PATH }}'
+    state: directory
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: 0755
+    recurse: true
+  when: GITEA_DB_DEPLOY
+  become: true
 
-        - name: Config Gitea DataBase
-          block:
-            - name: Create Gitea DB
-              mysql_db:
-                name: '{{ GITEA_DB_NAME }}'
-                collation: utf8mb4_general_ci
-                encoding: utf8mb4
-                login_unix_socket: /var/run/mysqld/mysqld.sock
-                state: present
-              notify: Restart MariaDB
+- name: Gitea bare metal install
+  include_tasks: gitea_baremetal.yml
+  when: not GITEA_DOCKERIZED
 
-            - name: Create Gitea DB user
-              mysql_user:
-                name: '{{ GITEA_DB_USER }}'
-                password: '{{ GITEA_DB_PASSWORD }}'
-                host: '{{ (GITEA_DOCKERIZED) | ternary(GITEA_DB_ACCESS_SUBNET, "localhost") }}'
-                priv: '{{ GITEA_DB_NAME }}.*:ALL,GRANT'
-                login_unix_socket: /var/run/mysqld/mysqld.sock
-                state: present
-              notify: Restart MariaDB
-              no_log: true
-
-            - name: Flush handlers
-              meta: flush_handlers
-
-        - name: Create Gitea dir
-          file:
-            path: '{{ GITEA_PATH }}'
-            state: directory
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0775
-
-        - name: Get Gitea latest version
-          shell:
-            cmd: curl -s "https://api.github.com/repos/go-gitea/gitea/releases/latest" | jq -r '.tag_name' 2>&1 | sed -e 's|.*-||' -e 's|^v||'
-          register: gitea_latest_version
-
-        - name: x86_64
-          set_fact:
-            gitea_arch: amd64
-          when: ansible_architecture=="x86_64"
-
-        - name: armv7
-          set_fact:
-            gitea_arch: arm-6
-          when: ansible_architecture=="armv7l"
-
-        - name: Get Gitea
-          get_url:
-            url: https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}
-            dest: '{{ GITEA_PATH }}/gitea'
-            checksum: sha256:https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}.sha256
-            mode: 0755
-
-        - name: Apply Gitea Nginx config
-          template:
-            src: gitea_nginx.j2
-            dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
-            mode: 0644
-          when: GITEA_USE_NGINX
-
-        - name: Enable Gitea Nginx config
-          file:
-            src: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
-            dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
-            state: link
-            mode: 0644
-          when: GITEA_USE_NGINX
-
-        - name: Systemd config
-          template:
-            src: gitea_service.j2
-            dest: /etc/systemd/system/gitea.service
-            owner: '{{ GITEA_USER }}'
-            group: '{{ GITEA_USER }}'
-            mode: 0644
-
-      when: not GITEA_DOCKERIZED
-
-    # Dockerized install
-    - name: Gitea containerized install
-      block:
-        - name: Add {{ GITEA_USER }} to docker group
-          user:
-            name: '{{ GITEA_USER }}'
-            groups: docker
-            append: true
-
-        - name: Create directory
-          file:
-            path: '{{ GITEA_DOCKER_PATH }}'
-            state: directory
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0775
-
-        - name: Apply Docker Compose template
-          template:
-            src: docker_compose.yml.j2
-            dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
-            owner: '{{ GITEA_USER }}'
-            group: root
-            mode: 0644
-
-        - name: Apply Gitea Nginx config
-          template:
-            src: gitea_nginx.j2
-            dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
-            mode: 0644
-          when: GITEA_USE_NGINX
-
-        - name: Configure SSH
-          block:
-            - name: Create gitea-shell script
-              copy:
-                src: gitea-shell
-                dest: /usr/local/bin/gitea-shell
-                mode: 0755
-            - name: Change shell for {{ GITEA_USER }} user
-              user:
-                name: '{{ GITEA_USER }}'
-                shell: /usr/local/bin/gitea-shell
-            - name: Add SSH configuration
-              template:
-                src: 20_gitea.conf.j2
-                dest: /etc/ssh/sshd_config.d/20_gitea.conf
-                mode: 0755
-              notify: Restart sshd
-
-      when: GITEA_DOCKERIZED
-
-    - name: Apply config
-      template:
-        src: gitea_config.j2
-        dest: '{{ GITEA_CONFIG_PATH }}/app.ini'
-        owner: '{{ GITEA_USER }}'
-        group: '{{ GITEA_USER }}'
-        mode: 0600
-      no_log: true
-
-    - name: Start gitea
-      block:
-        - name: Start bare metal Gitea service
-          service:
-            name: gitea
-            state: restarted
-          when: not GITEA_DOCKERIZED
-
-        - name: Start dockerized Gitea service
-          block:
-            - name: Run Docker Compose
-              shell: docker compose down && docker compose up -d {{ GITEA_DOCKER_SERVICE_NAME }}
-              args:
-                chdir: '{{ GITEA_DOCKER_PATH }}'
-
-            - name: Run Docker Compose
-              shell: docker compose down && docker compose up -d
-              args:
-                chdir: '{{ NGINX_DOCKER_PATH }}'
-              when: GITEA_USE_NGINX
-
-          when: GITEA_DOCKERIZED
-
-  tags: gitea
+- name: Gitea docker install
+  include_tasks: gitea_docker.yml
+  when: GITEA_DOCKERIZED

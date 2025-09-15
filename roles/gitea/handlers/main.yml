@@ -16,3 +16,9 @@
     name: sshd
     state: restarted
   become: true
+
+- name: Restart gitea
+  service:
+    name: gitea
+    state: restarted
+  become: true

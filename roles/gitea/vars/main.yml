@@ -1,16 +1,22 @@
 ---
+GITEA_DEPLOY: '{{ GITEA_GROUP in group_names }}'  # Set to true if Gitea should be installed on this node.
+GITEA_CONTROLLER: '{{ groups[GITEA_GROUP] | first }}'  # The first controller node in the Gitea group for installation.
 GITEA_USER: gitea_user  # Gitea system username.
 GITEA_ID: 1030  # Gitea system UID/GID.
-GITEA_DOCKER_SUBNET: 172.21.0.0/16  # Gitea Docker network subnet
-GITEA_DB_ACCESS_SUBNET: 172.21.%  # Subnet for database access
+GITEA_DOCKER_SUBNET: 172.21.0.0/16  # Gitea Docker network subnet.
+GITEA_DB_ACCESS_SUBNET: 172.21.%  # Subnet for database access.
 GITEA_PATH: /opt/gitea  # Gitea's installation path.
 GITEA_DOCKER_PATH: '{{ GITEA_PATH }}_docker'  # Gitea Docker installation path
 GITEA_CONFIG_PATH: "{{ (GITEA_DOCKERIZED) | ternary(GITEA_DOCKER_PATH + '/config', '/etc/gitea')}}"  # Gitea's configuration file path.
-GITEA_DOCKER_SERVICE_NAME: gitea  # Gitea Docker service name
+GITEA_DOCKER_SERVICE_NAME: gitea  # Gitea Docker service name.
 GITEA_DOCKER_DB_SERVICE_NAME: gitea_db  # MariaDB Docker service name.
 GITEA_CONTAINER_NAME: '{{ GITEA_DOCKER_SERVICE_NAME }}_rootless'  # Gitea Docker container name
 GITEA_DB_CONTAINER_NAME: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}_container'  # MariaDB Docker container name.
-ACT_DATA_PATH: '{{ GITEA_DOCKER_PATH }}/act_runner'  # act_runner data storage path.
-ACT_DOCKER_SERVICE_NAME: actrunner
-ACT_CONTAINER_NAME: '{{ ACT_DOCKER_SERVICE_NAME }}_container'
-ACT_DOCKER_NETWORK: act_network
+GITEA_DB_PATH: '{{ GITEA_DATA_PATH }}/gitea_db'  # Gitea's database storage path.
+
+ACTRUNNER_DEPLOY: '{{ ACTRUNNER_GROUP in group_names }}'  # Set to true if workers should be installed on this node.
+ACTRUNNER_CONTROLLERS: '{{ groups.get(ACTRUNNER_GROUP, []) }}'  # List of worker controller nodes for Act Runner installation.
+ACT_DATA_PATH: '{{ GITEA_DOCKER_PATH }}/act_runner'  # Act Runner data storage path.
+ACT_DOCKER_SERVICE_NAME: actrunner  # Act Runner Docker service name.
+ACT_CONTAINER_NAME: '{{ ACT_DOCKER_SERVICE_NAME }}_container'  # Act Runner Docker container name.
+ACT_DOCKER_NETWORK: act_network  # Docker network for Act Runner.

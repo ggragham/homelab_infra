@@ -45,13 +45,13 @@ services:
     networks:
       - gitea_network
     volumes:
-      - {{ DISK_DATABASE_PATH }}/gitea:/var/lib/mysql
+      - {{ GITEA_DB_PATH }}:/var/lib/mysql
 {% endif %}
 {% endif %}
 
 {% if ACTRUNNER_DEPLOY %}
   {{ ACT_DOCKER_SERVICE_NAME }}:
-    image: gitea/act_runner:latest
+    image: gitea/act_runner:{{ ACTRUNNER_DOCKER_VERSION  }}
     container_name: {{ ACT_CONTAINER_NAME }}
     restart: always
 {% if GITEA_DEPLOY and ACTRUNNER_DEPLOY %}
@@ -60,7 +60,9 @@ services:
 {% endif %}
     environment:
       CONFIG_FILE: /config.yml
-      GITEA_INSTANCE_URL: http://{{ GITEA_IP }}:{{ GITEA_PORT }}
+      GITEA_INSTANCE_URL: "http://{{ GITEA_IP }}:{{ GITEA_PORT }}"
+      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ runner_token }}"
+      GITEA_RUNNER_NAME: "{{ ACT_RUNNER_NAME | default(inventory_hostname) }}"
     networks:
       - {{ ACT_DOCKER_NETWORK }}
     volumes:

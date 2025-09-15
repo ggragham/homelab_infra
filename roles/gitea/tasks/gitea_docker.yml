@@ -1,0 +1,88 @@
+---
+- name: Check Docker existence
+  block:
+    - name: Check Docker binary existence
+      stat:
+        path: /usr/bin/docker
+      register: docker_installed
+    - name: Show error if Docker not isntalled
+      fail:
+        msg: Docker is not installed
+      when: not docker_installed.stat.exists
+
+- name: Add {{ GITEA_USER }} to docker group
+  user:
+    name: '{{ GITEA_USER }}'
+    groups: docker
+    append: true
+  become: true
+
+- name: Create directory
+  file:
+    path: '{{ GITEA_DOCKER_PATH }}'
+    state: directory
+    owner: '{{ GITEA_USER }}'
+    group: root
+    mode: 0775
+  become: true
+
+- name: Apply Docker Compose template
+  template:
+    src: docker_compose.yml.j2
+    dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
+    owner: '{{ GITEA_USER }}'
+    group: root
+    mode: 0644
+  become: true
+
+- name: Apply Gitea Nginx config
+  template:
+    src: gitea_nginx.j2
+    dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
+    mode: 0644
+  when: GITEA_USE_NGINX
+  become: true
+
+- name: Configure SSH
+  block:
+    - name: Create gitea-shell script
+      copy:
+        src: gitea-shell
+        dest: /usr/local/bin/gitea-shell
+        mode: 0755
+    - name: Change shell for {{ GITEA_USER }} user
+      user:
+        name: '{{ GITEA_USER }}'
+        shell: /usr/local/bin/gitea-shell
+    - name: Add SSH configuration
+      template:
+        src: 20_gitea.conf.j2
+        dest: /etc/ssh/sshd_config.d/20_gitea.conf
+        mode: 0755
+      notify: Restart sshd
+  become: true
+
+- name: Apply config
+  template:
+    src: gitea_config.j2
+    dest: '{{ GITEA_CONFIG_PATH }}/app.ini'
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: 0600
+  no_log: true
+  become: true
+
+- name: Start gitea
+  block:
+    - name: Start dockerized Gitea service
+      block:
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d {{ GITEA_DOCKER_SERVICE_NAME }}
+          args:
+            chdir: '{{ GITEA_DOCKER_PATH }}'
+
+        - name: Run Docker Compose
+          shell: docker compose down && docker compose up -d
+          args:
+            chdir: '{{ NGINX_DOCKER_PATH }}'
+          when: GITEA_USE_NGINX
