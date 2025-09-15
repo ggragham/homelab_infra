@@ -49,6 +49,13 @@
             msg: Sucksessfully failed
       when: GITEA_DEPLOY
 
+    - name: Remove runner
+      file:
+        path: '{{ ACT_DATA_PATH }}/.runner'
+        state: absent
+      when: ACTRUNNER_REREGISTER_RUNNER
+      become: true
+
     - name: Check if runner exists
       stat:
         path: '{{ ACT_DATA_PATH }}/.runner'

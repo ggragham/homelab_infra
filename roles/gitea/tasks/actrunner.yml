@@ -24,13 +24,6 @@
     mode: 0644
   become: true
 
-- name: Remove runner
-  file:
-    path: '{{ ACT_DATA_PATH }}/.runner'
-    state: absent
-  when: ACTRUNNER_REREGISTER_RUNNER
-  become: true
-
 - name: Install and configure actrunner
   block:
     - name: Create act_runner data dir
