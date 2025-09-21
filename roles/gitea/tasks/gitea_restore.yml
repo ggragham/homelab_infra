@@ -1,0 +1,109 @@
+---
+- name: Set Gitea Restore vars
+  set_fact:
+    gitea_dump_file: /tmp/{{ gitea_dump_name }}
+    gitea_extract_dir: /tmp/gitea_dump
+    gitea_etc_dir: '{{ GITEA_CONFIG_PATH }}'
+    gitea_data_dir: '{{ GITEA_DATA_PATH }}'
+    gitea_repos_dir: '{{ GITEA_DATA_PATH }}/data/repositories'
+
+- name: Copy Gitea dump to host
+  copy:
+    src: ./assets/{{ gitea_dump_name }}
+    dest: '{{ gitea_dump_file }}'
+    owner: '{{ GITEA_USER }}'
+    group: root
+    mode: 0644
+  become: true
+
+- name: Ensure unzip is present
+  package:
+    name: unzip
+    state: present
+  become: true
+
+- name: Ensure clean Gitea extract dir
+  file:
+    path: '{{ gitea_extract_dir }}'
+    state: absent
+  become: true
+
+- name: Re-create Gitea extract dir
+  file:
+    path: '{{ gitea_extract_dir }}'
+    state: directory
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: 0755
+  become: true
+
+- name: Extract Gitea dump
+  unarchive:
+    src: '{{ gitea_dump_file }}'
+    dest: '{{ gitea_extract_dir }}'
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: 0755
+    remote_src: true
+  become: true
+
+- name: Stop Gitea
+  community.docker.docker_compose_v2:
+    project_src: '{{ GITEA_DOCKER_PATH }}'
+    services: '{{ GITEA_DOCKER_SERVICE_NAME }}'
+    state: absent
+
+- name: Ensure Gitea target dirs exist
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: '0755'
+  loop:
+    - '{{ gitea_etc_dir }}'
+    - '{{ gitea_data_dir }}'
+    - '{{ gitea_repos_dir }}'
+  become: true
+
+- name: Restore Gitea config
+  copy:
+    src: '{{ gitea_extract_dir }}/app.ini'
+    dest: '{{ gitea_etc_dir }}/app.ini'
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: '0600'
+    remote_src: true
+  become: true
+
+- name: Restore Gitea data dir
+  copy:
+    src: '{{ gitea_extract_dir }}/data/'
+    dest: '{{ gitea_data_dir }}'
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: '0755'
+    remote_src: true
+  become: true
+
+- name: Restore Gitea repos
+  copy:
+    src: '{{ gitea_extract_dir }}/repos/'
+    dest: '{{ gitea_repos_dir }}/'
+    owner: '{{ GITEA_USER }}'
+    group: '{{ GITEA_USER }}'
+    mode: '0755'
+    remote_src: true
+  become: true
+
+- name: Start Gitea
+  community.docker.docker_compose_v2:
+    project_src: '{{ GITEA_DOCKER_PATH }}'
+    services: '{{ GITEA_DOCKER_SERVICE_NAME }}'
+    state: present
+
+- name: Regenerate Gitea hooks
+  community.docker.docker_compose_v2_exec:
+    project_src: '{{ GITEA_DOCKER_PATH }}'
+    service: '{{ GITEA_DOCKER_SERVICE_NAME }}'
+    command: /usr/local/bin/gitea -c /etc/gitea/app.ini admin regenerate hooks

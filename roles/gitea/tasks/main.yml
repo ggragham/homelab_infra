@@ -105,3 +105,9 @@
       when:
         - GITEA_DEPLOY
         - action | default('') == 'backup'
+
+    - name: Gitea Restore
+      include_tasks: gitea_restore.yml
+      when:
+        - GITEA_DEPLOY
+        - action | default('') == 'restore'
