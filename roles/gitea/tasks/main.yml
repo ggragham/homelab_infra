@@ -1,4 +1,9 @@
 ---
+- name: Fail if action is invalid
+  fail:
+    msg: Invalid action '{{ action }}'. Must be either 'backup' or 'restore'.
+  when: action is defined and action not in ['backup', 'restore']
+
 - name: Gitea
   block:
     - name: Create Gitea system user
@@ -90,3 +95,13 @@
           when: ACTRUNNER_DEPLOY
 
       when: not runner_file.stat.exists
+
+  when: action is not defined
+
+- name: Gitea Backup or Restore
+  block:
+    - name: Gitea Backup
+      include_tasks: gitea_backup.yml
+      when:
+        - GITEA_DEPLOY
+        - action | default('') == 'backup'

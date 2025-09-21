@@ -1,0 +1,20 @@
+---
+- name: Set backup filename
+  set_fact:
+    gitea_dump_name: gitea-dump-{{ ansible_date_time.epoch }}.zip
+
+- name: Backup Gitea data
+  command: >
+    {{ (GITEA_DOCKERIZED) | ternary('docker exec -w /tmp -i ' + GITEA_CONTAINER_NAME + ' /app/gitea/gitea',
+    'sudo -u ' + GITEA_USER + GITEA_PATH + '/gitea') }}
+    dump --file {{ gitea_dump_name }}
+    -c {{ (GITEA_DOCKERIZED) | ternary('/etc/gitea', GITEA_CONFIG_PATH) }}/app.ini
+
+- name: Copy Gitea backup from docker to gitea host
+  command: docker cp {{ GITEA_CONTAINER_NAME }}:/tmp/{{ gitea_dump_name }} /tmp
+
+- name: Fetch Gitea backup
+  fetch:
+    src: /tmp/{{ gitea_dump_name }}
+    dest: ./assets/
+    flat: true
