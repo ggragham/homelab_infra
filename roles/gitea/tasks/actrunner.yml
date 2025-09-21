@@ -12,7 +12,7 @@
     state: directory
     owner: '{{ GITEA_USER }}'
     group: root
-    mode: 0775
+    mode: '0775'
   become: true
 
 - name: Apply Docker Compose template
@@ -21,7 +21,7 @@
     dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
     owner: '{{ GITEA_USER }}'
     group: root
-    mode: 0644
+    mode: '0644'
   become: true
 
 - name: Install and configure actrunner
@@ -32,7 +32,7 @@
         owner: '{{ GITEA_USER }}'
         group: '{{ GITEA_USER }}'
         state: directory
-        mode: 0775
+        mode: '0775'
       become: true
 
     - name: Apply act_runner config
@@ -41,7 +41,7 @@
         dest: '{{ GITEA_DOCKER_PATH }}/act_config.yml'
         owner: '{{ GITEA_USER }}'
         group: root
-        mode: 0644
+        mode: '0644'
       become: true
 
     - name: Start ActRunner

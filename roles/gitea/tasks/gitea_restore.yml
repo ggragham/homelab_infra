@@ -13,7 +13,7 @@
     dest: '{{ gitea_dump_file }}'
     owner: '{{ GITEA_USER }}'
     group: root
-    mode: 0644
+    mode: '0644'
   become: true
 
 - name: Ensure unzip is present
@@ -34,7 +34,7 @@
     state: directory
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0755
+    mode: '0755'
   become: true
 
 - name: Extract Gitea dump
@@ -43,7 +43,7 @@
     dest: '{{ gitea_extract_dir }}'
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0755
+    mode: '0755'
     remote_src: true
   become: true
 

@@ -38,7 +38,7 @@
     state: directory
     owner: '{{ GITEA_USER }}'
     group: root
-    mode: 0775
+    mode: '0775'
   become: true
 
 - name: Get Gitea latest version
@@ -62,14 +62,14 @@
     url: https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}
     dest: '{{ GITEA_PATH }}/gitea'
     checksum: sha256:https://dl.gitea.com/gitea/{{ gitea_latest_version.stdout }}/gitea-{{ gitea_latest_version.stdout }}-linux-{{ gitea_arch }}.sha256
-    mode: 0755
+    mode: '0755'
   become: true
 
 - name: Apply Gitea Nginx config
   template:
     src: gitea_nginx.j2
     dest: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
-    mode: 0644
+    mode: '0644'
   when: GITEA_USE_NGINX
   notify: Restart nginx
   become: true
@@ -79,7 +79,7 @@
     src: '{{ NGINX_SITES_AVAILABLE_PATH }}/gitea.conf'
     dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
     state: link
-    mode: 0644
+    mode: '0644'
   when: GITEA_USE_NGINX
   notify: Restart nginx
   become: true
@@ -90,7 +90,7 @@
     dest: /etc/systemd/system/gitea.service
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0644
+    mode: '0644'
   notify: Restart gitea
   become: true
 
@@ -100,7 +100,7 @@
     dest: '{{ GITEA_CONFIG_PATH }}/app.ini'
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0600
+    mode: '0600'
   notify: Restart gitea
   no_log: true
   become: true

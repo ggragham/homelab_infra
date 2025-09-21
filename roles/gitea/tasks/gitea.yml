@@ -5,7 +5,7 @@
     state: directory
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0755
+    mode: '0755'
     recurse: true
   with_items:
     - '{{ GITEA_CONFIG_PATH }}'
@@ -19,7 +19,7 @@
     state: directory
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0755
+    mode: '0755'
     recurse: true
   when: GITEA_DB_DEPLOY
   become: true

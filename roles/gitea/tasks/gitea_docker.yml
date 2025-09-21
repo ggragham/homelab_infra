@@ -23,7 +23,7 @@
     state: directory
     owner: '{{ GITEA_USER }}'
     group: root
-    mode: 0775
+    mode: '0775'
   become: true
 
 - name: Apply Docker Compose template
@@ -32,14 +32,14 @@
     dest: '{{ GITEA_DOCKER_PATH }}/docker-compose.yml'
     owner: '{{ GITEA_USER }}'
     group: root
-    mode: 0644
+    mode: '0644'
   become: true
 
 - name: Apply Gitea Nginx config
   template:
     src: gitea_nginx.j2
     dest: '{{ NGINX_SITES_ENABLED_PATH }}/gitea.conf'
-    mode: 0644
+    mode: '0644'
   when: GITEA_USE_NGINX
   become: true
 
@@ -49,7 +49,7 @@
       copy:
         src: gitea-shell
         dest: /usr/local/bin/gitea-shell
-        mode: 0755
+        mode: '0755'
     - name: Change shell for {{ GITEA_USER }} user
       user:
         name: '{{ GITEA_USER }}'
@@ -58,7 +58,7 @@
       template:
         src: 20_gitea.conf.j2
         dest: /etc/ssh/sshd_config.d/20_gitea.conf
-        mode: 0755
+        mode: '0755'
       notify: Restart sshd
   become: true
 
@@ -68,7 +68,7 @@
     dest: '{{ GITEA_CONFIG_PATH }}/app.ini'
     owner: '{{ GITEA_USER }}'
     group: '{{ GITEA_USER }}'
-    mode: 0600
+    mode: '0600'
   no_log: true
   become: true
 
