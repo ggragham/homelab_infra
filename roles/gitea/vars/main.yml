@@ -12,7 +12,7 @@ GITEA_DOCKER_SERVICE_NAME: gitea  # Gitea Docker service name.
 GITEA_DOCKER_DB_SERVICE_NAME: gitea_db  # MariaDB Docker service name.
 GITEA_CONTAINER_NAME: '{{ GITEA_DOCKER_SERVICE_NAME }}_rootless'  # Gitea Docker container name
 GITEA_DB_CONTAINER_NAME: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}_container'  # MariaDB Docker container name.
-GITEA_DB_PATH: '{{ GITEA_DATA_PATH }}/gitea_db'  # Gitea's database storage path.
+GITEA_DB_PATH: '{{ GITEA_DATA_PATH }}/../gitea_db'  # Gitea's database storage path.
 
 ACTRUNNER_DEPLOY: '{{ ACTRUNNER_GROUP in group_names }}'  # Set to true if workers should be installed on this node.
 ACTRUNNER_CONTROLLERS: '{{ groups.get(ACTRUNNER_GROUP, []) }}'  # List of worker controller nodes for Act Runner installation.
