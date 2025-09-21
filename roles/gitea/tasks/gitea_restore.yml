@@ -48,10 +48,20 @@
   become: true
 
 - name: Stop Gitea
-  community.docker.docker_compose_v2:
-    project_src: '{{ GITEA_DOCKER_PATH }}'
-    services: '{{ GITEA_DOCKER_SERVICE_NAME }}'
-    state: absent
+  block:
+    - name: Stop Gitea (Bare Metal)
+      service:
+        name: gitea
+        state: stopped
+      become: true
+      when: not GITEA_DOCKERIZED
+
+    - name: Stop Gitea (Docker)
+      community.docker.docker_compose_v2:
+        project_src: '{{ GITEA_DOCKER_PATH }}'
+        services: '{{ GITEA_DOCKER_SERVICE_NAME }}'
+        state: absent
+      when: GITEA_DOCKERIZED
 
 - name: Ensure Gitea target dirs exist
   file:
@@ -97,13 +107,32 @@
   become: true
 
 - name: Start Gitea
-  community.docker.docker_compose_v2:
-    project_src: '{{ GITEA_DOCKER_PATH }}'
-    services: '{{ GITEA_DOCKER_SERVICE_NAME }}'
-    state: present
+  block:
+    - name: Start Gitea (Bare Metal)
+      service:
+        name: gitea
+        state: started
+      become: true
+      when: not GITEA_DOCKERIZED
+
+    - name: Start Gitea (Docker)
+      community.docker.docker_compose_v2:
+        project_src: '{{ GITEA_DOCKER_PATH }}'
+        services: '{{ GITEA_DOCKER_SERVICE_NAME }}'
+        state: present
+      when: GITEA_DOCKERIZED
 
 - name: Regenerate Gitea hooks
-  community.docker.docker_compose_v2_exec:
-    project_src: '{{ GITEA_DOCKER_PATH }}'
-    service: '{{ GITEA_DOCKER_SERVICE_NAME }}'
-    command: /usr/local/bin/gitea -c /etc/gitea/app.ini admin regenerate hooks
+  block:
+    - name: Regenerate Gitea Hooks (Bare Metal)
+      command: '{{ GITEA_PATH }}/gitea -c /etc/gitea/app.ini admin regenerate hooks'
+      become: true
+      become_user: '{{ GITEA_USER }}'
+      when: not GITEA_DOCKERIZED
+
+    - name: Regenerate Gitea Hooks (Docker)
+      community.docker.docker_compose_v2_exec:
+        project_src: '{{ GITEA_DOCKER_PATH }}'
+        service: '{{ GITEA_DOCKER_SERVICE_NAME }}'
+        command: /usr/local/bin/gitea -c /etc/gitea/app.ini admin regenerate hooks
+      when: GITEA_DOCKERIZED
