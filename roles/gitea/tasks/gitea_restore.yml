@@ -109,31 +109,82 @@
 
 - name: Restore MariaDB data
   block:
-    - name: Copy Gitea SQL dump to MariaDB container
-      community.docker.docker_container_copy_into:
-        container: '{{ GITEA_DB_CONTAINER_NAME }}'
-        path: '{{ gitea_db_dump_file }}'
-        container_path: /tmp/gitea-db.sql
+    - name: Restore MeriaDB (Docker)
+      block:
+        - name: Copy Gitea SQL dump to MariaDB container (Docker)
+          community.docker.docker_container_copy_into:
+            container: '{{ GITEA_DB_CONTAINER_NAME }}'
+            path: '{{ gitea_db_dump_file }}'
+            container_path: /tmp/gitea-db.sql
 
-    - name: Drop & recreate Gitea database {{ GITEA_DB_NAME }}
-      community.docker.docker_compose_v2_exec:
-        project_src: '{{ GITEA_DOCKER_PATH }}'
-        service: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'
-        command: >
-          sh -lc "mariadb -uroot -p'{{ GITEA_DB_ROOT_PASSWORD }}' -e
-          \"DROP DATABASE IF EXISTS \`{{ GITEA_DB_NAME }}\`;
-             CREATE DATABASE \`{{ GITEA_DB_NAME }}\`
-             CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\""
-        no_log: true
+        - name: Drop & recreate Gitea database {{ GITEA_DB_NAME }} (Docker)
+          community.docker.docker_compose_v2_exec:
+            project_src: '{{ GITEA_DOCKER_PATH }}'
+            service: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'
+            command: >
+              sh -lc "mariadb -uroot -p'{{ GITEA_DB_ROOT_PASSWORD }}' -e
+              \"DROP DATABASE IF EXISTS \`{{ GITEA_DB_NAME }}\`;
+                CREATE DATABASE \`{{ GITEA_DB_NAME }}\`
+                CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\""
+          no_log: true
 
-    - name: Restore Gitea MariaDB data
-      community.docker.docker_compose_v2_exec:
-        project_src: '{{ GITEA_DOCKER_PATH }}'
-        service: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'
-        command: >
-          sh -lc "mariadb -u{{ GITEA_DB_USER }} -p'{{ GITEA_DB_PASSWORD }}' {{ GITEA_DB_NAME }}
-          < /tmp/gitea-db.sql"
-      no_log: true
+        - name: Restore Gitea MariaDB data (Docker)
+          community.docker.docker_compose_v2_exec:
+            project_src: '{{ GITEA_DOCKER_PATH }}'
+            service: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'
+            command: >
+              sh -lc "mariadb -u{{ GITEA_DB_USER }} -p'{{ GITEA_DB_PASSWORD }}' {{ GITEA_DB_NAME }}
+              < /tmp/gitea-db.sql"
+          no_log: true
+
+      when:
+        - GITEA_DOCKERIZED
+        - GITEA_DB_DEPLOY
+
+    - name: Restore MariaDB (Bare Metal)
+      block:
+        - name: Install MariaDB dependencies (Bare Metal)
+          package:
+            name:
+              - python3-pymysql
+              - mariadb-client
+            state: present
+          become: true
+
+        - name: Drop Gitea database (Bare Metal)
+          mysql_db:
+            name: '{{ GITEA_DB_NAME }}'
+            login_host: '{{ GITEA_DB_HOST }}'
+            login_port: '{{ GITEA_DB_PORT | default(3306) }}'
+            login_user: '{{ GITEA_DB_ROOT_USER | default(root) }}'
+            login_password: '{{ GITEA_DB_ROOT_PASSWORD }}'
+            state: absent
+          no_log: true
+
+        - name: Create Gitea database (Bare Metal)
+          mysql_db:
+            name: '{{ GITEA_DB_NAME }}'
+            login_host: '{{ GITEA_DB_HOST }}'
+            login_port: '{{ GITEA_DB_PORT | default(3306) }}'
+            login_user: '{{ GITEA_DB_ROOT_USER | default(root) }}'
+            login_password: '{{ GITEA_DB_ROOT_PASSWORD }}'
+            encoding: utf8mb4
+            collation: utf8mb4_unicode_ci
+            state: present
+          no_log: true
+
+        - name: Restore Gitea MariaDB data (Bate Metal)
+          mysql_db:
+            name: '{{ GITEA_DB_NAME }}'
+            target: '{{ gitea_db_dump_file }}'
+            login_host: '{{ GITEA_DB_HOST }}'
+            login_port: '{{ GITEA_DB_PORT | default(3306) }}'
+            login_user: '{{ GITEA_DB_USER }}'
+            login_password: '{{ GITEA_DB_PASSWORD }}'
+            state: import
+          no_log: true
+
+      when: not GITEA_DB_DEPLOY
 
   when: gitea_restore_db | bool
 
