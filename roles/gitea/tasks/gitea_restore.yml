@@ -2,6 +2,7 @@
 - name: Set Gitea Restore vars
   set_fact:
     gitea_dump_file: /tmp/{{ gitea_dump_name }}
+    gitea_db_dump_file: /tmp/gitea_dump/gitea-db.sql
     gitea_extract_dir: /tmp/gitea_dump
     gitea_etc_dir: '{{ GITEA_CONFIG_PATH }}'
     gitea_data_dir: '{{ GITEA_DATA_PATH }}'
@@ -111,7 +112,7 @@
     - name: Copy Gitea SQL dump to MariaDB container
       community.docker.docker_container_copy_into:
         container: '{{ GITEA_DB_CONTAINER_NAME }}'
-        path: '{{ gitea_extract_dir }}/gitea-db.sql'
+        path: '{{ gitea_db_dump_file }}'
         container_path: /tmp/gitea-db.sql
 
     - name: Drop & recreate Gitea database {{ GITEA_DB_NAME }}
