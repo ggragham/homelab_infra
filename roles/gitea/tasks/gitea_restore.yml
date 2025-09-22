@@ -106,6 +106,35 @@
     remote_src: true
   become: true
 
+- name: Restore MariaDB data
+  block:
+    - name: Copy Gitea SQL dump to MariaDB container
+      community.docker.docker_container_copy_into:
+        container: '{{ GITEA_DB_CONTAINER_NAME }}'
+        path: '{{ gitea_extract_dir }}/gitea-db.sql'
+        container_path: /tmp/gitea-db.sql
+
+    - name: Drop & recreate Gitea database {{ GITEA_DB_NAME }}
+      community.docker.docker_compose_v2_exec:
+        project_src: '{{ GITEA_DOCKER_PATH }}'
+        service: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'
+        command: >
+          sh -lc "mariadb -uroot -p'{{ GITEA_DB_ROOT_PASSWORD }}' -e
+          \"DROP DATABASE IF EXISTS \`{{ GITEA_DB_NAME }}\`;
+             CREATE DATABASE \`{{ GITEA_DB_NAME }}\`
+             CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\""
+
+    - name: Restore Gitea MariaDB data
+      community.docker.docker_compose_v2_exec:
+        project_src: '{{ GITEA_DOCKER_PATH }}'
+        service: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'
+        command: >
+          sh -lc "mariadb -u{{ GITEA_DB_USER }} -p'{{ GITEA_DB_PASSWORD }}' {{ GITEA_DB_NAME }}
+          < /tmp/gitea-db.sql"
+      no_log: true
+
+  when: gitea_restore_db | bool
+
 - name: Start Gitea
   block:
     - name: Start Gitea (Bare Metal)
