@@ -14,30 +14,25 @@ Role Variables
 
 ```yml
 PIHOLE_DOCKERIZED: true  # Pihole dockerized install toogle.
-PIHOLE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
 PIHOLE_DOCKER_WEBSERVER_PORT: false  # Web server port exposure (false to disable or specify a port number).
 PIHOLE_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Pi-hole.
-PIHOLE_DOMAIN_NAME: '{{ DOMAIN_NAME }}'
-PIHOLE_DOMAIN: dns.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Pi-hole service.
-PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
-PIHOLE_ADMIN_PASSWORD: qwerty1234!  # Password used to login in Pi-hole WebUI.
 
-PIHOLE_DNS_1: 1.1.1.1  # Primary DNS server.
-PIHOLE_DNS_2: 1.0.0.1  # Secondary DNS server.
-PIHOLE_DNS_3: 9.9.9.9  # Tertiary DNS server.
-PIHOLE_DNS_4: 149.112.112.112  # Quaternary DNS server.
+PIHOLE_DOMAIN: dns.{{ DOMAIN_NAME }}  # Domain name for the Pi-hole service.
+PIHOLE_ADMIN_PASSWORD: foobar123  # Password used to login in Pi-hole WebUI.
 PIHOLE_QUERY_LOGGING: 'true'  # Toggle query logging.
 PIHOLE_CACHE_SIZE: 10000  # DNS cache size.
 PIHOLE_WEBUI_BOXED_LAYOUT: boxed  # Web interface layout.
-PIHOLE_WEBTHEME: default-dark  # Web interface theme.
-
+PIHOLE_WEBUI_THEME: default-dark  # Web interface theme.
 PIHOLE_DNS_RECORDS:  # List of DNS records to be created in Pi-hole.
-  - '{{ ansible_host }} {{ PIHOLE_DOMAIN_NAME }}'
+  - '{{ ansible_host }} {{ DOMAIN_NAME }}'
   - '{{ ansible_host }} {{ PIHOLE_DOMAIN }}'
+  - 10.8.0.2 example.com
+  - 10.8.0.3 link1.example.com
+  - 10.8.0.4 link2.example.com
 
-## Only for baremetal installation. 
-PIHOLE_INTERFACE: '{{ NETWORK_INTERFACE }}'  # Network interface for Pi-hole.
-PIHOLE_INSTALL_WEB_INTERFACE: 'true'  # Toggle web interface installation.
+CLOUDFLARED_DOCKER_IMAGE_VERSION: latest  # Cloudflared Docker image version.
+CLOUDFLARED_TUNNEL_DNS_UPSTREAM: https://1.1.1.1/dns-query,https://1.0.0.1/dns-query  # Upstream DoH servers for Cloudflared tunnel.
 ```
 
 Dependencies
