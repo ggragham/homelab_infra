@@ -69,6 +69,24 @@ Example Playbook
        - role: gitea
 ```
 
+Backup and Restore
+------------------
+Backup and restore are managed via the `action` extra var:
+
+### Backup
+```bash
+ansible-playbook <playbook_name>.yml --tags <gitea_role_tag> \
+    -e action=backup
+```
+
+### Restore
+```bash
+ansible-playbook <playbook_name>.yml --tags <gitea_role_tag> \
+    -e action=restore \
+    -e gitea_dump_name=<backup_name>.zip \  # required, dump archive name
+    -e gitea_restore_db=true   # optional, restores DB (overwrites existing)
+```
+
 License
 -------
 
