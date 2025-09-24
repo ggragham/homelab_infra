@@ -17,6 +17,7 @@ NGINX_VERSION_DOCKER: latest  # Nginx version in Docker (rootless).
 NGINX_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 
 NGINX_DOMAIN_NAME: '{{ DOMAIN_NAME }}'  # Nginx server domain.
+NGINX_DEPLOY_DEMO: false  # Enable or disable demo page deploying.
 
 SSL_CERT_NAME: cert.crt  # SSL certificate filename placed in the assets/ directory.
 SSL_KEY_NAME: cert.key  # SSL Key filename placed in the assets/ directory.
