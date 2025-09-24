@@ -2,7 +2,6 @@
 ##############
 ###  Base  ###
 ##############
-
 DOMAIN_NAME: example.com  # Domain name for server.
 USERNAME: user  # Default system user.
 NETWORK_INTERFACE: eth0  # Network interface to be used.
@@ -182,7 +181,6 @@ SAMBA_SHARES_LIST:  # List of SAMBA shares.
 #############################
 ###  Hardening role vars  ###
 #############################
-
 # Misc
 HARDENING_MISC_CONFIG_ENABLED: true  # Enable or disable miscellaneous hardening tasks.
 HARDENING_MISC_YESCRYPT_HOST_FACTOR: 8  # Yescrypt factor for password hashing difficulty.
@@ -226,7 +224,6 @@ HARDENING_FIREWALL_IPTABLES_CONFIG_SRC: ./assets/default.iptables.rules.j2  # Pa
 ###############
 ###  NGINX  ###
 ###############
-
 NGINX_DOCKERIZED: false  # Nginx dockerized install toogle.
 NGINX_VERSION_DOCKER: latest  # Nginx version in Docker (rootless).
 NGINX_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
@@ -245,7 +242,6 @@ SSL_DH_PATH: ./assets/{{ SSL_DH_NAME }}  # DH key path.
 #############################
 ###  NGINX PROXY MANAGER  ###
 #############################
-
 NPM_DOCKER_VERSION: latest  # Nginx Proxy Manager Docker image version.
 NPM_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 NPM_DOMAIN: proxy.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Nginx Proxy Manager service.
@@ -253,7 +249,6 @@ NPM_DOMAIN: proxy.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Nginx Proxy Ma
 ################
 ###  PiHole  ###
 ################
-
 PIHOLE_DOCKERIZED: true  # Pihole dockerized install toogle.
 PIHOLE_DOCKER_VERSION: latest  # Pi-hole Docker image version.
 PIHOLE_DOCKER_WEBSERVER_PORT: false  # Web server port exposure (false to disable or specify a port number).
@@ -278,7 +273,6 @@ CLOUDFLARED_TUNNEL_DNS_UPSTREAM: https://1.1.1.1/dns-query,https://1.0.0.1/dns-q
 ###################
 ###  NextCloud  ###
 ###################
-
 NEXTCLOUD_DOCKERIZED: true  #  Toggle for Docker setup.
 NEXTCLOUD_DOCKER_VERSION: stable  # NextCloud Docker image version.
 NEXTCLOUD_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
@@ -299,7 +293,6 @@ NEXTCLOUD_DB_PASSWORD: qwerty1234!  # Nextcloud database password.
 ###############
 ###  Gitea  ###
 ###############
-
 GITEA_GROUP: gitea_host  # The group of nodes designated to install Gitea (defined in the inventory file).
 GITEA_IP: 192.168.1.30  # The IP address of the Gitea instance.
 
@@ -325,19 +318,19 @@ GITEA_DB_DEPLOY: false  # Toggle to include database service in Docker Compose.
 GITEA_DOCKER_MARIADB_VERSION: lts  # MariaDB Docker image version.
 GITEA_DB_HOST: '{{ GITEA_DOCKER_DB_SERVICE_NAME }}'  # Database host for Gitea. Change this if not using the DB from Docker Compose.
 GITEA_DB_PORT: 3306  # Port for the Gitea database server.
+GITEA_DB_ROOT_USER: root  # Database admin user (can be 'root' or any user with sufficient privileges)
 GITEA_DB_ROOT_PASSWORD: root1234!  # MariaDB root-user password.
 GITEA_DB_NAME: giteadb  # Gitea's database name.
 GITEA_DB_USER: gitea_db_user  # Gitea's database username.
 GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
 
-ACTRUNNER_GROUP: actrunner_host  # The group of nodes designated to install Act Runner (workers) (defined in the inventory file).
+ACTRUNNER_GROUP: actrunner_host  # The group of nodes designated to install Act Runner (defined in the inventory file). Setting this variable to `false` will skip Act Runner installation.
 ACTRUNNER_DOCKER_VERSION: latest  # act_runner version.
 ACTRUNNER_REREGISTER_RUNNER: false  # Re-register runner.
 
 ######################
 ###  Transmission  ###
 ######################
-
 TRANSMISSION_DOCKERIZED: true  # Transmission dockerized install toogle.
 TRANSMISSION_DOCKER_VERSION: latest  # Transmission Docker image version.
 TRANSMISSION_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
