@@ -22,7 +22,7 @@ TRANSMISSION_USE_NGINX: false  # Toggle to use Transmission as a reverse proxy f
 TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'  # Transmission data directory path.
 
 TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}  # Domain name for the Transmission service.
-TRANSMISSION_PORT: 9091  # Transmission port.
+TRANSMISSION_RPC_PORT: 9091  # Transmission port.
 TRANSMISSION_PEER_PORT: 51413  # Transmission peer port.
 
 TRANSMISSION_USER: transmission  # Username used to login.
