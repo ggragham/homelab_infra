@@ -1,38 +1,70 @@
-Role Name
-=========
+Jellyfin Role
+=============
 
-A brief description of the role goes here.
+Install and configure Jellyfin to Proxmox LXC with hardware acceleration (AMD GPU only).
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- AMD GPU hardware.
+- Proxmox VE host with an available LXC container (Debian/Ubuntu based).
+- Python packages on the control node:
+  * `proxmoxer` >= 2.0
+  * `requests`
+
+Example install:
+```bash
+python3 -m pip install --user "proxmoxer>=2.0" requests
+```
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yml
+PROXMOX_HOSTNAME: example.com  # Proxmox VE instance hostname.
+PROXMOX_NODE: srv-01  # Proxmox node name where the container runs.
+PROXMOX_API_HOST: pve.example.com  # Proxmox API hostname or IP.
+PROXMOX_API_PORT: 8006  # Proxmox API port.
+PROXMOX_API_USER: root@pam  # Proxmox API username.
+PROXMOX_API_PASSWORD: foobar123  # Proxmox API password.
+PROXMOX_CONTAINER_VMID: '100'  # Numeric VMID of the LXC container.
+PROXMOX_VALIDATE_SSL: false  # Whether to verify the API TLS certificate.
 
-Dependencies
-------------
+PROXMOX_MOUNT_VOLUMES:  # Bind mounts from host into the container.
+  - id: mp0  # LXC mount slot.
+    host_path: /opt/media  # Absolute path on the Proxmox node.
+    mountpoint: /mnt/media  # Target path inside the container.
+  - id: mp1
+    host_path: /opt/data
+    mountpoint: /mnt/data
+```
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Optional Variables
+------------------
+
+### Force Run Install
+Run the Jellyfin install script even if the package is already installed.
+
+```bash
+ansible-playbook <playbook_name>.yml --tags jellyfin \
+    -e jellyfin_force_run_install=true
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+  - hosts: pve-lxc-01
+    roles:
+       - role: jellyfin
+```
 
 License
 -------
 
-BSD
+GPL
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+[Grell Gragham](https://github.com/ggragham)
