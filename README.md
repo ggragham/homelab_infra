@@ -54,8 +54,8 @@ ansible-playbook master_server.playbook.yml
 > Detailed usage, variables, and examples are documented in each role’s own README.
 
 ## External Roles
-* [**base**](https://github.com/youruser/base_ansible_role) – external role for initial server setup.
-* [**hardening**](https://github.com/youruser/hardening_ansible_role) – external role for applying security hardening.
+* [**base**](https://github.com/ggragham/base_config_role) – external role for initial server setup.
+* [**hardening**](https://github.com/ggragham/hardening_ansible_role) – external role for applying security hardening.
 
 # Deployment Options
 The deployment method for each service is determined by its individual Ansible variable `<SERVICE_NAME>_DOCKERIZED`, which you should set in your `vars.yml` file. For each service, choose:
