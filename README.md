@@ -48,6 +48,7 @@ ansible-playbook master_server.playbook.yml
 * [**Pi-hole**](./roles/pihole/README.md) - Network-wide ad blocking via your own Linux hardware.
 * [**Gitea**](./roles/gitea/README.md) - Lightweight self-hosted Git service.
 * [**Nextcloud**](./roles/nextcloud/README.md) - Personal cloud storage solution.
+* [**Jellyfin**](./roles/jellyfin/README.md) - Media server for organizing and streaming media content.
 * [**Transmission**](./roles/transmission/README.md) - Fast, easy and free BitTorrent client.
 
 > Detailed usage, variables, and examples are documented in each role’s own README.
@@ -65,6 +66,8 @@ For example:
 - To deploy Nextcloud in a containerized manner, set `NEXTCLOUD_DOCKERIZED: true`.
 - To deploy Gitea on the host (bare metal), set `GITEA_DOCKERIZED: false`.
 
+Some services use alternative fixed deployment methods, e.g. Jellyfin (Proxmox LXC, AMD GPU only).
+
 ## Supported Deployment Methods
 * Nginx: Dockerized, Bare Metal
 * Nginx Proxy Manager: Dockerized
@@ -73,6 +76,7 @@ For example:
 * Pi-hole: Dockerized, Bare Metal
 * Gitea: Dockerized, Bare Metal
 * Nextcloud: Dockerized
+* Jellyfin: Proxmox LXC (AMD GPU only)
 * Transmission: Dockerized, Bare Metal
 
 [^1]: When deploying a Dockerized application that requires MariaDB, the MariaDB service is included in the same docker-compose file and deployed together with the application.
