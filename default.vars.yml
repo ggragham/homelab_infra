@@ -328,6 +328,26 @@ ACTRUNNER_GROUP: actrunner_host  # The group of nodes designated to install Act 
 ACTRUNNER_DOCKER_VERSION: latest  # act_runner version.
 ACTRUNNER_REREGISTER_RUNNER: false  # Re-register runner.
 
+##################
+###  Jellyfin  ###
+##################
+PROXMOX_HOSTNAME: example.com  # Proxmox VE instance hostname.
+PROXMOX_NODE: srv-01  # Proxmox node name where the container runs.
+PROXMOX_API_HOST: pve.example.com  # Proxmox API hostname or IP.
+PROXMOX_API_PORT: 8006  # Proxmox API port.
+PROXMOX_API_USER: root@pam  # Proxmox API username.
+PROXMOX_API_PASSWORD: foobar123  # Proxmox API password.
+PROXMOX_CONTAINER_VMID: '100'  # Numeric VMID of the LXC container.
+PROXMOX_VALIDATE_SSL: false  # Whether to verify the API TLS certificate.
+
+PROXMOX_MOUNT_VOLUMES:  # Bind mounts from host into the container.
+  - id: mp0  # LXC mount slot.
+    host_path: /opt/media  # Absolute path on the Proxmox node.
+    mountpoint: /mnt/media  # Target path inside the container.
+  - id: mp1
+    host_path: /opt/data
+    mountpoint: /mnt/data
+
 ######################
 ###  Transmission  ###
 ######################
