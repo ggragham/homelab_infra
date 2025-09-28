@@ -1,0 +1,13 @@
+---
+- name: Restart LXC container
+  community.proxmox.proxmox:
+    api_host: '{{ PROXMOX_API_HOST }}'
+    api_port: '{{ PROXMOX_API_PORT }}'
+    api_user: '{{ PROXMOX_API_USER }}'
+    api_password: '{{ PROXMOX_API_PASSWORD }}'
+    validate_certs: '{{ PROXMOX_VALIDATE_SSL | default(true) }}'
+    node: '{{ PROXMOX_NODE }}'
+    vmid: '{{ PROXMOX_CONTAINER_VMID }}'
+    state: restarted
+  delegate_to: localhost
+  run_once: true

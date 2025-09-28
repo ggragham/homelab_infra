@@ -1,0 +1,57 @@
+---
+- name: Check if Jellyfin is installed
+  block:
+    - name: Gather installed packages
+      package_facts:
+        manager: auto
+
+    - name: Ensure Jellyfin is installed
+      set_fact:
+        jellyfin_installed: "{{ 'jellyfin' in (ansible_facts.packages | default({})) }}"
+
+- name: Download and verify installer
+  block:
+    - name: Download Jellyfin install script
+      get_url:
+        url: https://repo.jellyfin.org/install-debuntu.sh
+        dest: /tmp/install-debuntu.sh
+        mode: '0755'
+        force: true
+
+    - name: Download Jellyfin install script checksum
+      get_url:
+        url: https://repo.jellyfin.org/install-debuntu.sh.sha256sum
+        dest: /tmp/install-debuntu.sh.sha256sum
+        mode: '0644'
+        force: true
+
+    - name: Get actual sha256 of script
+      stat:
+        path: /tmp/install-debuntu.sh
+        checksum_algorithm: sha256
+      register: actual_sha
+
+    - name: Read installer checksum file
+      slurp:
+        src: /tmp/install-debuntu.sh.sha256sum
+      register: checksum_file
+
+    - name: Get expected sha256 of script
+      set_fact:
+        expected_sha: '{{ (checksum_file.content | b64decode).split()[0] }}'
+
+    - name: Fail on checksum mismatch
+      fail:
+        msg: >-
+          Jellyfin install script checksum mismatch.
+          Expected {{ expected_sha }}, got {{ actual_sha.stat.checksum }}.
+      when: actual_sha.stat.checksum != expected_sha
+
+  when: (jellyfin_force_run_install | default(false) | bool) or (not jellyfin_installed)
+
+- name: Install Jellyfin
+  command: /bin/bash /tmp/install-debuntu.sh
+  environment:
+    SKIP_CONFIRM: '1'
+  when: (jellyfin_force_run_install | default(false) | bool) or (not jellyfin_installed)
+  become: true

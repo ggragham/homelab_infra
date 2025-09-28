@@ -1,0 +1,9 @@
+---
+- name: Configure Proxmox LXC container
+  include_tasks: proxmox_ct_config.yml
+
+- name: Configure LXC guest OS
+  include_tasks: container_os_config.yml
+
+- name: Install Jellyfin
+  include_tasks: jellyfin_install.yml

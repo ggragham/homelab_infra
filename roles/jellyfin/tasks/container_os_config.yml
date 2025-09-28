@@ -1,0 +1,33 @@
+---
+- name: Install Mesa driver (AMD)
+  package:
+    name:
+      - mesa-va-drivers
+      - vainfo
+    state: present
+  become: true
+
+- name: Set fixed GIDs for render and video groups
+  block:
+    - name: Set 'video' gid
+      group:
+        name: video
+        gid: '{{ JELLYFIN_VIDEO_GID }}'
+        state: present
+        system: true
+        force: true
+      become: true
+      notify: Restart LXC container
+
+    - name: Set 'render' gid
+      group:
+        name: render
+        gid: '{{ JELLYFIN_RENDER_GID }}'
+        state: present
+        system: true
+        force: true
+      become: true
+      notify: Restart LXC container
+
+- name: Flush handlers
+  meta: flush_handlers

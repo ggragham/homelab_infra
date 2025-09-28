@@ -1,0 +1,106 @@
+---
+- name: Get container info
+  community.proxmox.proxmox_vm_info:
+    node: '{{ PROXMOX_NODE }}'
+    api_host: '{{ PROXMOX_API_HOST }}'
+    api_port: '{{ PROXMOX_API_PORT }}'
+    api_user: '{{ PROXMOX_API_USER }}'
+    api_password: '{{ PROXMOX_API_PASSWORD }}'
+    type: lxc
+    vmid: '{{ PROXMOX_CONTAINER_VMID }}'
+  register: lxc_info
+  changed_when: false
+  run_once: true
+  delegate_to: localhost
+
+- name: Fail if container not found
+  fail:
+    msg: LXC container with vmid={{ PROXMOX_CONTAINER_WMID }} was not found. Provide a valid VMID or create the container.
+  when: lxc_info.proxmox_vms | length == 0
+  run_once: true
+
+- name: Configure container
+  community.proxmox.proxmox:
+    hostname: '{{ PROXMOX_HOSTNAME }}'
+    node: '{{ PROXMOX_NODE }}'
+    api_host: '{{ PROXMOX_API_HOST }}'
+    api_port: '{{ PROXMOX_API_PORT }}'
+    api_user: '{{ PROXMOX_API_USER }}'
+    api_password: '{{ PROXMOX_API_PASSWORD }}'
+    vmid: '{{ PROXMOX_CONTAINER_VMID }}'
+    mount_volumes: '{{ PROXMOX_MOUNT_VOLUMES }}'
+    unprivileged: true
+    features:
+      - nesting=1
+    update: true
+    state: present
+  run_once: true
+  delegate_to: localhost
+  notify: Restart LXC container
+
+- name: Passthrough GPU to container
+  block:
+    - name: Login to Proxmox (get CSRF & ticket)
+      uri:
+        url: https://{{ PROXMOX_API_HOST }}:{{ PROXMOX_API_PORT }}/api2/json/access/ticket
+        method: POST
+        body_format: form-urlencoded
+        body:
+          username: '{{ PROXMOX_API_USER }}'
+          password: '{{ PROXMOX_API_PASSWORD }}'
+        return_content: true
+        validate_certs: '{{ PROXMOX_VALIDATE_SSL | default(true) }}'
+      register: login_data
+      no_log: true
+
+    - name: Save CSRF token and cookie
+      set_fact:
+        pve_csrf: '{{ login_data.json.data.CSRFPreventionToken }}'
+        pve_cookie: PVEAuthCookie={{ login_data.json.data.ticket }}
+      no_log: true
+
+    - name: Get current container config
+      uri:
+        url: https://{{ PROXMOX_API_HOST }}:{{ PROXMOX_API_PORT }}/api2/json/nodes/{{ PROXMOX_NODE }}/lxc/{{ PROXMOX_CONTAINER_VMID }}/config
+        method: GET
+        headers:
+          Cookie: '{{ pve_cookie }}'
+        return_content: true
+        validate_certs: '{{ PROXMOX_VALIDATE_SSL | default(true) }}'
+      register: container_config
+
+    - name: Passthrough GPU to container
+      uri:
+        url: https://{{ PROXMOX_API_HOST }}:{{ PROXMOX_API_PORT }}/api2/json/nodes/{{ PROXMOX_NODE }}/lxc/{{ PROXMOX_CONTAINER_VMID }}/config
+        method: PUT
+        headers:
+          CSRFPreventionToken: '{{ pve_csrf }}'
+          Cookie: '{{ pve_cookie }}'
+        body_format: form-urlencoded
+        body: '{{ PROXMOX_DEVICES }}'
+        status_code: 200
+        validate_certs: '{{ PROXMOX_VALIDATE_SSL | default(true) }}'
+      when: >
+        (container_config.json.data.dev0 | default('')) != PROXMOX_DEVICES.dev0 or
+        (container_config.json.data.dev1 | default('')) != PROXMOX_DEVICES.dev1
+      notify: Restart LXC container
+
+  run_once: true
+  delegate_to: localhost
+
+# - name: Restart container
+#   community.proxmox.proxmox:
+#     api_host: '{{ PROXMOX_API_HOST }}'
+#     api_port: '{{ PROXMOX_API_PORT }}'
+#     api_user: '{{ PROXMOX_API_USER }}'
+#     api_password: '{{ PROXMOX_API_PASSWORD }}'
+#     validate_certs: '{{ PROXMOX_VALIDATE_SSL | default(true) }}'
+#     node: '{{ PROXMOX_NODE }}'
+#     vmid: '{{ PROXMOX_CONTAINER_VMID }}'
+#     state: restarted
+#   when: (configure_result is changed) or (put_result is defined)
+#   delegate_to: localhost
+#   run_once: true
+
+- name: Flush handlers
+  meta: flush_handlers

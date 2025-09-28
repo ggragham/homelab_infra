@@ -1,0 +1,7 @@
+---
+JELLYFIN_VIDEO_GID: 64001  # GID for video group inside the container.
+JELLYFIN_RENDER_GID: 64002  # GID for render group inside the container.
+
+PROXMOX_DEVICES:  # GPU devices passed through to the container.
+  dev0: /dev/dri/card0,gid={{ JELLYFIN_VIDEO_GID }},mode=0660  # Primary DRM device.
+  dev1: /dev/dri/renderD128,gid={{ JELLYFIN_RENDER_GID }},mode=0660  # Render node device.
