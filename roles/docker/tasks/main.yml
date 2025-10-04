@@ -43,7 +43,27 @@
 
       when: not docker_installed.stat.exists
 
+- name: Ensure docker network exists
+  block:
     - name: Create Docker network
+      docker_network:
+        name: '{{ DOCKER_NETWORK_NAME }}'
+        driver: bridge
+        driver_options:
+          com.docker.network.bridge.name: br-{{ DOCKER_BRIDGE_NAME }}
+        enable_ipv6: false
+        ipam_config:
+          - subnet: '{{ DOCKER_SERVICES_NETWORK_SUBNET }}'
+        state: present
+
+  rescue:
+    - name: Restart Docker service
+      service:
+        name: docker
+        state: restarted
+      become: true
+
+    - name: Retry create Docker network after docker restart
       docker_network:
         name: '{{ DOCKER_NETWORK_NAME }}'
         driver: bridge
