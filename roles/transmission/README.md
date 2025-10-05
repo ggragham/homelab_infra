@@ -47,6 +47,25 @@ Example Playbook
        - role: transmission
 ```
 
+Backup and Restore
+------------------
+> **Note:** Backup and restore are available **only for Dockerized installations**
+
+Backup and restore are managed via the `action` extra var:
+
+### Backup
+```bash
+ansible-playbook <playbook_name>.yml --tags <transmission_role_tag> \
+    -e action=backup
+```
+
+### Restore
+```bash
+ansible-playbook <playbook_name>.yml --tags <transmission_role_tag> \
+    -e action=restore \
+    -e transmission_dump_name=<backup_name>.tar.gz
+```
+
 License
 -------
 
