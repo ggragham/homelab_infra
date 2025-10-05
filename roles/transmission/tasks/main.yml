@@ -136,4 +136,8 @@
       include_tasks: transmission_backup.yml
       when: action | default('') == 'backup'
 
+    - name: Transmission Restore (Docker)
+      include_tasks: transmission_restore.yml
+      when: action | default('') == 'restore'
+
   when: TRANSMISSION_DOCKERIZED

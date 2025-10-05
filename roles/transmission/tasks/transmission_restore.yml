@@ -1,0 +1,39 @@
+---
+- name: Set Transmission Restore vars
+  set_fact:
+    transmission_dump_file: /tmp/{{ transmission_dump_name }}
+
+- name: Copy Transmission dump to host
+  copy:
+    src: ./assets/{{ transmission_dump_name }}
+    dest: '{{ transmission_dump_file }}'
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Stop Transmission (Docker)
+  community.docker.docker_compose_v2:
+    project_src: '{{ TRANSMISSION_DOCKER_PATH }}'
+    services: '{{ TRANSMISSION_DOCKER_SERVICE_NAME }}'
+    state: absent
+
+- name: Resrote Transmission data (Docker)
+  unarchive:
+    src: '{{ transmission_dump_file }}'
+    dest: /opt
+    remote_src: true
+  become: true
+
+- name: Restore Transmission permissions (Docker)
+  file:
+    path: '{{ TRANSMISSION_DOCKER_PATH }}'
+    mode: '0755'
+    owner: '{{ TRANSMISSION_SYSTEM_USER }}'
+  become: true
+
+- name: Start Transmission (Docker)
+  community.docker.docker_compose_v2:
+    project_src: '{{ TRANSMISSION_DOCKER_PATH }}'
+    services: '{{ TRANSMISSION_DOCKER_SERVICE_NAME }}'
+    state: present
