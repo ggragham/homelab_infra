@@ -128,3 +128,12 @@
       when: TRANSMISSION_DOCKERIZED
 
   become: true
+  when: action is not defined
+
+- name: Transmission Backup or Restore
+  block:
+    - name: Transmission Backup (Docker)
+      include_tasks: transmission_backup.yml
+      when: action | default('') == 'backup'
+
+  when: TRANSMISSION_DOCKERIZED

@@ -1,0 +1,17 @@
+---
+- name: Set backup filename
+  set_fact:
+    transmission_dump_name: transmission-dump-{{ ansible_date_time.epoch }}.tar.gz
+
+- name: Create Transmission Archive (Docker)
+  archive:
+    path: '{{ TRANSMISSION_DOCKER_PATH }}'
+    dest: /tmp/{{ transmission_dump_name }}
+    format: gz
+  become: true
+
+- name: Fetch Transmission backup
+  fetch:
+    src: /tmp/{{ transmission_dump_name }}
+    dest: ./assets/
+    flat: true
