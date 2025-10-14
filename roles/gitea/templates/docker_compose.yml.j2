@@ -60,7 +60,7 @@ services:
 {% endif %}
     environment:
       CONFIG_FILE: /config.yml
-      GITEA_INSTANCE_URL: "http://{{ GITEA_IP }}:{{ GITEA_PORT }}"
+      GITEA_INSTANCE_URL: "http://{{ ACTRUNNER_GITEA_IP }}:{{ GITEA_PORT }}"
       GITEA_RUNNER_REGISTRATION_TOKEN: "{{ runner_token }}"
       GITEA_RUNNER_NAME: "{{ ACT_RUNNER_NAME | default(inventory_hostname) }}"
     networks:
