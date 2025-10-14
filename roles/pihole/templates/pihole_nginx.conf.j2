@@ -19,6 +19,10 @@ server {
     server_tokens off;
 
 {% if PIHOLE_DOCKERIZED %}
+    location / {
+        proxy_pass http://{{ PIHOLE_DOCKER_SERVICE_NAME }}:80;
+    }
+
     location ^~ /admin {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
