@@ -47,7 +47,6 @@ GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
 
 ACTRUNNER_GROUP: actrunner_host  # The group of nodes designated to install Act Runner (defined in the inventory file). Setting this variable to `false` will skip Act Runner installation.
 ACTRUNNER_DOCKER_VERSION: latest  # act_runner version.
-ACTRUNNER_REREGISTER_RUNNER: false  # Re-register runner.
 ```
 
 Dependencies
@@ -68,6 +67,18 @@ Example Playbook
     roles:
        - role: gitea
 ```
+
+Re-register Act Runner
+----------------------
+
+To re-register the Act Runner (for example, if configuration changed), run the playbook with:
+
+```bash
+ansible-playbook <playbook_name>.yml --tags <gitea_role_tag> \
+    -e ACTRUNNER_REREGISTER_RUNNER=true
+```
+
+This will remove the existing runner token and re-deploy the runner with a new registration.
 
 Backup and Restore
 ------------------
