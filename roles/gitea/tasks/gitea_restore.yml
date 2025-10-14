@@ -144,12 +144,27 @@
     - name: Restore MariaDB (Bare Metal)
       block:
         - name: Install MariaDB dependencies (Bare Metal)
-          package:
-            name:
-              - python3-pymysql
-              - mariadb-client
-            state: present
-          become: true
+          block:
+            - name: Install MariaDB dependencies on Debian-based system
+              apt:
+                name:
+                  - python3-pymysql
+                  - mariadb-client
+                state: present
+                update_cache: true
+              when: ansible_os_family == 'Debian'
+              become: true
+
+            - name: Install MariaDB dependencies on RHEL-based system
+              dnf:
+                name:
+                  - python3-PyMySQL
+                  - mariadb
+                state: latest
+                update_cache: true
+                install_weak_deps: false
+              when: ansible_os_family == "RedHat"
+              become: true
 
         - name: Drop Gitea database (Bare Metal)
           mysql_db:
