@@ -58,7 +58,7 @@
       file:
         path: '{{ ACT_DATA_PATH }}/.runner'
         state: absent
-      when: ACTRUNNER_REREGISTER_RUNNER
+      when: (actrunner_reregister_runner | default(false)) | bool
       become: true
 
     - name: Check if runner exists
