@@ -15,7 +15,6 @@ Role Variables
 
 ```yml
 GITEA_GROUP: gitea_host  # The group of nodes designated to install Gitea (defined in the inventory file).
-GITEA_IP: 192.168.1.30  # The IP address of the Gitea instance.
 
 GITEA_DOCKERIZED: true  # Gitea dockerized install toogle.
 GITEA_DOCKER_VERSION: latest  # Gitea Docker image version (rootless).
@@ -47,6 +46,7 @@ GITEA_DB_PASSWORD: gitea_db_password  # Gitea's database password.
 
 ACTRUNNER_GROUP: actrunner_host  # The group of nodes designated to install Act Runner (defined in the inventory file). Setting this variable to `false` will skip Act Runner installation.
 ACTRUNNER_DOCKER_VERSION: latest  # act_runner version.
+ACTRUNNER_GITEA_IP: 192.168.1.30  # IP address of the Gitea instance reachable from the Act Runner network.
 ```
 
 Dependencies
