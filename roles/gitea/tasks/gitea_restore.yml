@@ -201,7 +201,7 @@
 
       when: not GITEA_DB_DEPLOY
 
-  when: gitea_restore_db | bool
+  when: (gitea_restore_db | default(false)) | bool
 
 - name: Start Gitea
   block:
