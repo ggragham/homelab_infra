@@ -7,10 +7,18 @@
   become: true
 
   tasks:
-    - name: Upgrade all software.
+    - name: Upgrade all packages (Debian).
       apt:
         update_cache: true
         upgrade: dist
+      when: ansible_os_family == 'Debian'
+
+    - name: Upgrade all packages (RedHat).
+      dnf:
+        name: '*'
+        state: latest
+        update_cache: true
+      when: ansible_os_family == 'RedHat'
 
     - name: Check if a reboot is required.
       stat:
@@ -21,6 +29,12 @@
       reboot:
       when: reboot_required_file.stat.exists == true
 
-    - name: Remove dependencies that are no longer required.
+    - name: Remove dependencies that are no longer required (Debian).
       apt:
         autoremove: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Remove dependencies that are no longer required (RedHat).
+      dnf:
+        autoremove: true
+      when: ansible_os_family == 'RedHat'
