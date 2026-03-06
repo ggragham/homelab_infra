@@ -2,6 +2,8 @@
 ##################
 ###  Jellyfin  ###
 ##################
+JELLYFIN_INSTALL_METHOD: docker  # Installation method for Jellyfin (docker or proxmox).
+
 PROXMOX_HOSTNAME: example.com  # Proxmox VE instance hostname.
 PROXMOX_NODE: srv-01  # Proxmox node name where the container runs.
 PROXMOX_API_HOST: pve.example.com  # Proxmox API hostname or IP.
