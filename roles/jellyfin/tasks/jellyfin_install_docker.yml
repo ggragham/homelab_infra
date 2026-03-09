@@ -1,0 +1,95 @@
+---
+- name: Check Docker existence
+  block:
+    - name: Check Docker binary existence
+      stat:
+        path: /usr/bin/docker
+      register: docker_installed
+    - name: Show error if Docker not isntalled
+      fail:
+        msg: Docker is not installed
+      when: not docker_installed.stat.exists
+
+- name: Create Jellyfin system user and group
+  block:
+    - name: Create jellyfin group
+      group:
+        name: '{{ JELLYFIN_SYSTEM_USERNAME }}'
+        system: true
+        state: present
+      register: jellyfin_group
+      become: true
+
+    - name: Create jellyfin user
+      user:
+        name: '{{ JELLYFIN_SYSTEM_USERNAME }}'
+        group: '{{ JELLYFIN_SYSTEM_USERNAME }}'
+        system: true
+        create_home: false
+        shell: /usr/sbin/nologin
+        state: present
+      register: jellyfin_user
+      become: true
+
+    - name: Get jellyfin gid and uid
+      set_fact:
+        jellyfin_gid: '{{ jellyfin_group.gid }}'
+        jellyfin_uid: '{{ jellyfin_user.uid }}'
+
+- name: Jellyfin docker install
+  block:
+    - name: Create Jellyfin Docker dirs
+      block:
+        - name: Create Transmission Docker dirs
+          file:
+            path: '{{ jellyfin_dir.path }}'
+            state: directory
+            owner: '{{ jellyfin_dir.owner }}'
+            group: '{{ jellyfin_dir.owner }}'
+            mode: 0755
+          loop_control:
+            loop_var: jellyfin_dir
+          loop:
+            - {path: '{{ JELLYFIN_DOCKER_PATH }}', owner: root}
+            - {path: '{{ JELLYFIN_DOCKER_CONFIG_PATH }}', owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'}
+            - {path: '{{ JELLYFIN_DOCKER_CACHE_PATH }}', owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'}
+          become: true
+
+        - name: Check Jellyfin media source dirs
+          stat:
+            path: '{{ jellyfin_media_dir_check.source }}'
+          loop_control:
+            label: '{{ jellyfin_media_dir_check.name }} -> {{ jellyfin_media_dir_check.source }}'
+            loop_var: jellyfin_media_dir_check
+          loop: '{{ JELLYFIN_DOCKER_MEDIA_PATH }}'
+          register: jellyfin_media_dir_stat
+
+        - name: Ensure Jellyfin owns existing media source dirs
+          file:
+            path: '{{ jellyfin_media_dir.jellyfin_media_dir_check.source }}'
+            owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'
+          loop_control:
+            label: '{{ jellyfin_media_dir.jellyfin_media_dir_check.name }} -> {{ jellyfin_media_dir.jellyfin_media_dir_check.source }}'
+            loop_var: jellyfin_media_dir
+          loop: '{{ jellyfin_media_dir_stat.results }}'
+          when:
+            - jellyfin_media_dir.stat.exists
+            - jellyfin_media_dir.stat.isdir
+          become: true
+
+    - name: Apply Jellyfin Compose template
+      template:
+        src: docker_compose.yml.j2
+        dest: '{{ JELLYFIN_DOCKER_PATH }}/docker-compose.yml'
+        owner: root
+        mode: '0644'
+      become: true
+
+- name: Start dockerized Jellyfin
+  block:
+    - name: Start Jellyfin
+      community.docker.docker_compose_v2:
+        project_src: '{{ JELLYFIN_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true

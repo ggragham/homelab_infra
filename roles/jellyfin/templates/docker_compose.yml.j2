@@ -1,0 +1,23 @@
+---
+services:
+  {{ JELLYFIN_DOCKER_SERVICE_NAME }}:
+    image: jellyfin/jellyfin:{{ JELLYFIN_DOCKER_VERSION }}
+    container_name: {{ JELLYFIN_DOCKER_CONTAINER_NAME }}
+    restart: unless-stopped
+    user: {{ jellyfin_uid }}:{{ jellyfin_gid}}
+    ports:
+      - {{ JELLYFIN_DOCKER_HTTP_PORT }}:8096/tcp
+{% if JELLYFIN_DOCKER_DISCOVERY_PORT is defined and JELLYFIN_DOCKER_DISCOVERY_PORT is not sameas(false) %}
+      - {{ JELLYFIN_DOCKER_DISCOVERY_PORT }}:7359/udp
+{% endif %}
+    volumes:
+      - {{ JELLYFIN_DOCKER_CONFIG_PATH }}:/config
+      - {{ JELLYFIN_DOCKER_CACHE_PATH }}:/cache
+{% for item in JELLYFIN_DOCKER_MEDIA_PATH %}
+      - type: bind
+        source: {{ item.source }}
+        target: {{ item.target }}
+        read_only: {{ item.read_only }}
+        bind:
+          create_host_path: false
+{% endfor %}

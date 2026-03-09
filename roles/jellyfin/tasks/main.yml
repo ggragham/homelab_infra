@@ -1,4 +1,8 @@
 ---
+- name: Install Jellyfin (Docker)
+  include_tasks: jellyfin_install_docker.yml
+  when: JELLYFIN_INSTALL_METHOD == 'docker'
+
 - name: Install Jellyfin (Proxmox)
   block:
     - name: Configure Proxmox LXC container
