@@ -40,7 +40,7 @@
   block:
     - name: Create Jellyfin Docker dirs
       block:
-        - name: Create Transmission Docker dirs
+        - name: Create Jellyfin Docker dirs
           file:
             path: '{{ jellyfin_dir.path }}'
             state: directory
