@@ -3,6 +3,7 @@ services:
   {{ JELLYFIN_DOCKER_SERVICE_NAME }}:
     image: jellyfin/jellyfin:{{ JELLYFIN_DOCKER_VERSION }}
     container_name: {{ JELLYFIN_DOCKER_CONTAINER_NAME }}
+    hostname: {{ JELLYFIN_DOCKER_HOSTNAME }}
     restart: unless-stopped
     user: {{ jellyfin_uid }}:{{ jellyfin_gid}}
     networks:
