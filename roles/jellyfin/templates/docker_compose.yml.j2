@@ -5,10 +5,14 @@ services:
     container_name: {{ JELLYFIN_DOCKER_CONTAINER_NAME }}
     restart: unless-stopped
     user: {{ jellyfin_uid }}:{{ jellyfin_gid}}
+    networks:
+      - jellyfin_nginx_network
+{% if JELLYFIN_DOCKER_USE_NGINX is not sameas(true) %}
     ports:
       - {{ JELLYFIN_DOCKER_HTTP_PORT }}:8096/tcp
 {% if JELLYFIN_DOCKER_DISCOVERY_PORT is defined and JELLYFIN_DOCKER_DISCOVERY_PORT is not sameas(false) %}
       - {{ JELLYFIN_DOCKER_DISCOVERY_PORT }}:7359/udp
+{% endif %}
 {% endif %}
     volumes:
       - {{ JELLYFIN_DOCKER_CONFIG_PATH }}:/config
@@ -21,3 +25,8 @@ services:
         bind:
           create_host_path: false
 {% endfor %}
+
+networks:
+  jellyfin_nginx_network:
+    name: {{ JELLYFIN_DOCKER_NETWORK_NAME }}
+    external: true

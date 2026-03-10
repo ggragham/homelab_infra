@@ -1,11 +1,13 @@
 ---
+JELLYFIN_SERVICE_NAME: jellyfin  # Jellyfin service name.
 JELLYFIN_SYSTEM_USERNAME: jellyfin  # Jellyfin system user.
 
 JELLYFIN_DOCKER_PATH: /opt/jellyfin_docker  # Jellyfin Docker installation path.
 JELLYFIN_DOCKER_CONFIG_PATH: '{{ JELLYFIN_DOCKER_PATH }}/config'  # Jellyfin Docker config path.
 JELLYFIN_DOCKER_CACHE_PATH: '{{ JELLYFIN_DOCKER_PATH }}/cache'  # Jellyfin Docker cache path.
-JELLYFIN_DOCKER_SERVICE_NAME: jellyfin  # Jellyfin Docker service name.
+JELLYFIN_DOCKER_SERVICE_NAME: '{{ JELLYFIN_SERVICE_NAME }}'  # Jellyfin Docker service name.
 JELLYFIN_DOCKER_CONTAINER_NAME: jellyfin_container  # Jellyfin Docker container name.
+JELLYFIN_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 
 JELLYFIN_VIDEO_GID: 64001  # GID for video group inside the container.
 JELLYFIN_RENDER_GID: 64002  # GID for render group inside the container.

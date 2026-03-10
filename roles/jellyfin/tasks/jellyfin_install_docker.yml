@@ -85,6 +85,14 @@
         mode: '0644'
       become: true
 
+    - name: Apply Jellyfin Nginx config
+      template:
+        src: jellyfin_nginx.conf.j2
+        dest: '{{ NGINX_SITES_ENABLED_PATH }}/jellyfin.conf'
+        mode: '0644'
+      when: JELLYFIN_DOCKER_USE_NGINX
+      become: true
+
 - name: Start dockerized Jellyfin
   block:
     - name: Start Jellyfin
@@ -93,3 +101,11 @@
         state: present
         recreate: always
         remove_orphans: true
+
+    - name: Restart Nginx
+      community.docker.docker_compose_v2:
+        project_src: '{{ NGINX_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true
+      when: JELLYFIN_DOCKER_USE_NGINX
