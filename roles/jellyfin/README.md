@@ -1,18 +1,20 @@
 Jellyfin Role
 =============
 
-Install and configure Jellyfin to Proxmox LXC with hardware acceleration (AMD GPU only).
+Install and configure Jellyfin on Proxmox LXC or Docker hosts.
 
 Requirements
 ------------
 
-- AMD GPU hardware.
-- Proxmox VE host with an available LXC container (Debian/Ubuntu based).
-- Python packages on the control node:
+- One of the following:
+  * Proxmox VE host with an available LXC container and AMD GPU hardware
+  * A host with Docker installed
+
+- For Proxmox VE deployments only:
   * `proxmoxer` >= 2.0
   * `requests`
 
-Example install:
+Install the required Python packages for Proxmox VE deployments:
 ```bash
 python3 -m pip install --user "proxmoxer>=2.0" requests
 ```
@@ -21,6 +23,23 @@ Role Variables
 --------------
 
 ```yml
+JELLYFIN_INSTALL_METHOD: docker  # Installation method for Jellyfin (docker or proxmox).
+JELLYFIN_DOCKER_VERSION: latest  # Jellyfin Docker image version.
+JELLYFIN_DOCKER_HTTP_PORT: 8096  # Jellyfin WebUI HTTP port.
+JELLYFIN_DOCKER_DISCOVERY_PORT: 7359  # Jellyfin Client Discrovery port (set to false to disable, or specify a port number).
+JELLYFIN_DOCKER_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Jellyfin.
+JELLYFIN_DOCKER_MEDIA_PATH:  # Mapping of media directories to Jellyfin container.
+  - name: anime  # Name for the media path.
+    source: /mnt/anime  # Host source directory for media.
+    target: /anime  # Container target directory for media.
+    read_only: true  # If true, media can’t be modified from the container.
+  - name: shows
+    source: /mnt/shows
+    target: /shows
+    read_only: false
+
+JELLYFIN_DOMAIN: jellyfin.{{ DOMAIN_NAME }}  # Domain name for the Jellyfin service.
+
 PROXMOX_HOSTNAME: example.com  # Proxmox VE instance hostname.
 PROXMOX_NODE: srv-01  # Proxmox node name where the container runs.
 PROXMOX_API_HOST: pve.example.com  # Proxmox API hostname or IP.
@@ -54,7 +73,7 @@ Example Playbook
 ----------------
 
 ```yml
-  - hosts: pve-lxc-01
+  - hosts: jellyfin-node
     roles:
        - role: jellyfin
 ```
