@@ -1,3 +1,41 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for roles/portainer
+- name: Check Docker existence
+  block:
+    - name: Check Docker binary existence
+      stat:
+        path: /usr/bin/docker
+      register: docker_installed
+    - name: Show error if Docker not isntalled
+      fail:
+        msg: Docker is not installed
+      when: not docker_installed.stat.exists
+
+- name: Portainer docker install
+  block:
+    - name: Create Portainer Docker dirs
+      block:
+        - name: Create Portainer Docker dirs
+          file:
+            path: '{{ PORTAINER_DOCKER_PATH }}'
+            state: directory
+            owner: root
+            group: root
+            mode: 0755
+          become: true
+
+    - name: Apply Portainer Compose template
+      template:
+        src: docker_compose.yml.j2
+        dest: '{{ PORTAINER_DOCKER_PATH }}/docker-compose.yml'
+        owner: root
+        mode: '0644'
+      become: true
+
+- name: Start dockerized Portainer
+  block:
+    - name: Start Portainer
+      community.docker.docker_compose_v2:
+        project_src: '{{ PORTAINER_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true
