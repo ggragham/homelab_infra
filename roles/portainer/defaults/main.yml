@@ -1,4 +1,10 @@
 ---
+###################
+###  Portainer  ###
+###################
 PORTAINER_DOCKER_VERSION: sts  # Portainer Docker image version.
 PORTAINER_DOCKER_HTTP_PORT: 9443  # Portainer WebUI HTTP port.
 PORTAINER_DOCKER_EDGE_AGENTS_PORT: 8000  # Portainer edge agents port for remote management (set to false to disable, or specify a port number).
+PORTAINER_DOCKER_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Portainer.
+
+PORTAINER_DOMAIN: portainer.{{ DOMAIN_NAME }}  # Domain name for the Portainer service.

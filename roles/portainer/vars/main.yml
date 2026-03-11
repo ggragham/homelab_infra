@@ -3,3 +3,4 @@ PORTAINER_SERVICE_NAME: portainer  # Portainer service name.
 PORTAINER_DOCKER_PATH: /opt/portainer_docker  # Portainer Docker installation path.
 PORTAINER_DOCKER_SERVICE_NAME: '{{ PORTAINER_SERVICE_NAME }}'  # Portainer Docker service name.
 PORTAINER_DOCKER_CONTAINER_NAME: '{{ PORTAINER_SERVICE_NAME }}_container'  # Portainer Docker container name.
+PORTAINER_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.

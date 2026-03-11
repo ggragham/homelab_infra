@@ -31,6 +31,14 @@
         mode: '0644'
       become: true
 
+    - name: Apply Portainer Nginx config
+      template:
+        src: portainer_nginx.conf.j2
+        dest: '{{ NGINX_SITES_ENABLED_PATH }}/portainer.conf'
+        mode: '0644'
+      when: PORTAINER_DOCKER_USE_NGINX
+      become: true
+
 - name: Start dockerized Portainer
   block:
     - name: Start Portainer
@@ -39,3 +47,11 @@
         state: present
         recreate: always
         remove_orphans: true
+
+    - name: Restart Nginx
+      community.docker.docker_compose_v2:
+        project_src: '{{ NGINX_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true
+      when: PORTAINER_DOCKER_USE_NGINX
