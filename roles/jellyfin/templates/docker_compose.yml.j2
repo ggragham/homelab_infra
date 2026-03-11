@@ -8,9 +8,12 @@ services:
     user: {{ jellyfin_uid }}:{{ jellyfin_gid}}
     networks:
       - jellyfin_nginx_network
-{% if JELLYFIN_DOCKER_USE_NGINX is not sameas(true) %}
+{% if (JELLYFIN_DOCKER_USE_NGINX is not defined or JELLYFIN_DOCKER_USE_NGINX is not sameas(true))
+   or (JELLYFIN_DOCKER_DISCOVERY_PORT is defined and JELLYFIN_DOCKER_DISCOVERY_PORT is not sameas(false)) %}
     ports:
+{% if JELLYFIN_DOCKER_USE_NGINX is not defined or JELLYFIN_DOCKER_USE_NGINX is not sameas(true) %}
       - {{ JELLYFIN_DOCKER_HTTP_PORT }}:8096/tcp
+{% endif %}
 {% if JELLYFIN_DOCKER_DISCOVERY_PORT is defined and JELLYFIN_DOCKER_DISCOVERY_PORT is not sameas(false) %}
       - {{ JELLYFIN_DOCKER_DISCOVERY_PORT }}:7359/udp
 {% endif %}
