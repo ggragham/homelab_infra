@@ -1,38 +1,48 @@
-Role Name
-=========
+Portainer Role
+==============
 
-A brief description of the role goes here.
+Install and configure Portainer.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Docker must be installed, or a Docker Ansible role must be applied (see [Docker Installation Guide](https://docs.docker.com/engine/install/)).
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yml
+PORTAINER_DOCKER_VERSION: sts  # Portainer Docker image version.
+PORTAINER_DOCKER_HTTP_PORT: 9443  # Portainer WebUI HTTP port.
+PORTAINER_DOCKER_EDGE_AGENTS_PORT: 8000  # Portainer edge agents port for remote management (set to false to disable, or specify a port number).
+PORTAINER_DOCKER_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Portainer.
+
+PORTAINER_DOMAIN: portainer.{{ DOMAIN_NAME }}  # Domain name for the Portainer service.
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+```yml
+dependencies:
+  - role: docker
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+  - hosts: portainer-node
+    roles:
+       - role: portainer
+```
 
 License
 -------
 
-BSD
+GPL
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+[Grell Gragham](https://github.com/ggragham)
