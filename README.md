@@ -43,6 +43,7 @@ ansible-playbook master_server.playbook.yml
 # Roles
 * [**Nginx**](./roles/nginx/README.md) - High-performance HTTP server and reverse proxy.
 * [**Nginx Proxy Manager**](./roles/nginx_proxy_manager/README.md) - Reverse proxy management with a user-friendly web interface.
+* [**Portainer**](./roles/portainer/README.md) - Lightweight web UI for Docker environment management.
 * [**MariaDB**](./roles/mariadb/README.md) - Role for MariaDB installation and configuration.
 * **(WIP)** [**Borgmatic**](./roles/borg/README.md) - Simple, configuration-driven backup software for servers and workstations.
 * [**Pi-hole**](./roles/pihole/README.md) - Network-wide ad blocking via your own Linux hardware.
@@ -71,6 +72,7 @@ Some services use alternative fixed deployment methods, e.g. Jellyfin (Proxmox L
 ## Supported Deployment Methods
 * Nginx: Dockerized, Bare Metal
 * Nginx Proxy Manager: Dockerized
+* Portainer: Dockerized
 * MariaDB: Dockerized[^1], Bare Metal
 * Borgmatic (WIP): Bare Metal
 * Pi-hole: Dockerized, Bare Metal
