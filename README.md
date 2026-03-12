@@ -76,7 +76,7 @@ Some services use alternative fixed deployment methods, e.g. Jellyfin (Proxmox L
 * Pi-hole: Dockerized, Bare Metal
 * Gitea: Dockerized, Bare Metal
 * Nextcloud: Dockerized
-* Jellyfin: Proxmox LXC (AMD GPU only)
+* Jellyfin: Proxmox LXC (AMD GPU only), Dockerized
 * Transmission: Dockerized, Bare Metal
 
 [^1]: When deploying a Dockerized application that requires MariaDB, the MariaDB service is included in the same docker-compose file and deployed together with the application.
