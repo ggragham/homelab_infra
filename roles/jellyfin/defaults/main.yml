@@ -7,6 +7,7 @@ JELLYFIN_DOCKER_VERSION: latest  # Jellyfin Docker image version.
 JELLYFIN_DOCKER_HTTP_PORT: 8096  # Jellyfin WebUI HTTP port.
 JELLYFIN_DOCKER_DISCOVERY_PORT: 7359  # Jellyfin Client Discrovery port (set to false to disable, or specify a port number).
 JELLYFIN_DOCKER_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Jellyfin.
+JELLYFIN_DOCKER_NGINX_REDIRECT_HTTPS: false  # Redirect HTTP to HTTPS in Nginx.
 JELLYFIN_DOCKER_MEDIA_PATH:  # Mapping of media directories to Jellyfin container.
   - name: anime  # Name for the media path.
     source: /mnt/anime  # Host source directory for media.

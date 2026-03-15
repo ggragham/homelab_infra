@@ -5,10 +5,27 @@ upstream {{ JELLYFIN_SERVICE_NAME }}_backend {
 server {
     server_name {{ JELLYFIN_DOMAIN }};
     listen 80;
-    return 301 https://$host$request_uri;
-    
+
     autoindex off;
     server_tokens off;
+
+{% if JELLYFIN_DOCKER_NGINX_REDIRECT_HTTPS | bool %}
+    return 301 https://$host$request_uri;
+{% else %}
+    set $backend "http://{{ JELLYFIN_SERVICE_NAME }}_backend";
+
+    location / {
+        proxy_set_header  X-Real-IP         $remote_addr;
+        proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header  Host              $http_host;
+        proxy_set_header  X-NginX-Proxy     true;
+        proxy_set_header  Connection        "";
+        proxy_pass_header X-Transmission-Session-Id;
+        add_header        Front-End-Https   on;
+
+        proxy_pass $backend;
+    }
+{% endif %}
 
     access_log /var/log/nginx/{{ JELLYFIN_SERVICE_NAME }}-access.log;
     error_log /var/log/nginx/{{ JELLYFIN_SERVICE_NAME }}-error.log;
@@ -22,7 +39,7 @@ server {
     autoindex off;
     server_tokens off;
 
-	set $backend "http://{{ JELLYFIN_SERVICE_NAME }}_backend";
+    set $backend "http://{{ JELLYFIN_SERVICE_NAME }}_backend";
 
     location / {
         proxy_set_header  X-Real-IP         $remote_addr;
