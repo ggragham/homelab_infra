@@ -1,2 +1,51 @@
 ---
-...
+- name: Install and config Redmine
+  block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not isntalled
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+
+    - name: Create Redmine Docker dirs
+      file:
+        path: '{{ redmine_dirs }}'
+        state: directory
+        owner: '{{ REDMINE_DOCKER_HOST_UID }}'
+        mode: 0755
+      loop_control:
+        loop_var: redmine_dirs
+      loop:
+        - '{{ REDMINE_DOCKER_PATH }}'
+        - '{{ REDMINE_DOCKER_DATA_PATH }}'
+        - '{{ REDMINE_DOCKER_FILES_PATH }}'
+        - '{{ REDMINE_DOCKER_PLUGINS_PATH }}'
+        - '{{ REDMINE_DOCKER_THEMES_PATH }}'
+      become: true
+
+    - name: Apply .env
+      template:
+        src: env.j2
+        dest: '{{ REDMINE_DOCKER_PATH }}/.env'
+        owner: '{{ REDMINE_DOCKER_HOST_UID }}'
+        mode: '0600'
+      become: true
+
+    - name: Apply Redmine Docker Compose template
+      template:
+        src: docker-compose.yml.j2
+        dest: '{{ REDMINE_DOCKER_PATH }}/docker-compose.yml'
+        owner: '{{ REDMINE_DOCKER_HOST_UID }}'
+        mode: 0644
+
+    - name: Start Redmine
+      community.docker.docker_compose_v2:
+        project_src: '{{ REDMINE_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true

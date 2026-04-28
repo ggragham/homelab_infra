@@ -1,0 +1,36 @@
+---
+services:
+  {{ REDMINE_DOCKER_SERVICE_NAME }}:
+    image: docker.io/library/redmine:{{ REDMINE_DOCKER_TAG }}
+    container_name: {{ REDMINE_DOCKER_CONTAINER_NAME }}
+    user: {{ REDMINE_DOCKER_HOST_UID }}:{{ REDMINE_DOCKER_HOST_GID }}
+    restart: unless-stopped
+    environment:
+      - TZ=${REDMINE_TIMEZONE:-Etc/UTC}
+      - SECRET_KEY_BASE=${REDMINE_SECRET_KEY_BASE}
+      - REDMINE_LANG=${REDMINE_LANG:-en}
+      - REDMINE_DB_MYSQL=${REDMINE_DB_HOST}
+      - REDMINE_DB_PORT=${REDMINE_DB_PORT:-3306}
+      - REDMINE_DB_USERNAME=${REDMINE_DB_USERNAME}
+      - REDMINE_DB_PASSWORD=${REDMINE_DB_PASSWORD}
+      - REDMINE_DB_DATABASE=${REDMINE_DB_DATABASE}
+      - REDMINE_DB_ENCODING=${REDMINE_DB_ENCODING:-utf8mb4}
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 2 bash -c '</dev/tcp/127.0.0.1/3000'"]
+      interval: 1m
+      timeout: 3s
+      retries: 5
+      start_period: 2m
+    networks:
+      - redmine_network
+    ports:
+      - {{ REDMINE_DOCKER_HTTP_PORT }}:3000/tcp
+    volumes:
+      - {{ REDMINE_DOCKER_FILES_PATH }}:/usr/src/redmine/files:Z
+      - {{ REDMINE_DOCKER_PLUGINS_PATH }}:/usr/src/redmine/plugins:Z
+      - {{ REDMINE_DOCKER_THEMES_PATH }}:/usr/src/redmine/public/themes:Z
+
+networks:
+  redmine_network:
+    name: {{ REDMINE_DOCKER_NETWORK_NAME }}
+    external: true
