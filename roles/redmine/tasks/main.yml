@@ -49,3 +49,16 @@
         state: present
         recreate: always
         remove_orphans: true
+
+    - name: Load Redmine default data
+      community.docker.docker_container_exec:
+        container: '{{ REDMINE_DOCKER_CONTAINER_NAME }}'
+        command: >
+          bash -lc 'RAILS_ENV=production REDMINE_LANG={{ REDMINE_LANG | default("en") }}
+          bundle exec rake redmine:load_default_data'
+        chdir: /usr/src/redmine
+      register: redmine_default_data
+      changed_when: "'Default configuration data loaded' in redmine_default_data.stdout"
+      retries: 10
+      delay: 5
+      until: redmine_default_data.rc == 0
