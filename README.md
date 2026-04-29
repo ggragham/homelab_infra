@@ -51,6 +51,7 @@ ansible-playbook master_server.playbook.yml
 * [**Nextcloud**](./roles/nextcloud/README.md) - Personal cloud storage solution.
 * [**Jellyfin**](./roles/jellyfin/README.md) - Media server for organizing and streaming media content.
 * [**Transmission**](./roles/transmission/README.md) - Fast, easy and free BitTorrent client.
+* [**Redmine**](./roles/redmine/README.md) - Flexible project management and issue tracking web application.
 
 > Detailed usage, variables, and examples are documented in each role’s own README.
 
@@ -80,6 +81,7 @@ Some services use alternative fixed deployment methods, e.g. Jellyfin (Proxmox L
 * Nextcloud: Dockerized
 * Jellyfin: Proxmox LXC (AMD GPU only), Dockerized
 * Transmission: Dockerized, Bare Metal
+* Redmine: Dockerized
 
 [^1]: When deploying a Dockerized application that requires MariaDB, the MariaDB service is included in the same docker-compose file and deployed together with the application.
 
