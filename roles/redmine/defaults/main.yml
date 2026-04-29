@@ -2,18 +2,21 @@
 #################
 ###  Redmine  ###
 #################
-REDMINE_DOCKER_TAG: latest
-REDMINE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'
-REDMINE_DOCKER_HTTP_PORT: 8080
+REDMINE_DOCKER_TAG: latest  # Redmine Docker image tag.
+REDMINE_DOCKER_HTTP_PORT: 8080  # Redmine WebUI HTTP port.
+REDMINE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 
-REDMINE_TIMEZONE: Etc/UTC
+REDMINE_DOCKER_HOST_UID: 1000  # Redmine Docker host user ID.
+REDMINE_DOCKER_HOST_GID: 1000  # Redmine Docker host group ID.
 
-REDMINE_DB_HOST: 192.168.88.128
-REDMINE_DB_PORT: 3306
-REDMINE_DB_USERNAME: redmine
-REDMINE_DB_PASSWORD: redmine_password
-REDMINE_DB_DATABASE: redmine
-REDMINE_DB_ENCODING: utf8mb4
+REDMINE_TIMEZONE: Etc/UTC  # Redmine timezone.
+REDMINE_LANG: en  # Redmine default language.
 
-REDMINE_SECRET_KEY_BASE: change_me_to_long_random_secret
-REDMINE_LANG: en
+REDMINE_SECRET_KEY_BASE: change_me_to_long_random_secret  # Redmine secret key base. Change it to a long random value.
+
+REDMINE_DB_HOST: 192.168.88.128  # Redmine database host.
+REDMINE_DB_PORT: 3306  # Redmine database port.
+REDMINE_DB_USERNAME: redmine  # Redmine database username.
+REDMINE_DB_PASSWORD: redmine_password  # Redmine database password.
+REDMINE_DB_DATABASE: redmine  # Redmine database name.
+REDMINE_DB_ENCODING: utf8mb4  # Redmine database encoding.
