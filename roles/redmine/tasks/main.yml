@@ -82,3 +82,21 @@
       retries: 10
       delay: 5
       until: redmine_default_data.rc == 0
+
+    - name: Redmine Nginx Config
+      block:
+        - name: Apply Redmine Nginx config
+          template:
+            src: redmine_nginx.conf.j2
+            dest: '{{ NGINX_SITES_ENABLED_PATH }}/redmine.conf'
+            mode: '0644'
+          when: REDMINE_DOCKER_USE_NGINX
+          become: true
+
+        - name: Restart Nginx
+          community.docker.docker_compose_v2:
+            project_src: '{{ NGINX_DOCKER_PATH }}'
+            state: present
+            recreate: always
+            remove_orphans: true
+          when: REDMINE_DOCKER_USE_NGINX

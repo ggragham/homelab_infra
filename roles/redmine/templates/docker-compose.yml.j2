@@ -31,8 +31,10 @@ services:
 {% if REDMINE_DOCKER_DB_DEPLOY %}
       - redmine_db_network
 {% endif %}
+{% if not (REDMINE_DOCKER_USE_NGINX | default(false) | bool) %}
     ports:
       - {{ REDMINE_DOCKER_HTTP_PORT }}:3000/tcp
+{% endif %}
     volumes:
       - {{ REDMINE_DOCKER_FILES_PATH }}:/usr/src/redmine/files:Z
       - {{ REDMINE_DOCKER_PLUGINS_PATH }}:/usr/src/redmine/plugins:Z
