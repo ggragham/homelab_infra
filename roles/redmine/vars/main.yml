@@ -8,3 +8,7 @@ REDMINE_DOCKER_DATA_PATH: '{{ REDMINE_DOCKER_PATH }}/data'  # Redmine Docker dat
 REDMINE_DOCKER_FILES_PATH: '{{ REDMINE_DOCKER_DATA_PATH }}/files'  # Redmine Docker files path.
 REDMINE_DOCKER_PLUGINS_PATH: '{{ REDMINE_DOCKER_DATA_PATH }}/plugins'  # Redmine Docker plugins path.
 REDMINE_DOCKER_THEMES_PATH: '{{ REDMINE_DOCKER_DATA_PATH }}/themes'  # Redmine Docker themes path.
+
+REDMINE_DOCKER_DB_SERVICE_NAME: '{{ REDMINE_SERVICE_NAME }}-db'  # MariaDB Docker service name. Used only when REDMINE_DOCKER_DB_DEPLOY is true.
+REDMINE_DOCKER_DB_CONTAINER_NAME: '{{ REDMINE_SERVICE_NAME }}_db_container'  # MariaDB Docker container name. Used only when REDMINE_DOCKER_DB_DEPLOY is true.
+REDMINE_DOCKER_DB_PATH: '{{ REDMINE_DOCKER_PATH }}/db'  # MariaDB Docker data path. Used only when REDMINE_DOCKER_DB_DEPLOY is true.

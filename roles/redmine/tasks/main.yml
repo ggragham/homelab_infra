@@ -28,6 +28,14 @@
         - '{{ REDMINE_DOCKER_THEMES_PATH }}'
       become: true
 
+    - name: Create Redmine DB Docker dir
+      file:
+        path: '{{ REDMINE_DOCKER_DB_PATH }}'
+        state: directory
+        mode: 0755
+      when: REDMINE_DOCKER_DB_DEPLOY | default(false) | bool
+      become: true
+
     - name: Apply .env
       template:
         src: env.j2

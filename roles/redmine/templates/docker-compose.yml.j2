@@ -5,6 +5,11 @@ services:
     container_name: {{ REDMINE_DOCKER_CONTAINER_NAME }}
     user: {{ REDMINE_DOCKER_HOST_UID }}:{{ REDMINE_DOCKER_HOST_GID }}
     restart: unless-stopped
+{% if REDMINE_DOCKER_DB_DEPLOY %}
+    depends_on:
+      {{ REDMINE_DOCKER_DB_SERVICE_NAME }}:
+        condition: service_healthy
+{% endif %}
     environment:
       - TZ=${REDMINE_TIMEZONE:-Etc/UTC}
       - SECRET_KEY_BASE=${REDMINE_SECRET_KEY_BASE}
@@ -23,6 +28,9 @@ services:
       start_period: 2m
     networks:
       - redmine_network
+{% if REDMINE_DOCKER_DB_DEPLOY %}
+      - redmine_db_network
+{% endif %}
     ports:
       - {{ REDMINE_DOCKER_HTTP_PORT }}:3000/tcp
     volumes:
@@ -30,7 +38,35 @@ services:
       - {{ REDMINE_DOCKER_PLUGINS_PATH }}:/usr/src/redmine/plugins:Z
       - {{ REDMINE_DOCKER_THEMES_PATH }}:/usr/src/redmine/public/themes:Z
 
+{% if REDMINE_DOCKER_DB_DEPLOY %}
+  {{ REDMINE_DOCKER_DB_SERVICE_NAME }}:
+    image: mariadb:{{ REDMINE_DOCKER_MARIADB_TAG }}
+    container_name: {{ REDMINE_DOCKER_DB_CONTAINER_NAME }}
+    restart: always
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MARIADB_ROOT_PASSWORD=${REDMINE_DB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${REDMINE_DB_DATABASE}
+      - MARIADB_USER=${REDMINE_DB_USERNAME}
+      - MARIADB_PASSWORD=${REDMINE_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u$${MARIADB_USER} -p$${MARIADB_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - redmine_db_network
+    volumes:
+      - {{ REDMINE_DOCKER_DB_PATH }}:/var/lib/mysql:Z
+{% endif %}
+
 networks:
   redmine_network:
     name: {{ REDMINE_DOCKER_NETWORK_NAME }}
     external: true
+{% if REDMINE_DOCKER_DB_DEPLOY %}
+  redmine_db_network:
+{% endif %}
