@@ -50,6 +50,18 @@
         recreate: always
         remove_orphans: true
 
+    - name: Wait until Redmine container is healthy
+      community.docker.docker_container_info:
+        name: '{{ REDMINE_DOCKER_CONTAINER_NAME }}'
+      register: redmine_container_info
+      changed_when: false
+      retries: 60
+      delay: 5
+      until:
+        - redmine_container_info.exists
+        - redmine_container_info.container.State.Health is defined
+        - redmine_container_info.container.State.Health.Status == 'healthy'
+
     - name: Load Redmine default data
       community.docker.docker_container_exec:
         container: '{{ REDMINE_DOCKER_CONTAINER_NAME }}'
