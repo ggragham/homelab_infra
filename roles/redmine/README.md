@@ -24,8 +24,12 @@ REDMINE_LANG: en  # Redmine default language.
 
 REDMINE_SECRET_KEY_BASE: change_me_to_long_random_secret  # Redmine secret key base. Change it to a long random value.
 
-REDMINE_DB_HOST: 192.168.88.128  # Redmine database host.
-REDMINE_DB_PORT: 3306  # Redmine database port.
+REDMINE_DOCKER_DB_DEPLOY: false  # Whether to deploy MariaDB as a Docker service with Redmine.
+REDMINE_DOCKER_MARIADB_TAG: latest  # MariaDB Docker image tag. Used only when REDMINE_DOCKER_DB_DEPLOY is true.
+REDMINE_DB_ROOT_PASSWORD: change_me  # MariaDB root password. Used only when REDMINE_DOCKER_DB_DEPLOY is true.
+
+REDMINE_DB_HOST: 192.168.88.128  # Redmine database host. Used only when REDMINE_DOCKER_DB_DEPLOY is false.
+REDMINE_DB_PORT: 3306  # Redmine database port. Used only when REDMINE_DOCKER_DB_DEPLOY is false.
 REDMINE_DB_USERNAME: redmine  # Redmine database username.
 REDMINE_DB_PASSWORD: redmine_password  # Redmine database password.
 REDMINE_DB_DATABASE: redmine  # Redmine database name.
