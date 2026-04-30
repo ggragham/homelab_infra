@@ -14,6 +14,10 @@ Role Variables
 ```yml
 REDMINE_DOCKER_TAG: latest  # Redmine Docker image tag.
 REDMINE_DOCKER_HTTP_PORT: 8080  # Redmine WebUI HTTP port.
+REDMINE_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
+
+REDMINE_DOCKER_HOST_UID: 1000  # Redmine Docker host user ID.
+REDMINE_DOCKER_HOST_GID: 1000  # Redmine Docker host group ID.
 
 REDMINE_TIMEZONE: Etc/UTC  # Redmine timezone.
 REDMINE_LANG: en  # Redmine default language.
