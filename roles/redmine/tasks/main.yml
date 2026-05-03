@@ -26,6 +26,7 @@
         - '{{ REDMINE_DOCKER_FILES_PATH }}'
         - '{{ REDMINE_DOCKER_PLUGINS_PATH }}'
         - '{{ REDMINE_DOCKER_THEMES_PATH }}'
+        - '{{ REDMINE_DOCKER_OTHER_PATH }}'
       become: true
 
     - name: Create Redmine DB Docker dir

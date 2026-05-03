@@ -39,6 +39,7 @@ services:
       - {{ REDMINE_DOCKER_FILES_PATH }}:/usr/src/redmine/files:Z
       - {{ REDMINE_DOCKER_PLUGINS_PATH }}:/usr/src/redmine/plugins:Z
       - {{ REDMINE_DOCKER_THEMES_PATH }}:/usr/src/redmine/public/themes:Z
+      - {{ REDMINE_DOCKER_OTHER_PATH }}:/usr/src/redmine/public/other:Z
 
 {% if REDMINE_DOCKER_DB_DEPLOY %}
   {{ REDMINE_DOCKER_DB_SERVICE_NAME }}:
