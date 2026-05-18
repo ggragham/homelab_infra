@@ -27,6 +27,9 @@ JELLYFIN_INSTALL_METHOD: docker  # Installation method for Jellyfin (docker or p
 JELLYFIN_DOCKER_VERSION: latest  # Jellyfin Docker image version.
 JELLYFIN_DOCKER_HTTP_PORT: 8096  # Jellyfin WebUI HTTP port.
 JELLYFIN_DOCKER_DISCOVERY_PORT: 7359  # Jellyfin Client Discovery port (set to false to disable, or specify a port number).
+JELLYFIN_DOCKER_HARDWARE_TRANSCODING_ENABLE: false  # Toggle to enable hardware transcoding.
+JELLYFIN_DOCKER_TRANSCODE_TMPFS_ENABLE: false  # Toggle to use tmpfs for Jellyfin transcoding.
+JELLYFIN_DOCKER_TRANSCODE_TMPFS_SIZE: 4g  # Size of tmpfs used for Jellyfin transcoding.
 JELLYFIN_DOCKER_USE_NGINX: false  # Toggle to use Nginx as a reverse proxy for Jellyfin.
 JELLYFIN_DOCKER_NGINX_REDIRECT_HTTPS: false  # Redirect HTTP to HTTPS in Nginx.
 JELLYFIN_DOCKER_MEDIA_PATH:  # Mapping of media directories to Jellyfin container.
