@@ -165,6 +165,7 @@
             loop_var: jellyfin_media_dir_check
           loop: '{{ JELLYFIN_DOCKER_MEDIA_PATH }}'
           register: jellyfin_media_dir_stat
+          become: true
 
         - name: Ensure Jellyfin owns existing media source dirs
           file:
