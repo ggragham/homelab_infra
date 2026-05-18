@@ -55,6 +55,10 @@ services:
         bind:
           create_host_path: false
 {% endfor %}
+{% if JELLYFIN_DOCKER_TRANSCODE_TMPFS_ENABLE | default(false) | bool %}
+    tmpfs:
+      - {{ JELLYFIN_DOCKER_TRANSCODES_DEST }}:size={{ JELLYFIN_DOCKER_TRANSCODE_TMPFS_SIZE }},uid={{ jellyfin_uid }},gid={{ jellyfin_gid }},mode=0750,noexec,nosuid,nodev
+{% endif %}
 
 networks:
   jellyfin_nginx_network:

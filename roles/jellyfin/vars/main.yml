@@ -11,6 +11,7 @@ JELLYFIN_DOCKER_CACHE_PATH: '{{ JELLYFIN_DOCKER_PATH }}/cache'  # Jellyfin Docke
 JELLYFIN_DOCKER_CACHE_DEST: /var/cache/jellyfin  # Jellyfin cache path inside Docker container.
 JELLYFIN_DOCKER_LOG_PATH: '{{ JELLYFIN_DOCKER_PATH }}/log'  # Jellyfin Docker logs path.
 JELLYFIN_DOCKER_LOG_DEST: /var/log/jellyfin  # Jellyfin logs path inside Docker container.
+JELLYFIN_DOCKER_TRANSCODES_DEST: /var/cache/jellyfin/transcodes  # Jellyfin transcodes path inside Docker container.
 JELLYFIN_DOCKER_SERVICE_NAME: '{{ JELLYFIN_SERVICE_NAME }}'  # Jellyfin Docker service name.
 JELLYFIN_DOCKER_CONTAINER_NAME: jellyfin_container  # Jellyfin Docker container name.
 JELLYFIN_DOCKER_HOSTNAME: '{{ JELLYFIN_SERVICE_NAME }}'  # Hostname for the Jellyfin Docker container.
