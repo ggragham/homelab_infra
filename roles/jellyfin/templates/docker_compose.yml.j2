@@ -11,6 +11,15 @@ services:
       - JELLYFIN_CACHE_DIR={{ JELLYFIN_DOCKER_CACHE_DEST }}
       - JELLYFIN_LOG_DIR={{ JELLYFIN_DOCKER_LOG_DEST }}
     user: {{ jellyfin_uid }}:{{ jellyfin_gid}}
+{% if (JELLYFIN_DOCKER_HARDWARE_TRANSCODING_ENABLE | default(false) | bool) %}
+    group_add:
+{% for item in jellyfin_transcode_group_add %}
+      - "{{ item }}"
+{% endfor %}
+    security_opt:
+      - systempaths=unconfined
+      - apparmor=unconfined
+{% endif %}
     networks:
       - jellyfin_nginx_network
 {% if (JELLYFIN_DOCKER_USE_NGINX is not defined or JELLYFIN_DOCKER_USE_NGINX is not sameas(true))
@@ -22,6 +31,16 @@ services:
 {% if JELLYFIN_DOCKER_DISCOVERY_PORT is defined and JELLYFIN_DOCKER_DISCOVERY_PORT is not sameas(false) %}
       - {{ JELLYFIN_DOCKER_DISCOVERY_PORT }}:7359/udp
 {% endif %}
+{% endif %}
+{% if (JELLYFIN_DOCKER_HARDWARE_TRANSCODING_ENABLE | default(false) | bool) and jellyfin_transcode_platform in ['intel', 'amd'] %}
+    devices:
+      - /dev/dri:/dev/dri
+{% endif %}
+{% if (JELLYFIN_DOCKER_HARDWARE_TRANSCODING_ENABLE | default(false) | bool) and jellyfin_transcode_platform == 'rk' and jellyfin_transcode_devices is defined and (jellyfin_transcode_devices | length > 0) %}
+    devices:
+{% for item in jellyfin_transcode_devices %}
+      - {{ item }}:{{ item }}
+{% endfor %}
 {% endif %}
     volumes:
       - {{ JELLYFIN_DOCKER_CONFIG_PATH }}:{{ JELLYFIN_DOCKER_CONFIG_DEST }}:Z

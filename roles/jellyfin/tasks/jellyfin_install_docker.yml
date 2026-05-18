@@ -36,6 +36,106 @@
         jellyfin_gid: '{{ jellyfin_group.gid }}'
         jellyfin_uid: '{{ jellyfin_user.uid }}'
 
+- name: Detect Jellyfin transcoding platform
+  block:
+    - name: Detect Jellyfin transcoding platform
+      shell: |
+        if [ -r /proc/device-tree/compatible ] && tr '\000' '\n' < /proc/device-tree/compatible | grep -qi rockchip; then
+          echo rk
+          exit 0
+        fi
+
+        for vendor_path in /sys/class/drm/renderD*/device/vendor /sys/class/drm/card*/device/vendor; do
+          [ -r "$vendor_path" ] || continue
+
+          vendor="$(cat "$vendor_path")"
+
+          if [ "$vendor" = "0x8086" ]; then
+            echo intel
+            exit 0
+          fi
+
+          if [ "$vendor" = "0x1002" ]; then
+            echo amd
+            exit 0
+          fi
+        done
+
+        echo none
+      args:
+        executable: /bin/bash
+      register: jellyfin_transcode_platform_check
+      changed_when: false
+      failed_when: false
+
+    - name: Set Jellyfin transcoding platform
+      set_fact:
+        jellyfin_transcode_platform: '{{ jellyfin_transcode_platform_check.stdout }}'
+
+    - name: Get Jellyfin transcoding group gids
+      shell: |
+        getent group video | cut -d: -f3
+        getent group render | cut -d: -f3
+      args:
+        executable: /bin/bash
+      register: jellyfin_transcode_group_gids
+      changed_when: false
+      failed_when: false
+
+    - name: Set Jellyfin transcoding group_add
+      set_fact:
+        jellyfin_transcode_group_add: "{{ jellyfin_transcode_group_gids.stdout_lines | reject('equalto', '') | unique | list }}"
+
+    - name: Detect Jellyfin Rockchip devices
+      shell: |
+        for dev in dri dma_heap mali0 rga mpp_service \
+          iep mpp-service vpu_service vpu-service \
+          hevc_service hevc-service rkvdec rkvenc vepu h265e; do
+          [ -e "/dev/$dev" ] && echo "/dev/$dev"
+        done
+      args:
+        executable: /bin/bash
+      register: jellyfin_transcode_rk_devices
+      changed_when: false
+      failed_when: false
+      when: jellyfin_transcode_platform == 'rk'
+
+    - name: Set Jellyfin Rockchip devices
+      set_fact:
+        jellyfin_transcode_devices: '{{ jellyfin_transcode_rk_devices.stdout_lines }}'
+      when: jellyfin_transcode_platform == 'rk'
+
+    - name: Set Jellyfin empty Rockchip devices
+      set_fact:
+        jellyfin_transcode_devices: []
+      when: jellyfin_transcode_platform != 'rk'
+
+    - name: Apply Jellyfin Rockchip udev rules
+      block:
+        - name: Apply Jellyfin Rockchip device permissions
+          template:
+            src: rockchip_udev.rules.j2
+            dest: /etc/udev/rules.d/99-rk-device-permissions.rules
+            owner: root
+            group: root
+            mode: '0644'
+          register: jellyfin_rk_udev_rules
+          become: true
+
+        - name: Reload Jellyfin Rockchip udev rules
+          command: udevadm control --reload-rules
+          when: jellyfin_rk_udev_rules.changed
+          become: true
+
+        - name: Trigger Jellyfin Rockchip udev rules
+          command: udevadm trigger
+          when: jellyfin_rk_udev_rules.changed
+          become: true
+
+      when:
+        - JELLYFIN_DOCKER_HARDWARE_TRANSCODING_ENABLE | default(false) | bool
+        - jellyfin_transcode_platform == 'rk'
+
 - name: Jellyfin docker install
   block:
     - name: Create Jellyfin Docker dirs
