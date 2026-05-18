@@ -52,7 +52,9 @@
           loop:
             - {path: '{{ JELLYFIN_DOCKER_PATH }}', owner: root}
             - {path: '{{ JELLYFIN_DOCKER_CONFIG_PATH }}', owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'}
+            - {path: '{{ JELLYFIN_DOCKER_DATA_PATH }}', owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'}
             - {path: '{{ JELLYFIN_DOCKER_CACHE_PATH }}', owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'}
+            - {path: '{{ JELLYFIN_DOCKER_LOG_PATH }}', owner: '{{ JELLYFIN_SYSTEM_USERNAME }}'}
           become: true
 
         - name: Check Jellyfin media source dirs

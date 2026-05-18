@@ -4,7 +4,13 @@ JELLYFIN_SYSTEM_USERNAME: jellyfin  # Jellyfin system user.
 
 JELLYFIN_DOCKER_PATH: /opt/jellyfin_docker  # Jellyfin Docker installation path.
 JELLYFIN_DOCKER_CONFIG_PATH: '{{ JELLYFIN_DOCKER_PATH }}/config'  # Jellyfin Docker config path.
+JELLYFIN_DOCKER_CONFIG_DEST: /etc/jellyfin  # Jellyfin config path inside Docker container.
+JELLYFIN_DOCKER_DATA_PATH: '{{ JELLYFIN_DOCKER_PATH }}/data'  # Jellyfin Docker data path.
+JELLYFIN_DOCKER_DATA_DEST: /var/lib/jellyfin  # Jellyfin data path inside Docker container.
 JELLYFIN_DOCKER_CACHE_PATH: '{{ JELLYFIN_DOCKER_PATH }}/cache'  # Jellyfin Docker cache path.
+JELLYFIN_DOCKER_CACHE_DEST: /var/cache/jellyfin  # Jellyfin cache path inside Docker container.
+JELLYFIN_DOCKER_LOG_PATH: '{{ JELLYFIN_DOCKER_PATH }}/log'  # Jellyfin Docker logs path.
+JELLYFIN_DOCKER_LOG_DEST: /var/log/jellyfin  # Jellyfin logs path inside Docker container.
 JELLYFIN_DOCKER_SERVICE_NAME: '{{ JELLYFIN_SERVICE_NAME }}'  # Jellyfin Docker service name.
 JELLYFIN_DOCKER_CONTAINER_NAME: jellyfin_container  # Jellyfin Docker container name.
 JELLYFIN_DOCKER_HOSTNAME: '{{ JELLYFIN_SERVICE_NAME }}'  # Hostname for the Jellyfin Docker container.

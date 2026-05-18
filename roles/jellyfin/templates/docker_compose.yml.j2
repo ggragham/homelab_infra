@@ -5,6 +5,11 @@ services:
     container_name: {{ JELLYFIN_DOCKER_CONTAINER_NAME }}
     hostname: {{ JELLYFIN_DOCKER_HOSTNAME }}
     restart: unless-stopped
+    environment:
+      - JELLYFIN_CONFIG_DIR={{ JELLYFIN_DOCKER_CONFIG_DEST }}
+      - JELLYFIN_DATA_DIR={{ JELLYFIN_DOCKER_DATA_DEST }}
+      - JELLYFIN_CACHE_DIR={{ JELLYFIN_DOCKER_CACHE_DEST }}
+      - JELLYFIN_LOG_DIR={{ JELLYFIN_DOCKER_LOG_DEST }}
     user: {{ jellyfin_uid }}:{{ jellyfin_gid}}
     networks:
       - jellyfin_nginx_network
@@ -19,8 +24,10 @@ services:
 {% endif %}
 {% endif %}
     volumes:
-      - {{ JELLYFIN_DOCKER_CONFIG_PATH }}:/config
-      - {{ JELLYFIN_DOCKER_CACHE_PATH }}:/cache
+      - {{ JELLYFIN_DOCKER_CONFIG_PATH }}:{{ JELLYFIN_DOCKER_CONFIG_DEST }}:Z
+      - {{ JELLYFIN_DOCKER_DATA_PATH }}:{{ JELLYFIN_DOCKER_DATA_DEST }}:Z
+      - {{ JELLYFIN_DOCKER_CACHE_PATH }}:{{ JELLYFIN_DOCKER_CACHE_DEST }}:Z
+      - {{ JELLYFIN_DOCKER_LOG_PATH }}:{{ JELLYFIN_DOCKER_LOG_DEST }}:z
 {% for item in JELLYFIN_DOCKER_MEDIA_PATH %}
       - type: bind
         source: {{ item.source }}
