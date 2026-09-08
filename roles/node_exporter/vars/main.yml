@@ -1,0 +1,5 @@
+---
+NODE_EXPORTER_DOCKER_PATH: /opt/node_exporter_docker  # Node exporter Docker installation path.
+NODE_EXPORTER_SERVICE_NAME: node_exporter  # Node exporter service name.
+NODE_EXPORTER_CONTAINER_NAME: node_exporter_container  # Node exporter container name.
+NODE_EXPORTER_USER: node_exporter  # Node exporter system user.

@@ -1,0 +1,35 @@
+---
+- name: Check Docker existence
+  block:
+    - name: Check Docker binary existence
+      stat:
+        path: /usr/bin/docker
+      register: docker_installed
+    - name: Show error if Docker not installed
+      fail:
+        msg: Docker is not installed
+      when: not docker_installed.stat.exists
+
+- name: Create Node exporter Docker dir
+  file:
+    path: '{{ NODE_EXPORTER_DOCKER_PATH }}'
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  become: true
+
+- name: Apply Node exporter Compose template
+  template:
+    src: docker_compose.yml.j2
+    dest: '{{ NODE_EXPORTER_DOCKER_PATH }}/docker-compose.yml'
+    owner: root
+    mode: 0644
+  become: true
+
+- name: Start Node exporter
+  community.docker.docker_compose_v2:
+    project_src: '{{ NODE_EXPORTER_DOCKER_PATH }}'
+    state: present
+    recreate: always
+    remove_orphans: true

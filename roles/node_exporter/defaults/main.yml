@@ -1,0 +1,9 @@
+---
+#######################
+###  Node Exporter  ###
+#######################
+NODE_EXPORTER_DOCKERIZED: true  # Node exporter dockerized install toggle.
+NODE_EXPORTER_VERSION: latest  # Node exporter version.
+
+NODE_EXPORTER_PROMETHEUS_TARGETS_HOST: monitoring_node  # Node exporter Prometheus targets host.
+MONITORING_PROMETHEUS_TARGETS_PATH: /opt/monitoring_docker/prometheus/targets  # Prometheus targets configuration path.

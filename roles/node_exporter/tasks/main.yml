@@ -1,0 +1,20 @@
+---
+- name: Node Exporter
+  block:
+    - name: Node exporter docker install
+      include_tasks: docker.yml
+      when: NODE_EXPORTER_DOCKERIZED
+
+    - name: Node exporter bare metal install
+      include_tasks: baremetal.yml
+      when: not NODE_EXPORTER_DOCKERIZED
+
+    - name: Create node exporter target files
+      template:
+        src: node_target.yml.j2
+        dest: '{{ MONITORING_PROMETHEUS_TARGETS_PATH }}/{{ item }}.yml'
+      loop: '{{ hostvars.keys() | list }}'
+      when:
+        - hostvars[item].ansible_host is defined
+      delegate_to: '{{ NODE_EXPORTER_PROMETHEUS_TARGETS_HOST }}'
+      become: true

@@ -1,0 +1,5 @@
+---
+- targets:
+    - {{ ansible_host | default(inventory_hostname) }}:9100
+  labels:
+    instance: {{ inventory_hostname }}

@@ -15,6 +15,9 @@
     - role: docker
       tags: docker
 
+    - role: node_exporter
+      tags: node_exporter
+
     - role: monitoring
       tags: monitoring
 

@@ -1,0 +1,38 @@
+---
+- name: Create Node exporter user
+  user:
+    name: '{{ NODE_EXPORTER_USER }}'
+    system: true
+    shell: /usr/sbin/nologin
+  become: true
+
+- block:
+    - name: Install Node exporter package
+      apt:
+        name: prometheus-node-exporter
+        state: latest
+        update_cache: true
+      become: true
+
+    - name: Enable Node exporter service
+      service:
+        name: prometheus-node-exporter
+        state: started
+        enabled: true
+      become: true
+  when: ansible_facts["os_family"] == "Debian"
+
+- block:
+    - name: Install Node exporter package
+      dnf:
+        name: node-exporter
+        state: latest
+      become: true
+
+    - name: Enable Node exporter service
+      service:
+        name: node_exporter
+        state: started
+        enabled: true
+      become: true
+  when: ansible_facts["os_family"] == "RedHat"
