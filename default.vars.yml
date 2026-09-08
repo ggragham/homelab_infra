@@ -392,3 +392,17 @@ TRANSMISSION_PEER_PORT: 51413  # Transmission peer port.
 
 TRANSMISSION_USER: transmission  # Username used to login.
 TRANSMISSION_PASSWORD: qwerty1234!  # Password used to login.
+
+####################
+###  Monitoring  ###
+####################
+MONITORING_DOCKER_PATH: /opt/monitoring_docker  # Monitoring Docker installation path.
+MONITORING_DOCKER_NETWORK_NAME: monitoring_network  # Monitoring Docker network name.
+
+# Monitoring service Docker image versions.
+MONITORING_GRAFANA_VERSION: latest
+MONITORING_PROMETHEUS_VERSION: latest
+MONITORING_ALERTMANAGER_VERSION: latest
+MONITORING_BLACKBOX_EXPORTER_VERSION: latest
+
+MONITORING_GRAFANA_PORT: 8080  # Grafana web interface port.

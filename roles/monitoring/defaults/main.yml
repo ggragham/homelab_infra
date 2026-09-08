@@ -1,0 +1,13 @@
+---
+####################
+###  Monitoring  ###
+####################
+# Monitoring service Docker image versions.
+MONITORING_GRAFANA_VERSION: latest
+MONITORING_PROMETHEUS_VERSION: latest
+MONITORING_ALERTMANAGER_VERSION: latest
+MONITORING_BLACKBOX_EXPORTER_VERSION: latest
+
+MONITORING_DOCKER_NETWORK_NAME: monitoring_network  # Monitoring Docker network name.
+
+MONITORING_GRAFANA_PORT: 8080  # Grafana web interface port.

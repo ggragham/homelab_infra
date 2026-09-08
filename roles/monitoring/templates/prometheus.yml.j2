@@ -1,0 +1,22 @@
+---
+global:
+  scrape_interval: 15s
+
+rule_files: []
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - {{ MONITORING_ALERTMANAGER_SERVICE_NAME }}:9093
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - {{ MONITORING_PROMETHEUS_SERVICE_NAME }}:9090
+
+  - job_name: nodes
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/targets/*.yml

@@ -1,0 +1,50 @@
+---
+services:
+  {{ MONITORING_PROMETHEUS_SERVICE_NAME }}:
+    image: prom/prometheus:{{ MONITORING_PROMETHEUS_VERSION }}
+    container_name: {{ MONITORING_PROMETHEUS_CONTAINER_NAME }}
+    restart: unless-stopped
+    volumes:
+      - {{ MONITORING_PROMETHEUS_CONFIG_PATH }}/prometheus.yml:/etc/prometheus/prometheus.yml:ro,z
+      - {{ MONITORING_PROMETHEUS_TARGETS_PATH }}:/etc/prometheus/targets:ro,z
+    networks:
+      - {{ MONITORING_DOCKER_NETWORK_NAME }}
+
+
+  {{ MONITORING_GRAFANA_SERVICE_NAME }}:
+    image: grafana/grafana:{{ MONITORING_GRAFANA_VERSION }}
+    container_name: {{ MONITORING_GRAFANA_CONTAINER_NAME }}
+    restart: unless-stopped
+    ports:
+      - "{{ MONITORING_GRAFANA_PORT }}:3000"
+    volumes:
+      - {{ MONITORING_GRAFANA_DATA_PATH }}:/var/lib/grafana:z
+      - {{ MONITORING_GRAFANA_DATASOURCES_PATH }}/:/etc/grafana/provisioning/datasources:ro,z
+    networks:
+      - {{ MONITORING_DOCKER_NETWORK_NAME }}
+
+
+  {{ MONITORING_ALERTMANAGER_SERVICE_NAME }}:
+    image: prom/alertmanager:{{ MONITORING_ALERTMANAGER_VERSION }}
+    container_name: {{ MONITORING_ALERTMANAGER_CONTAINER_NAME }}
+    restart: unless-stopped
+    volumes:
+      - {{ MONITORING_ALERTMANAGER_CONFIG_PATH }}/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro,z
+    networks:
+      - {{ MONITORING_DOCKER_NETWORK_NAME }}
+
+
+  {{ MONITORING_BLACKBOX_EXPORTER_SERVICE_NAME }}:
+    image: prom/blackbox-exporter:{{ MONITORING_BLACKBOX_EXPORTER_VERSION }}
+    container_name: {{ MONITORING_BLACKBOX_EXPORTER_CONTAINER_NAME }}
+    restart: unless-stopped
+    volumes:
+      - {{ MONITORING_DOCKER_PATH }}/blackbox/blackbox.yml:/config/blackbox.yml:ro,z
+    networks:
+      - {{ MONITORING_DOCKER_NETWORK_NAME }}
+
+
+networks:
+  {{ MONITORING_DOCKER_NETWORK_NAME }}:
+    name: {{ MONITORING_DOCKER_NETWORK_NAME }}
+    driver: bridge

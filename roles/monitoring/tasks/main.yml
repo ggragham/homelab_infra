@@ -1,0 +1,70 @@
+---
+- name: Monitoring
+  block:
+    - name: Check Docker existence
+      block:
+        - name: Check Docker binary existence
+          stat:
+            path: /usr/bin/docker
+          register: docker_installed
+        - name: Show error if Docker not installed
+          fail:
+            msg: Docker is not installed
+          when: not docker_installed.stat.exists
+
+    - name: Create Monitoring Docker dirs
+      file:
+        path: '{{ item }}'
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+      loop:
+        - '{{ MONITORING_DOCKER_PATH }}'
+        - '{{ MONITORING_PROMETHEUS_CONFIG_PATH }}'
+        - '{{ MONITORING_PROMETHEUS_TARGETS_PATH }}'
+        - '{{ MONITORING_ALERTMANAGER_CONFIG_PATH }}'
+        - '{{ MONITORING_BLACKBOX_CONFIG_PATH }}'
+      become: true
+
+    - name: Create grafana directories
+      file:
+        path: '{{ item }}'
+        state: directory
+        owner: '{{ MONITORING_GRAFANA_UID }}'
+        group: root
+        mode: '0775'
+      loop:
+        - '{{ MONITORING_GRAFANA_PATH }}'
+        - '{{ MONITORING_GRAFANA_DATA_PATH }}'
+        - '{{ MONITORING_GRAFANA_CONFIG_PATH }}'
+        - '{{ MONITORING_GRAFANA_DATASOURCES_PATH }}'
+      become: true
+
+    - name: Apply Monitoring configs
+      template:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        owner: root
+        mode: 0644
+      loop:
+        - {src: prometheus.yml.j2, dest: '{{ MONITORING_PROMETHEUS_CONFIG_PATH }}/prometheus.yml'}
+        - {src: grafana_datasource.yml.j2, dest: '{{ MONITORING_GRAFANA_DATASOURCES_PATH }}/datasource.yml'}
+        - {src: alertmanager.yml.j2, dest: '{{ MONITORING_ALERTMANAGER_CONFIG_PATH }}/alertmanager.yml'}
+        - {src: blackbox.yml.j2, dest: '{{ MONITORING_DOCKER_PATH }}/blackbox/blackbox.yml'}
+      become: true
+
+    - name: Apply Monitoring compose template
+      template:
+        src: docker_compose.yml.j2
+        dest: '{{ MONITORING_DOCKER_PATH }}/docker-compose.yml'
+        owner: root
+        mode: '0644'
+      become: true
+
+    - name: Start Monitoring
+      community.docker.docker_compose_v2:
+        project_src: '{{ MONITORING_DOCKER_PATH }}'
+        state: present
+        recreate: always
+        remove_orphans: true

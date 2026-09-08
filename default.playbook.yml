@@ -15,6 +15,9 @@
     - role: docker
       tags: docker
 
+    - role: monitoring
+      tags: monitoring
+
     - role: nginx
       tags: nginx
 
