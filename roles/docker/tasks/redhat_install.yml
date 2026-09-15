@@ -8,6 +8,35 @@
         else ansible_distribution | lower
       ).strip() }}
 
+- name: Configure Docker kernel requirements
+  block:
+    - name: Install kernel-modules-extra
+      dnf:
+        name: kernel-modules-extra
+        state: latest
+        update_cache: true
+      become: true
+
+    - name: Configure Docker kernel parameters
+      copy:
+        content: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.ipv4.ip_forward = 1
+        dest: /etc/sysctl.d/99-docker.conf
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+    - name: Apply sysctl configuration
+      command:
+        cmd: sysctl --system
+      become: true
+  when:
+    - ansible_facts["os_family"] == "RedHat"
+    - ansible_facts["distribution"] != "Fedora"
+
 - name: Add repo to {{ ansible_distribution }}
   yum_repository:
     name: docker
