@@ -13,8 +13,9 @@
       template:
         src: node_target.yml.j2
         dest: '{{ MONITORING_PROMETHEUS_TARGETS_PATH }}/{{ item }}.yml'
-      loop: '{{ hostvars.keys() | list }}'
+      loop: '{{ ansible_play_hosts }}'
       when:
         - hostvars[item].ansible_host is defined
       delegate_to: '{{ NODE_EXPORTER_PROMETHEUS_TARGETS_HOST }}'
       become: true
+      run_once: true
