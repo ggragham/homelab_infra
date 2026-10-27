@@ -11,3 +11,15 @@ MONITORING_BLACKBOX_EXPORTER_VERSION: latest
 MONITORING_DOCKER_NETWORK_NAME: monitoring_network  # Monitoring Docker network name.
 
 MONITORING_GRAFANA_PORT: 8080  # Grafana web interface port.
+
+# Manually defined node exporter targets.
+# NODE_EXPORTER_STATIC_TARGETS:
+#   router:
+#     - address: 192.168.88.1
+#       port: 9100
+#
+#   servers:
+#     - address: 10.10.10.10
+#       port: 9100
+#     - address: 10.10.10.11
+#       port: 9100

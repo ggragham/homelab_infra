@@ -49,6 +49,7 @@
         mode: 0644
       loop:
         - {src: prometheus.yml.j2, dest: '{{ MONITORING_PROMETHEUS_CONFIG_PATH }}/prometheus.yml'}
+        - {src: node_static_target.yml.j2, dest: '{{ MONITORING_PROMETHEUS_TARGETS_PATH }}/node_static_target.yml'}
         - {src: grafana_datasource.yml.j2, dest: '{{ MONITORING_GRAFANA_DATASOURCES_PATH }}/datasource.yml'}
         - {src: alertmanager.yml.j2, dest: '{{ MONITORING_ALERTMANAGER_CONFIG_PATH }}/alertmanager.yml'}
         - {src: blackbox.yml.j2, dest: '{{ MONITORING_DOCKER_PATH }}/blackbox/blackbox.yml'}

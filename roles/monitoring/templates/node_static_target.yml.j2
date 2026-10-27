@@ -1,0 +1,15 @@
+---
+{% set static_targets = NODE_EXPORTER_STATIC_TARGETS | default(false) %}
+{% if static_targets %}
+{% for group, targets in static_targets.items() %}
+- targets:
+{% for target in targets %}
+    - {{ target.address }}:{{ target.port | default(9100) }}
+{% endfor %}
+  labels:
+    group: {{ group }}
+
+{% endfor %}
+{% else %}
+[]
+{% endif %}
