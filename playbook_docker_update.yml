@@ -1,0 +1,23 @@
+---
+- name: Upgrade all Docker Compose projects
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Find Docker Compose project directories.
+      find:
+        paths: /opt
+        patterns: '*_docker'
+        file_type: directory
+        recurse: false
+      register: docker_compose_directories
+
+    - name: Upgrade all Docker Compose projects.
+      community.docker.docker_compose_v2:
+        project_src: '{{ item.path }}'
+        state: present
+        pull: always
+        recreate: auto
+      loop: '{{ docker_compose_directories.files }}'
+      loop_control:
+        label: '{{ item.path }}'
