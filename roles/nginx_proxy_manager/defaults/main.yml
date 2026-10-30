@@ -6,3 +6,9 @@
 NPM_DOCKER_VERSION: latest  # Nginx Proxy Manager Docker image version.
 NPM_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Docker network.
 NPM_DOMAIN: proxy.{{ PIHOLE_DOMAIN_NAME }}  # Domain name for the Nginx Proxy Manager service.
+
+## Port mappings for the Nginx Proxy Manager containers.
+# NPM_PORT_LIST:
+#   - "3000:3000/tcp"
+#   - "8080:8080/tcp"
+#   - "1194:1194/udp"

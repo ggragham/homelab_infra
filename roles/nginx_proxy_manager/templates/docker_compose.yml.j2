@@ -15,6 +15,9 @@ services:
       - '80:80/tcp'
       - '443:443/tcp'
       - '81:81/tcp'
+{% for port in NPM_PORT_LIST | default([], true) %}
+      - '{{ port }}'
+{% endfor %}
 
 networks:
   npm_network:
