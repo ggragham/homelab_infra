@@ -1,7 +1,7 @@
 ---
 - name: Set backup filename
   set_fact:
-    gitea_dump_name: gitea-dump-{{ ansible_date_time.epoch }}.zip
+    gitea_dump_name: dump-gitea-{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '-') }}.zip
 
 - name: Backup Gitea data (Bare Metal)
   command: >
