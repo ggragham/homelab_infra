@@ -1,0 +1,41 @@
+---
+- name: Set Nginx Proxy Manager backup filename
+  set_fact:
+    npm_dump_name: dump-npm-{{ ansible_date_time.date }}_{{ ansible_date_time.time | replace(':', '-') }}.tar.gz
+
+- name: Back up Nginx Proxy Manager directory
+  become: true
+  block:
+    - name: Stop and archive Nginx Proxy Manager
+      block:
+        - name: Stop Nginx Proxy Manager (Docker)
+          community.docker.docker_compose_v2:
+            project_src: /opt/nginx_proxy_manager_docker
+            state: stopped
+          become: true
+
+        - name: Archive Nginx Proxy Manager data (Docker)
+          command: >
+            tar -czf /tmp/{{ npm_dump_name }}
+            -C /opt nginx_proxy_manager_docker
+          become: true
+
+      always:
+        - name: Start Nginx Proxy Manager (Docker)
+          community.docker.docker_compose_v2:
+            project_src: /opt/nginx_proxy_manager_docker
+            state: present
+          become: true
+
+    - name: Fetch Nginx Proxy Manager backup
+      fetch:
+        src: /tmp/{{ npm_dump_name }}
+        dest: ./assets/
+        flat: true
+
+  always:
+    - name: Remove temporary archive from host
+      ansible.builtin.file:
+        path: /tmp/{{ npm_dump_name }}
+        state: absent
+      when: npm_dump_name is defined

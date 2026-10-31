@@ -33,3 +33,12 @@
         state: present
         recreate: always
         remove_orphans: true
+
+  when: action is not defined
+
+- name: Nging Proxy Manager Backup or Restore
+  block:
+    - name: Nging Proxy Manager Backup
+      include_tasks: npm_backup.yml
+      when:
+        - action | default('') == 'backup'
