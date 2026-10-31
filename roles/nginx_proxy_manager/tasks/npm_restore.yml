@@ -1,0 +1,89 @@
+---
+- name: Set Nginx Proxy Manager restore vars
+  set_fact:
+    npm_dump_file: /tmp/{{ npm_dump_name }}
+    npm_extract_dir: /tmp/npm_dump
+    npm_docker_dir: /opt/nginx_proxy_manager_docker
+
+- name: Restore Nginx Proxy Manager
+  block:
+    - name: Copy Nginx Proxy Manager dump to host
+      copy:
+        src: ./assets/{{ npm_dump_name }}
+        dest: '{{ npm_dump_file }}'
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+    - name: Ensure clean Nginx Proxy Manager extract dir
+      file:
+        path: '{{ npm_extract_dir }}'
+        state: absent
+      become: true
+
+    - name: Re-create Nginx Proxy Manager extract dir
+      file:
+        path: '{{ npm_extract_dir }}'
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      become: true
+
+    - name: Extract Nginx Proxy Manager dump
+      unarchive:
+        src: '{{ npm_dump_file }}'
+        dest: '{{ npm_extract_dir }}'
+        remote_src: true
+      become: true
+
+    - name: Stop and restore Nginx Proxy Manager
+      block:
+        - name: Check Nginx Proxy Manager target dir
+          stat:
+            path: '{{ npm_docker_dir }}'
+          register: npm_docker_dir_stat
+
+        - name: Stop Nginx Proxy Manager (Docker)
+          community.docker.docker_compose_v2:
+            project_src: '{{ npm_docker_dir }}'
+            state: stopped
+          when: npm_docker_dir_stat.stat.isdir | default(false)
+
+        - name: Ensure Nginx Proxy Manager target dir exists
+          file:
+            path: '{{ npm_docker_dir }}'
+            state: directory
+            owner: root
+            group: root
+            mode: '0755'
+          become: true
+
+        - name: Restore Nginx Proxy Manager data (Docker)
+          copy:
+            src: '{{ npm_extract_dir }}/nginx_proxy_manager_docker/'
+            dest: '{{ npm_docker_dir }}/'
+            remote_src: true
+            mode: preserve
+          become: true
+
+      always:
+        - name: Start Nginx Proxy Manager (Docker)
+          community.docker.docker_compose_v2:
+            project_src: '{{ npm_docker_dir }}'
+            state: present
+          become: true
+
+  always:
+    - name: Remove temporary archive from host
+      file:
+        path: '{{ npm_dump_file }}'
+        state: absent
+      become: true
+
+    - name: Remove temporary extract dir from host
+      file:
+        path: '{{ npm_extract_dir }}'
+        state: absent
+      become: true

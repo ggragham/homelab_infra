@@ -42,3 +42,8 @@
       include_tasks: npm_backup.yml
       when:
         - action | default('') == 'backup'
+
+    - name: Nging Proxy Manager Restore
+      include_tasks: npm_restore.yml
+      when:
+        - action | default('') == 'restore'
