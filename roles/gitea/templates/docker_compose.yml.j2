@@ -20,8 +20,12 @@ services:
     user: '{{ GITEA_ID }}'
     networks:
       - gitea_network
+{% if GITEA_DB_DEPLOY %}
+      - gitea_db_network
+{% endif %}
+{% if GITEA_DB_DEPLOY %}
       - {{ ACT_DOCKER_NETWORK }}
-      - gitea_nginx_network
+{% endif %}
     ports:
       - {{ GITEA_PORT }}:{{ GITEA_PORT }}
       - 2222:2222
@@ -43,7 +47,7 @@ services:
       MARIADB_USER: {{ GITEA_DB_USER }}
       MARIADB_PASSWORD: '{{ GITEA_DB_PASSWORD }}'
     networks:
-      - gitea_network
+      - gitea_db_network
     volumes:
       - {{ GITEA_DB_PATH }}:/var/lib/mysql
 {% endif %}
@@ -73,7 +77,11 @@ services:
 
 networks:
   gitea_network:
-  {{ ACT_DOCKER_NETWORK }}:
-  gitea_nginx_network:
-    name: {{ DOCKER_NETWORK_NAME }}
+    name: {{ GITEA_DOCKER_NETWORK_NAME }}
     external: true
+{% if ACTRUNNER_DEPLOY %}
+  {{ ACT_DOCKER_NETWORK }}:
+{% endif %}
+{% if GITEA_DB_DEPLOY %}
+  gitea_db_network:
+{% endif %}
