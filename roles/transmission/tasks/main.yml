@@ -20,6 +20,21 @@
         comment: Transmission System User
         home: /var/lib/transmission-daemon
         shell: /usr/sbin/nologin
+      when: (TRANSMISSION_SYSTEM_USERNAME | default('', true) | length) == 0
+
+    # Overwrites TRANSMISSION_SYSTEM_USER_ID with the UID of TRANSMISSION_SYSTEM_USERNAME.
+    - name: Get UID of existing user
+      block:
+        - name: Get user info
+          getent:
+            database: passwd
+            key: '{{ TRANSMISSION_SYSTEM_USERNAME }}'
+
+        - name: Set user UID
+          set_fact:
+            TRANSMISSION_SYSTEM_USER_ID: '{{ getent_passwd[TRANSMISSION_SYSTEM_USERNAME][2] | int }}'
+
+      when: (TRANSMISSION_SYSTEM_USERNAME | default('', true) | length) > 0
 
     # Bare Metal Install
     - name: Transmission bare metal install

@@ -11,9 +11,17 @@ TRANSMISSION_DOCKER_NETWORK_NAME: '{{ DOCKER_NETWORK_NAME }}'  # Name of the Doc
 TRANSMISSION_USE_NGINX: false  # Toggle to use Transmission as a reverse proxy for Gitea.
 TRANSMISSION_DATA_PATH: '{{ DISK_DATA_PATH }}/transmission'  # Transmission data directory path.
 
+TRANSMISSION_ADDITIONAL_DATA_PATH:  # Additional volume mounts for Transmission.
+  - /mnt/disk/torrent:/downloads_disk
+  - /mnt/data/torrent:/downloads_data
+
 TRANSMISSION_DOMAIN: torrent.{{ DOMAIN_NAME }}  # Domain name for the Transmission service.
 TRANSMISSION_RPC_PORT: 9091  # Transmission port.
 TRANSMISSION_PEER_PORT: 51413  # Transmission peer port.
+
+## System username used to run Transmission. The specified user must already exist on the system.
+## If not set, the 'debian-transmission' user will be created with UID 1105.
+# TRANSMISSION_SYSTEM_USERNAME: transmission
 
 TRANSMISSION_USER: transmission  # Username used to login.
 TRANSMISSION_PASSWORD: qwerty1234!  # Password used to login.

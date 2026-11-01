@@ -18,8 +18,13 @@ services:
       - {{ TRANSMISSION_DOWNLOAD_PATH }}:/downloads
       - {{ TRANSMISSION_PROCESS_PATH }}:/process
       - {{ TRANSMISSION_WATCH_PATH }}:/watch
+{% if TRANSMISSION_ADDITIONAL_DATA_PATH is defined and TRANSMISSION_ADDITIONAL_DATA_PATH %}
+{% for data_volume in TRANSMISSION_ADDITIONAL_DATA_PATH %}
+      - {{ data_volume }}
+{% endfor %}
+{% endif %}
     ports:
-{% if TRANSMISSION_RPC_PORT is defined and TRANSMISSION_RPC_PORT is not sameas(false) %}
+{% if TRANSMISSION_RPC_PORT is defined and TRANSMISSION_USE_NGINX is not sameas(false) %}
       - {{ TRANSMISSION_RPC_PORT }}:{{ TRANSMISSION_RPC_PORT }}/tcp
 {% endif %}
       - {{ TRANSMISSION_PEER_PORT }}:{{ TRANSMISSION_PEER_PORT }}/tcp
