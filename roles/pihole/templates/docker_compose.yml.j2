@@ -8,7 +8,9 @@ services:
       TZ: {{ PIHOLE_TIMEZONE }}
     networks:
       pihole_nginx_network:
+{% if CLOUDFLARED_DOCKER_DEPLOY %}
       dns_network:
+{% endif %}
     ports:
       - 53:53/tcp
       - 53:53/udp
@@ -19,6 +21,7 @@ services:
       - {{ PIHOLE_CONFIG_PATH }}:/etc/pihole
       - {{ PIHOLE_DNSMASQ_PATH }}:/etc/dnsmasq.d
 
+{% if CLOUDFLARED_DOCKER_DEPLOY %}
   {{ CLOUDFLARED_DOCKER_SERVICE_NAME }}:
     container_name: {{ CLOUDFLARED_DOCKER_CONTAINER_NAME }}
     image: cloudflare/cloudflared:{{ CLOUDFLARED_DOCKER_IMAGE_VERSION }}
@@ -32,14 +35,17 @@ services:
       TUNNEL_DNS_ADDRESS: "{{ CLOUDFLARED_TUNNEL_DNS_ADDRESS }}"
       TUNNEL_DNS_UPSTREAM: "{{ CLOUDFLARED_TUNNEL_DNS_UPSTREAM }}"
     restart: unless-stopped
+{% endif %}
 
 networks:
   pihole_nginx_network:
     name: {{ DOCKER_NETWORK_NAME }}
     external: true
+{% if CLOUDFLARED_DOCKER_DEPLOY %}
   dns_network:
     driver: bridge
     enable_ipv6: false
     ipam:
       config:
         - subnet: "{{ CLOUDFLARE_DOCKER_NETWORK_SUBNET }}"
+{% endif %}

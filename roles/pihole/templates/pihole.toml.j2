@@ -1,6 +1,12 @@
 [dns]
   upstreams = [
+{% if CLOUDFLARED_DOCKER_DEPLOY %}
     "{{ CLOUDFLARED_DOCKER_NETWORK_IPV4 }}#{{ CLOUDFLARED_TUNNEL_DNS_PORT }}"
+{% else %}
+{% for upstream_address in PIHOLE_DNS_UPSTREAMS %}
+    "{{ upstream_address}}"
+{% endfor %}
+{% endif %}
   ]
   
   hosts = [
